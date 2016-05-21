@@ -1,0 +1,14 @@
+doctype html
+html(lang="en")
+  head
+    title HomeDash
+    link(href='/css/vendor/bootstrap/css/bootstrap.min.css', rel='stylesheet')
+    link(href='/css/main.css', rel='stylesheet')
+    
+    block css
+  body
+    .container
+        block content
+    script(src="/js/vendor/jquery/jquery-2.2.3.min.js")
+    script(src="/js/vendor/bootstrap/bootstrap.min.js")
+    block scripts

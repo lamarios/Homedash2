@@ -1,3 +1,5 @@
+#maven
+
 target/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -7,6 +9,7 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
+
 
 # =========================
 # Operating System Files
@@ -18,10 +21,8 @@ buildNumber.properties
 .DS_Store
 .AppleDouble
 .LSOverride
-
 # Thumbnails
 ._*
-
 # Files that might appear in the root of a volume
 .DocumentRevisions-V100
 .fseventsd
@@ -29,7 +30,6 @@ buildNumber.properties
 .TemporaryItems
 .Trashes
 .VolumeIcon.icns
-
 # Directories potentially created on remote AFP share
 .AppleDB
 .AppleDesktop
@@ -39,17 +39,14 @@ Temporary Items
 
 # Windows
 # =========================
-
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
 
 # Folder config file
 Desktop.ini
-
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
-
 # Windows Installer files
 *.cab
 *.msi
@@ -58,3 +55,70 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+
+
+
+
+
+
+
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+# Eclipse Core
+.project
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# PyDev specific (Python IDE for Eclipse)
+*.pydevproject
+
+# CDT-specific (C/C++ Development Tooling)
+.cproject
+
+# JDT-specific (Eclipse Java Development Tools)
+.classpath
+
+# Java annotation processor (APT)
+.factorypath
+
+# PDT-specific (PHP Development Tools)
+.buildpath
+
+# sbteclipse plugin
+.target
+
+# Tern plugin
+.tern-project
+
+# TeXlipse plugin
+.texlipse
+
+# STS (Spring Tool Suite)
+.springBeans
+
+# Code Recommenders
+.recommenders/
+
+
+#Homedash2
+cache/
+homedash.mv.db
+web/src/main/resources/native-libs
+web/src/main/resources/web/web
+web/src/main/resources/conf/homedash.properties
+plugin-*/src/main/resources/

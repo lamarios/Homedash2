@@ -1,0 +1,14 @@
+extends ./layout.jade
+block css
+    link(href='/css/index.css', rel='stylesheet')
+block content
+    h1 Select module to add
+    .row
+        .col-md-12
+        for plugin in plugins
+            h2 #{plugin.getDisplayName()}
+            p #{plugin.getDescription()}
+            .add-button
+                a(href="/add-module/#{plugin.getClass().getCanonicalName()}", class="btn btn-default") Add #{plugin.getDisplayName()}
+block scripts
+    

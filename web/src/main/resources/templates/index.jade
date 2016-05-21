@@ -1,0 +1,23 @@
+extends ./layout.jade
+block css
+    link(href='/css/index.css', rel='stylesheet')
+    link(href="/css/vendor/gridster/gridster.css", rel='stylesheet')
+    for plugin in filteredPlugins
+        link(href="/plugin/#{plugin.getId()}/css/#{plugin.getId()}.css", rel="stylesheet")
+block content
+    a(href="/add-module") Add module 
+    h1#page-title
+    #layout
+block scripts
+    script(src="/js/vendor/gridster/gridster.js")
+    script(src="/js/index.js")
+    for plugin in filteredPlugins
+        script(src="/plugin/#{plugin.getId()}/js/#{plugin.getId()}.js")
+        
+    for plugin in plugins
+        script(type="text/javascript").
+            var moduleId = #{plugin.getModule().getId()};
+            MODULES[moduleId] = new #{plugin.getId()}(moduleId);
+            if(MODULES[moduleId].documentReady != undefined)
+            MODULES[moduleId].documentReady();
+    script(src="/js/websocket.js")

@@ -1,0 +1,13 @@
+.gridster
+    ul
+        for layout in layouts
+            li(class="module #{layout.getSize()}", data-size="#{layout.getSize()}", data-module="#{layout.getModule().getId()}", data-row="#{layout.getY()}", data-col="#{layout.getX()}", data-sizex="#{layout.getWidth()}", data-sizey="#{layout.getHeight()}")
+                .module-settings
+                    .module-resize-container
+                        button(class="module-resize") resize
+                        .module-sizes
+                            .loading loading...
+                .drag-box
+                .loading
+                .content
+                    p yo

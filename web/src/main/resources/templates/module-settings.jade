@@ -1,0 +1,16 @@
+extends ./layout.jade
+block css
+    link(href='/css/module-settings.css', rel='stylesheet')
+block content
+    h1 Settings for #{pluginName}
+    
+    form(action="/save-module", method="post")
+        input(type="hidden", name="class", value="#{pluginClass}")
+        .row
+            .col-md-12
+                !{settings}
+        .row
+            .col-md-12
+                input(type="submit", class="btn btn-primary", value="Save")
+
+block scripts

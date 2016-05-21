@@ -1,0 +1,215 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.ftpix.homedash</groupId>
+		<artifactId>homedash</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+
+	<artifactId>web</artifactId>
+	<name>web</name>
+
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<main.class>com.ftpix.homedash.app.App</main.class>
+		<native.dir>lib/native</native.dir>
+	</properties>
+
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sparkjava</groupId>
+			<artifactId>spark-core</artifactId>
+			<version>2.5</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>2.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sparkjava</groupId>
+			<artifactId>spark-template-jade</artifactId>
+			<version>2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.21</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>0.9.10</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>io.gsonfire</groupId>
+			<artifactId>gson-fire</artifactId>
+			<version>1.5.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+			<version>2.2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz-jobs</artifactId>
+			<version>2.2.2</version>
+		</dependency>
+		<!-- plugins -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>plugin-systeminfo</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>plugin-docker</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+
+	</dependencies>
+
+
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.lesscss</groupId>
+				<artifactId>lesscss-maven-plugin</artifactId>
+				<configuration>
+					<sourceDirectory>${project.build.sourceDirectory}/assets/less</sourceDirectory>
+					<outputDirectory>${project.build.resources[0].directory}/web/css</outputDirectory>
+					<compress>true</compress>
+					<includes>
+						<include>*.less</include>
+					</includes>
+					<excludes>
+						<exclude>variables.less</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>net.tqh.plugins</groupId>
+				<artifactId>uglifyjs-maven-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<id>uglify-js</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>uglify</goal>
+						</goals>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>net.tqh.plugins</groupId>
+				<artifactId>uglifyjs-maven-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<id>uglify-js-web</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>uglify</goal>
+						</goals>
+						<configuration>
+							<skip>false</skip>
+							<sourceDirectory>${project.build.sourceDirectory}/assets/js</sourceDirectory>
+
+							<outputDirectory>${project.build.resources[0].directory}/web/js</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- EXECUTE -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+			</plugin>
+
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<!-- <execution> <id>copy-plugins-css</id> <phase>generate-resources</phase> 
+						<goals> <goal>run</goal> </goals> <configuration> <tasks> <copy todir="src/main/resources/web/css/plugins" 
+						flatten="true"> <fileset dir="../"> <include name="plugin-*/src/main/resources/web/css/*.css" 
+						/> </fileset> </copy> </tasks> </configuration> </execution> <execution> 
+						<id>copy-plugins-js</id> <phase>generate-resources</phase> <goals> <goal>run</goal> 
+						</goals> <configuration> <tasks> <copy todir="src/main/resources/web/js/plugins" 
+						flatten="true"> <fileset dir="../"> <include name="plugin-*/src/main/resources/web/js/*.js" 
+						/> </fileset> </copy> </tasks> </configuration> </execution> -->
+
+					<execution>
+						<id>copy-plugins-templates</id>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-plugins-files</id>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-native</id>
+
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<copy todir="src/main/resources/native-libs" flatten="true">
+
+									<fileset dir="../">
+										<include name="plugin-*/${native.dir}/*.*" />
+									</fileset>
+								</copy>
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+
+</project>
