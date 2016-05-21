@@ -1,13 +1,117 @@
 @import 'variables.less';
+@import 'loader.less';
+@import 'dropdown-multilevel.less';
+@transition-speed:0.3s;
+
+.gridster .player-revert{
+    -webkit-transition: all @transition-speed !important;
+    transition: all @transition-speed !important;
+}
 .gridster {
 	margin: 0 auto;
-	background-color: #ccc;
-	ul {
-		list-style: none;
-	}
+    -webkit-transition: all @transition-speed ;
+    transition: all @transition-speed;
+    .gridster-item {
+        -webkit-transition: all @transition-speed !important;
+        transition: all @transition-speed !important;
 
-	.module {
-		background-color: grey;
-	}
-}
+        .module{
+            position: relative;
+            height:100%;
+            .loading{
+                background-color:white;
+                position:absolute;
+                top:0;
+                left:0;
+                right:0;
+                bottom:0;
+                padding-top: 40px;
+            }
 
+            .content{
+                height:100%;
+                overflow: hidden;
+            }
+
+            .settings-overlay{
+                position:absolute;
+                background-color: rgb(0,0,0);
+                top: 0;
+                left:0;
+                right:0;
+                bottom:0;
+                display:none;
+                opacity:0;
+                -webkit-transition: all @transition-speed !important;
+                transition: all @transition-speed !important;
+                z-index:99;
+            }
+            .module-settings{
+                display: none;
+                .module-settings-icon{
+                    padding-top:5px;
+                    display:block;
+                    width:@module-icon-size;
+                    height:@module-icon-size;
+                    background-color:white;
+                    border-radius: 50%;
+                    border: 1px solid #eee;
+                    color:#333;
+                    text-align: center;
+                    z-index: 100;
+                    position: absolute;
+                    top:-@module-icon-size/2;
+                    right:-@module-icon-size/2;
+                }
+
+
+                .dropdown-menu{
+                    top:0;
+                    right:0;
+                    left: inherit;
+                    -webkit-box-shadow: none;
+                    box-shadow: none;
+                    z-index:10000;
+
+                    a{
+                        cursor: pointer;;
+                    }
+                }
+            } // module-settings
+        } // module
+	} // ul
+} // gridster
+
+.gridster.layout-edit{
+    background-color: #ccc;
+    .gridster-item{
+        @scale-size: 0.8;
+        -ms-transform: scale(@scale-size); /* IE 9 */
+        -webkit-transform: scale(@scale-size); /* Safari */
+        transform: scale(@scale-size);
+
+        .module{
+            .settings-overlay{
+                display:block;
+                opacity:0.6;
+            }
+        }
+    }//gridster-item
+    .gridster-item.selected{
+        @scale-size: 1;
+        -ms-transform: scale(@scale-size); /* IE 9 */
+        -webkit-transform: scale(@scale-size); /* Safari */
+        transform: scale(@scale-size);
+
+        .module{
+            .settings-overlay{
+                display:block;
+                opacity:0.1;
+            }
+
+            .module-settings{
+                display: block;
+            }
+        }
+    }
+}//gridster

@@ -17,7 +17,7 @@ import javassist.NotFoundException;
 
 public class PluginModuleMaintainer {
 
-	private static final Map<Integer, Plugin> PLUGIN_INSTANCES = new HashMap<>();
+	public static final Map<Integer, Plugin> PLUGIN_INSTANCES = new HashMap<>();
 	private static Logger logger = LogManager.getLogger();
 
 	/**
@@ -75,5 +75,15 @@ public class PluginModuleMaintainer {
 		});
 		
 		return plugins;
+	}
+
+	/**
+	 * Removes a module from the list after it has been deleted
+	 * @param moduleId
+	 */
+	public static void removeModule(int moduleId) {
+		if(PLUGIN_INSTANCES.containsKey(moduleId)){
+			PLUGIN_INSTANCES.remove(moduleId);
+		}
 	}
 }

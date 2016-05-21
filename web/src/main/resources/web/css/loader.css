@@ -1,0 +1,1 @@
+.loader{margin:auto;width:15px;height:15px;border:2px solid #f00;border-radius:50%;animation:load 1.2s infinite ease-in-out;-webkit-animation-direction:alternate;animation-direction:alternate}@keyframes load{from{opacity:.5}to{opacity:1;-ms-transform:scale(1.2);-webkit-transform:scale(1.2);transform:scale(1.2)}}

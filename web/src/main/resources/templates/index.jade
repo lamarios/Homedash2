@@ -6,8 +6,24 @@ block css
         link(href="/plugin/#{plugin.getId()}/css/#{plugin.getId()}.css", rel="stylesheet")
 block content
     a(href="/add-module") Add module 
-    h1#page-title
+    h1#page-title page!
     #layout
+    
+    span.glyphicon.glyphicon-cog
+    .global-settings
+        ul
+            li HomeDash
+            li 
+                a(href="/settings")
+                    span.glyphicon.glyphicon-cog
+                    | Settings
+            li#edit-layout
+                a
+                    span.glyphicon.glyphicon-object-align-top
+                    | Edit Layout
+                    
+                    
+                
 block scripts
     script(src="/js/vendor/gridster/gridster.js")
     script(src="/js/index.js")

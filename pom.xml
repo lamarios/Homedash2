@@ -139,31 +139,6 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-		<plugins>
-			<plugin>
-				<groupId>com.fizzed</groupId>
-				<artifactId>fizzed-watcher-maven-plugin</artifactId>
-				<version>1.0.6</version>
-				<configuration>
-					<touchFile>target/classes/watcher.txt</touchFile>
-					<watches>
-						<watch>
-							<directory>core/src/main/java</directory>
-						</watch>
-						<watch>
-							<directory>ninja/src/main/java</directory>
-						</watch>
-					</watches>
-					<goals>
-						<goal>compile</goal>
-						<goal>process-classes</goal>
-					</goals>
-					<profiles>
-						<profile>optional-profile-to-activate</profile>
-					</profiles>
-				</configuration>
-			</plugin>
-		</plugins>
 	</build>
 
 </project>

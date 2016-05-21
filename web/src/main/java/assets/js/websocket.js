@@ -79,7 +79,7 @@ function onMessage(event) {
 //		console.log(functionName+': not a function')
 //	}
 	var size = $('.gridster .module[data-module="' + json.moduleId + '"]').attr('data-size');
-	MODULES[json.moduleId].onMessage[size](json.command, json.message, json.extra);
+	MODULES[json.moduleId]['onMessage_'+size](json.command, json.message, json.extra);
 }
 
 /**

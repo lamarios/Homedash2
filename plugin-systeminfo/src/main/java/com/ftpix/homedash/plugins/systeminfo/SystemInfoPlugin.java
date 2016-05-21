@@ -139,11 +139,11 @@ public class SystemInfoPlugin extends Plugin {
 
 		Mem mem = sigar.getMem();
 
-		info.maxRam = mem.getRam();
+		info.maxRam = mem.getRam() * 1024 * 1024;
 
-		info.availableRam = mem.getFree() / 1024 / 1024;
+		info.availableRam = mem.getFree() ;
 
-		info.usedRam = mem.getUsed() / 1024 / 1024;
+		info.usedRam = mem.getUsed() ;
 
 		info.percentageUsed = Math.ceil((info.usedRam / info.maxRam) * 100);
 

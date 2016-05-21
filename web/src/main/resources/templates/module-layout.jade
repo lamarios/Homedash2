@@ -1,13 +1,27 @@
 .gridster
-    ul
-        for layout in layouts
-            li(class="module #{layout.getSize()}", data-size="#{layout.getSize()}", data-module="#{layout.getModule().getId()}", data-row="#{layout.getY()}", data-col="#{layout.getX()}", data-sizex="#{layout.getWidth()}", data-sizey="#{layout.getHeight()}")
+    for layout in layouts
+        .gridster-item(data-row="#{layout.getY()}", data-col="#{layout.getX()}", data-sizex="#{layout.getWidth()}", data-sizey="#{layout.getHeight()}",  data-module="#{layout.getModule().getId()}")
+            div(class="module #{layout.getSize()}", data-module="#{layout.getModule().getId()}", data-size="#{layout.getSize()}")
                 .module-settings
-                    .module-resize-container
-                        button(class="module-resize") resize
-                        .module-sizes
-                            .loading loading...
-                .drag-box
+                    .module-settings-icon(data-toggle="dropdown")
+                        span(class="glyphicon glyphicon-option-horizontal")
+                    ul.dropdown-menu.multi-level(role="menu")
+                        li
+                            a(href="/module/#{layout.getModule().getId()}/settings")
+                                span(class="glyphicon glyphicon-pencil")  Edit settings
+                        li
+                            a
+                                span(class="glyphicon glyphicon-pause")  Move to page
+                        li.dropdown-submenu
+                            a(href="#", tabindex="-1")
+                                span(class="glyphicon glyphicon-resize-full")  Resize
+                            ul.dropdown-menu.module-sizes
+                                li test
+                        li.divider
+                        li.delete(data-id="#{layout.getModule().getId()}")
+                            a
+                                span(class="glyphicon glyphicon-remove")  Delete
+                .settings-overlay
                 .loading
-                .content
-                    p yo
+                    .loader
+                div(class="content #{plugins.get(layout.getModule().getId()).getId()} #{layout.getSize()}")

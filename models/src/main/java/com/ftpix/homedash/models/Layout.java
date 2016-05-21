@@ -9,7 +9,7 @@ public class Layout {
 
 	// length of a grid unit, means a 2x2 module with 150 as widhth would be
 	// 300x300px
-	public static int GRID_UNIT_WIDTH = 150;
+	public static int GRID_UNIT_WIDTH = 100;
 	@DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
 	@Expose
 	private int id;

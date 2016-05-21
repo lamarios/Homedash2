@@ -1,3 +1,6 @@
 label
-    input(type="checkbox", name="notifications", value="1")
+    if settings && settings.containsKey("notifications")
+        input(type="checkbox", name="notifications", value="1", checked = "true")
+    else
+        input(type="checkbox", name="notifications", value="1")
     span Notify my when the RAM or CPU load is high

@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 import com.ftpix.homedash.app.controllers.LayoutController;
 import com.ftpix.homedash.app.controllers.ModuleController;
 import com.ftpix.homedash.app.controllers.PluginController;
+import com.ftpix.homedash.db.DB;
 import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.utils.Predicates;
@@ -75,6 +76,9 @@ public class Endpoints {
 				return null;
 			}
 		}, new JadeTemplateEngine());
+		
+		
+		
 
 		/*
 		 * Add module with class This will save the module if there are no
@@ -101,6 +105,26 @@ public class Endpoints {
 		}, new JadeTemplateEngine());
 
 		/*
+		 * Add module
+		 */
+		get("/module/:moduleId/settings", (req, res) -> {
+			int moduleId = Integer.parseInt(req.params("moduleId"));
+			logger.info("/add-module/{}/settings");
+			try {
+				Plugin plugin = PluginModuleMaintainer.getPluginForModule(moduleId);
+				
+				Map<String, Object> map = new HashMap<>();
+				map.put("plugin", plugin);
+				map.put("pluginName", plugin.getDisplayName());
+				map.put("settings", pluginController.getPluginSettingsHtml(plugin));
+				return new ModelAndView(map, "module-settings");
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		}, new JadeTemplateEngine());
+		
+		/*
 		 * Save a new or edited module
 		 */
 		post("/save-module", (req, res) -> {
@@ -110,6 +134,27 @@ public class Endpoints {
 				moduleController.saveModuleWithSettings(req.queryMap().toMap());
 			} catch (Exception e) {
 				logger.error("Error while saving module", e);
+			}
+			res.redirect("/");
+			return null;
+		});
+		
+		
+		/*
+		 * Deletes a module
+		 */
+		get("/module/:moduleId/delete", (req, res) -> {
+			int moduleId = Integer.parseInt(req.params("moduleId"));
+
+			logger.info("/delete-module/{}", moduleId);
+			try {
+				DB.MODULE_DAO.deleteById(moduleId);
+				PluginModuleMaintainer.removeModule(moduleId);
+				
+				res.redirect("/");
+				return "";
+			} catch (Exception e) {
+				logger.error("Error while deleting module", e);
 			}
 			res.redirect("/");
 			return null;
@@ -125,10 +170,9 @@ public class Endpoints {
 			logger.info("/modules-layout/{}/{}", page, width);
 
 			List<ModuleLayout> layouts = layoutController.generatePageLayout(page, width);
-
 			Map<String, Object> model = new HashMap<>();
 			model.put("layouts", layouts);
-
+			model.put("plugins", PluginModuleMaintainer.PLUGIN_INSTANCES);
 			return new ModelAndView(model, "module-layout");
 		}, new JadeTemplateEngine());
 

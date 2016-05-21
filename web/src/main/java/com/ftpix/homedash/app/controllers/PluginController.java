@@ -3,7 +3,9 @@ package com.ftpix.homedash.app.controllers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -51,7 +53,6 @@ public class PluginController {
 	 * @throws JadeException 
 	 */
 	public String getPluginSettingsHtml(Plugin plugin) throws Exception{
-		
 		return plugin.getSettingsHtml();
 	}
 

@@ -107,7 +107,6 @@ public abstract class Plugin {
 	 */
 	public abstract int getRefreshRate();
 
-	
 	/**
 	 * Gets the html for a specific size
 	 * 
@@ -156,24 +155,27 @@ public abstract class Plugin {
 	 * @throws IOException
 	 */
 	public String getSettingsHtml() throws JadeException, IOException {
-		logger.info("Getting settings for [{}]", this.getId());
-		JadeConfiguration config = new JadeConfiguration();
+			logger.info("Getting settings for [{}]", this.getId());
+			JadeConfiguration config = new JadeConfiguration();
 
-		TemplateLoader loader = new ClasspathTemplateLoader();
+			TemplateLoader loader = new ClasspathTemplateLoader();
 
-		config.setTemplateLoader(loader);
+			config.setTemplateLoader(loader);
 
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("module", module);
+			Map<String, Object> model = new HashMap<String, Object>();
+			if (module != null) {
+				model.put("settings", getSettingsAsMap());
+			}
 
-		JadeTemplate template = config.getTemplate("templates/" + getId() + "-settings.jade");
+			JadeTemplate template = config.getTemplate("templates/" + getId() + "-settings.jade");
 
-		logger.info("Found setting template, returning it");
-		return config.renderTemplate(template, model);
+			logger.info("Found setting template, returning it");
+			return config.renderTemplate(template, model);
 	}
 
 	/**
 	 * Get the module settings as a map
+	 * 
 	 * @return
 	 */
 	private Map<String, String> getSettingsAsMap() {
@@ -188,22 +190,24 @@ public abstract class Plugin {
 
 	/**
 	 * Get the module
+	 * 
 	 * @return
 	 */
 	public Module getModule() {
 		return module;
 	}
 
-	
 	/**
-	 * Set the module, it will load the settings and the data from the module as well
+	 * Set the module, it will load the settings and the data from the module as
+	 * well
+	 * 
 	 * @param module
 	 */
 	public void setModule(Module module) {
 		this.module = module;
 		this.settings = getSettingsAsMap();
-		
-		//Converts the data
+
+		// Converts the data
 		if (module.getData() != null) {
 			try {
 				Type type = new TypeToken<Map<String, String>>() {
@@ -214,14 +218,12 @@ public abstract class Plugin {
 			}
 		}
 	}
-	
+
 	/**
 	 * COnverts the data in a json string for the module
 	 */
-	public void saveData(){
+	public void saveData() {
 		module.setData(gson.toJson(data));
 	}
-	
-	
 
 }

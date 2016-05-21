@@ -1,0 +1,29 @@
+@import 'variables.less';
+
+@loader-size:15px;
+@speed: 1.2s;
+
+.loader{
+    margin: auto;
+    width:@loader-size;
+    height:@loader-size;
+    border: 2px solid @accentColor;
+    border-radius: 50%;
+    animation: load @speed infinite ease-in-out;
+    -webkit-animation-direction: alternate; /* Chrome, Safari, Opera */
+    animation-direction: alternate;
+}
+
+
+@keyframes load {
+    @scale-size: 1.2;
+    from {
+        opacity:0.5;
+    }
+    to {
+        opacity:1;
+        -ms-transform: scale(@scale-size); /* IE 9 */
+        -webkit-transform: scale(@scale-size); /* Safari */
+        transform: scale(@scale-size);
+    }
+}

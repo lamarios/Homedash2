@@ -5,7 +5,12 @@ block content
     h1 Settings for #{pluginName}
     
     form(action="/save-module", method="post")
-        input(type="hidden", name="class", value="#{pluginClass}")
+        if pluginClass
+            input(type="hidden", name="class", value="#{pluginClass}")
+        else if plugin
+            input(type="hidden", name="class", value="#{plugin.getClass().getCanonicalName()}")
+            input(type="hidden", name="module_id", value="#{plugin.getModule().getId()}")
+            
         .row
             .col-md-12
                 !{settings}

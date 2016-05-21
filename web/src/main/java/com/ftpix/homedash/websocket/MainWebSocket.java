@@ -89,13 +89,13 @@ public class MainWebSocket {
 				case COMMAND_CHANGE_PAGE:
 					client.setPage(DB.PAGE_DAO.queryForId(Double.valueOf(socketMessage.getMessage().toString()).intValue()));
 					logger.info("New page for client: [{}]", client.getPage().getName());
-
+					time = 0;
 					break;
 				case COMMAND_CHANGE_LAYOUT:
 					Layout layout = DB.LAYOUT_DAO.queryForId(Double.valueOf(socketMessage.getMessage().toString()).intValue());
 					client.setLayout(layout);
 					logger.info("New layout for client: [{}]", client.getLayout().getName());
-
+					time = 0;
 					break;
 				default: // send the command to the module concerned
 					sendCommandToModule(client, socketMessage);
@@ -169,7 +169,6 @@ public class MainWebSocket {
 						// the
 						// message
 						sessions.stream().filter(s -> {
-							//logger.info("{} == {} && {} == {}", s.getLayout().getId(),ml.getLayout().getId(),s.getPage().getId(),ml.getModule().getPage().getId());
 							return s.getLayout().getId() == ml.getLayout().getId() && s.getPage().getId() == ml.getModule().getPage().getId();
 						}).forEach(s -> {
 							try {
