@@ -1,0 +1,85 @@
+extends ./layout.jade
+block content
+    .head-links
+        a(href="/") << Back
+    h1 Settings
+    form(method="post", action="/settings")
+        .settings-box
+            h2 Authentication
+            .checkbox
+                label
+                    if settings.containsKey("use_auth") && settings.get("use_auth").equals("1")
+                        input(type="checkbox", name="use_auth", value="1", checked="true")
+                    else
+                        input(type="checkbox", name="use_auth", value="1")
+                    | Use Authentication  
+            .auth-settings(data-dependent="use_auth")
+                .form-group
+                    label(for="username") Username
+                    if settings.containsKey("username")
+                        input(type="text", class="form-control", id="username", name="username", value='#{settings.get("username")}')
+                    else
+                        input(type="text", class="form-control", id="username", name="username")
+                .form-group
+                    label(for="password") Password
+                    input(type="password", class="form-control", id="password", name="password")
+                    
+        .settings-box
+            h2 Notifications
+            //pushbullet
+            .checkbox
+                label
+                    if settings.containsKey("use_pushbullet") && settings.get("use_pushbullet").equals("1")
+                        input(type="checkbox", name="use_pushbullet", value="1", checked="true")
+                    else
+                        input(type="checkbox", name="use_pushbullet", value="1")
+                    | Pushbullet Notifications
+            .notification(data-dependent="use_pushbullet")
+                .form-group
+                    label(for="pushbullet_api_key") API Key
+                    if settings.containsKey("pushbullet_api_key")
+                        input(type="text", class="form-control", id="pushbullet_api_key", name="pushbullet_api_key", value='#{settings.get("pushbullet_api_key")}')
+                    else
+                        input(type="text", class="form-control", id="pushbullet_api_key", name="pushbullet_api_key")
+            //Push alot
+            .checkbox
+                label
+                    if settings.containsKey("use_pushalot") && settings.get("use_pushalot").equals("1")
+                        input(type="checkbox", name="use_pushalot", value="1", checked="true")
+                    else
+                        input(type="checkbox", name="use_pushalot", value="1")
+                    | Pushalot Notifications
+            .notification(data-dependent="use_pushalot")
+                .form-group
+                    label(for="pushalot_api_key") API Key
+                    if settings.containsKey("pushalot_api_key")
+                        input(type="text", class="form-control", id="pushalot_api_key", name="pushalot_api_key", value='#{settings.get("pushalot_api_key")}')
+                    else
+                        input(type="text", class="form-control", id="pushalot_api_key", name="pushalot_api_key")
+            //Pushover
+            .checkbox
+                label
+                    if settings.containsKey("use_pushover") && settings.get("use_pushover").equals("1")
+                        input(type="checkbox", name="use_pushover", value="1", checked="true")
+                    else
+                        input(type="checkbox", name="use_pushover", value="1")
+                    | Pushover Notifications
+            .notification(data-dependent="use_pushover")
+                .form-group
+                    label(for="pushover_api_key") API Key
+                    if settings.containsKey("pushover_api_key")
+                        input(type="text", class="form-control", id="pushover_api_key", name="pushover_api_key", value='#{settings.get("pushover_api_key")}')
+                    else
+                        input(type="text", class="form-control", id="pushover_api_key", name="pushover_api_key")
+                .form-group
+                    label(for="pushover_app_token") App token
+                    if settings.containsKey("pushover_app_token")
+                        input(type="text", class="form-control", id="pushover_app_token", name="pushover_app_token", value='#{settings.get("pushover_app_token")}')
+                    else
+                        input(type="text", class="form-control", id="pushover_app_token", name="pushover_app_token")
+            div
+                button(type="submit", class="btn btn-primary") Save 
+                            
+block scripts
+    script(src="/js/settings.js")                
+                

@@ -33,22 +33,37 @@ $(document).ready(function() {
 
 	});
 
-	$(document).on('click', '.gridster .module .module-sizes li', function() {
+	/**
+	 * Changes the size of a module
+	 */
+	$(document).on('click', '.gridster .module .resize-size', function() {
 		var element = $(this);
 		changeSize(element);
 	});
 	
+	
+	/**
+	 * delete a module
+	 */
 	$(document).on('click', '.gridster .module  li.delete', function() {
 		var element = $(this);
 		
 		deleteModule(element.attr('data-id'));
 	});
 	
+	
+	/**
+	 * Enables layout edit mode
+	 */
 	$('#edit-layout').click(function (){
+		$(this).toggleClass('editing');
 		toggleLayoutEditMode();
 	});
 	
 	
+	/**
+	 * Selects an item in layout editting mode
+	 */
 	$(document).on('click', '.gridster .gridster-item .settings-overlay', function() {
 		$('.gridster .gridster-item.selected').removeClass('selected');
 		$('.settings-overlay').removeClass('drag-box');
@@ -56,6 +71,13 @@ $(document).ready(function() {
 		$(this).addClass('drag-box');
 	});
 
+	
+	/**
+	 * Toggle settings display
+	 */
+	$('#settings-button').click(function(){
+		$('.global-settings').toggleClass('showing');
+	});
 	// ///////////////////////////////////////////////
 	// ///////////Functions
 
@@ -68,17 +90,19 @@ $(document).ready(function() {
 		var moduleId = moduleElement.attr('data-module');
 		var sizes = moduleElement.find('.module-sizes');
 		
+		
+		
 		console.log('Getting available sizes for module ' + moduleId);
-		sizes.html('<div class="loading"></div>');
+		
 		$.getJSON('/module/' + moduleId + '/availableSizes', function(json) {
 			console.log(json);
 
 			var html = [];
 			$.each(json, function(index, value){
-				html.push('<li data-size="', value,'"><a>', value,'</a></li>');
+				html.push('<li class="resize-size" data-size="', value,'"><a>', value,'</a></li>');
 			});
-			
-			sizes.html(html.join(''));
+			sizes.siblings('.resize-size').remove();
+			sizes.after(html.join(''));
 		});
 	}
 

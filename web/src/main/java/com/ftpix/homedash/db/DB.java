@@ -11,6 +11,7 @@ import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.ModuleSettings;
 import com.ftpix.homedash.models.Page;
+import com.ftpix.homedash.models.Settings;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
@@ -23,6 +24,7 @@ public class DB {
 	public static Dao<Layout, Integer> LAYOUT_DAO = null;
 	public static Dao<ModuleLayout, Integer> MODULE_LAYOUT_DAO = null;
 	public static Dao<ModuleSettings, Integer> MODULE_SETTINGS_DAO = null;
+	public static Dao<Settings, String> SETTINGS_DAO = null;
 	
 	private final static String databaseUrl = "jdbc:h2:" + Constants.DB_PATH;
 
@@ -57,6 +59,11 @@ public class DB {
 			logger.info("Creating Module Settings DAO and tables if it doesn't exist");
 			MODULE_SETTINGS_DAO = DaoManager.createDao(connectionSource, ModuleSettings.class);
 			TableUtils.createTableIfNotExists(connectionSource, ModuleSettings.class);
+			
+			
+			logger.info("Creating  Settings DAO and tables if it doesn't exist");
+			SETTINGS_DAO = DaoManager.createDao(connectionSource, Settings.class);
+			TableUtils.createTableIfNotExists(connectionSource, Settings.class);
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

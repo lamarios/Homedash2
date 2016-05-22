@@ -12,11 +12,10 @@
                         li
                             a
                                 span(class="glyphicon glyphicon-pause")  Move to page
-                        li.dropdown-submenu
-                            a(href="#", tabindex="-1")
-                                span(class="glyphicon glyphicon-resize-full")  Resize
-                            ul.dropdown-menu.module-sizes
-                                li test
+                        li.divider
+                        li.module-sizes
+                            a
+                                span(class="glyphicon glyphicon-resize-full")  Resize:
                         li.divider
                         li.delete(data-id="#{layout.getModule().getId()}")
                             a
