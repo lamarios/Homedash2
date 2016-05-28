@@ -46,9 +46,6 @@ function onMessage(event) {
 	console.log(event.data);
 
 	switch (json.command) {
-	case 'clientId':
-		CLIENT_ID = json.message;
-		break;
 	case 'success':
 		showSuccessMessage(json.message);
 		break;
@@ -59,11 +56,11 @@ function onMessage(event) {
 		location.reload();
 		break;
 	case 'remote404':
-		$('#' + json.moduleId + '-overlay').html('This remote module is not available at the moment.');
-		$('#' + json.moduleId + '-overlay').show();
+		$('#' + json.id + '-overlay').html('This remote module is not available at the moment.');
+		$('#' + json.id + '-overlay').show();
 		break;
 	default:
-		$('#' + json.moduleId + '-overlay').hide();
+		$('#' + json.id + '-overlay').hide();
 		break;
 
 	}
@@ -78,8 +75,8 @@ function onMessage(event) {
 //	}else{
 //		console.log(functionName+': not a function')
 //	}
-	var size = $('.gridster .module[data-module="' + json.moduleId + '"]').attr('data-size');
-	MODULES[json.moduleId]['onMessage_'+size](json.command, json.message, json.extra);
+	var size = $('.gridster .module[data-module="' + json.id + '"]').attr('data-size');
+	MODULES[json.id]['onMessage_'+size](json.command, json.message, json.extra);
 }
 
 /**

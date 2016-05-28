@@ -1,0 +1,37 @@
+extends ./layout.jade
+
+block css
+    link(href='/css/layout-settings.css', rel='stylesheet')
+
+block content
+    .head-links
+        a(href="/") << Back
+    h1
+        | Layout Settings
+        a(href="/settings") Settings
+
+    p Here you can create new layouts to fit your devices the best
+
+    for layout in layouts
+        .layout.row(data-id="#{layout.getId()}")
+            .layout-display.col-sm-8(data-max="#{layout.getMaxGridWidth()}")
+
+            .layout-name.col-sm-4
+                p #{layout.getName()}
+                if layout.getId() > 3
+                    p
+                        a(class="remove")
+                            span.glyphicon.glyphicon-minus
+                        a(class="add")
+                            span.glyphicon.glyphicon-plus
+
+    button#add-layout.btn.btn-primary
+        span.glyphicon.glyphicon-plus
+        | Add layout
+
+
+
+
+block scripts
+    script(src="/js/layout-settings.js")
+

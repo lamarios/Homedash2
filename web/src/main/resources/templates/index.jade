@@ -5,27 +5,49 @@ block css
     for plugin in filteredPlugins
         link(href="/plugin/#{plugin.getId()}/css/#{plugin.getId()}.css", rel="stylesheet")
 block content
-    a(href="/add-module") Add module 
-    h1#page-title page!
-    #layout
-    
+    h1#page-title
+        span.glyphicon.glyphicon-option-vertical(aria-hidden="true")
+        span.name
+        span.layout
+    div#layout-wrapper
+        .loading
+            .loader
+        #layout
+
     span#settings-button.glyphicon.glyphicon-cog
     .global-settings
         ul
+            li
+                a#add-module
+                    span.glyphicon.glyphicon-plus
+                    |  Add module
             li 
                 a(href="/settings")
                     span.glyphicon.glyphicon-wrench
-                    | Settings
+                    |  Settings
             li#edit-layout
                 a
                     span.glyphicon.glyphicon-object-align-top
-                    | Edit Layout
+                    |  Edit Layout
+
+    #pages
+        div.icons
+            a.close-panel
+                span.glyphicon.glyphicon-chevron-left(aria-hidden="true")
+                |   Pages
+            a.add
+                span.glyphicon.glyphicon-plus(aria-hidden="true")
+            a.edit
+                span.glyphicon.glyphicon-pencil(aria-hidden="true")
+        ul
+
                     
                     
                 
 block scripts
     script(src="/js/vendor/gridster/gridster.js")
     script(src="/js/index.js")
+    script(src="/js/pages.js")
     for plugin in filteredPlugins
         script(src="/plugin/#{plugin.getId()}/js/#{plugin.getId()}.js")
         

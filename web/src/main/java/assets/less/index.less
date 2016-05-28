@@ -1,195 +1,229 @@
 @import 'variables.less';
 @import 'loader.less';
 @import 'dropdown-multilevel.less';
-@transition-speed:0.3s;
+@import 'pages.less';
 
-.gridster .player-revert{
+#page-title{
+
+  .layout{
+    color: #999;
+    font-size:14px;
+  }
+}
+
+#layout-wrapper {
+  position: relative;
+  .loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: @background;
+    text-align: center;
+    z-index: 9;
+    padding-top:50px;
+    .loader {
+      margin: auto;
+    }
+  }
+}
+
+.gridster .player-revert {
+  -webkit-transition: all @transition-speed !important;
+  transition: all @transition-speed !important;
+}
+
+.gridster {
+  margin: 0 auto;
+  -webkit-transition: all @transition-speed;
+  transition: all @transition-speed;
+  .gridster-item {
     -webkit-transition: all @transition-speed !important;
     transition: all @transition-speed !important;
-}
-.gridster {
-	margin: 0 auto;
-    -webkit-transition: all @transition-speed ;
-    transition: all @transition-speed;
-    .gridster-item {
+
+    .module {
+      position: relative;
+      height: 100%;
+      .loading {
+        background-color: white;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding-top: 40px;
+        display: none;
+      }
+
+      .content {
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .settings-overlay {
+        position: absolute;
+        background-color: rgb(0, 0, 0);
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: none;
+        opacity: 0;
         -webkit-transition: all @transition-speed !important;
         transition: all @transition-speed !important;
-
-        .module{
-            position: relative;
-            height:100%;
-            .loading{
-                background-color:white;
-                position:absolute;
-                top:0;
-                left:0;
-                right:0;
-                bottom:0;
-                padding-top: 40px;
-            }
-
-            .content{
-                height:100%;
-                overflow: hidden;
-            }
-
-            .settings-overlay{
-                position:absolute;
-                background-color: rgb(0,0,0);
-                top: 0;
-                left:0;
-                right:0;
-                bottom:0;
-                display:none;
-                opacity:0;
-                -webkit-transition: all @transition-speed !important;
-                transition: all @transition-speed !important;
-                z-index:99;
-            }
-            .module-settings{
-                display: none;
-                .module-settings-icon{
-                    padding-top:5px;
-                    display:block;
-                    width:@module-icon-size;
-                    height:@module-icon-size;
-                    background-color:white;
-                    border-radius: 50%;
-                    border: 1px solid #eee;
-                    color:#333;
-                    text-align: center;
-                    z-index: 100;
-                    position: absolute;
-                    top:-@module-icon-size/2;
-                    right:-@module-icon-size/2;
-                }
-
-
-                .dropdown-menu{
-                    top:0;
-                    right:0;
-                    left: inherit;
-                    -webkit-box-shadow: none;
-                    box-shadow: none;
-                    z-index:10000;
-
-                    a{
-                        cursor: pointer;;
-                    }
-                }
-            } // module-settings
-        } // module
-	} // ul
-} // gridster
-
-.gridster.layout-edit{
-    background-color: #ccc;
-    .gridster-item{
-        @scale-size: 0.8;
-        -ms-transform: scale(@scale-size); /* IE 9 */
-        -webkit-transform: scale(@scale-size); /* Safari */
-        transform: scale(@scale-size);
-
-        .module{
-            .settings-overlay{
-                display:block;
-                opacity:0.6;
-            }
+        z-index: 99;
+      }
+      .module-settings {
+        display: none;
+        .module-settings-icon {
+          padding-top: 5px;
+          display: block;
+          width: @module-icon-size;
+          height: @module-icon-size;
+          background-color: white;
+          border-radius: 50%;
+          border: 1px solid #eee;
+          color: #333;
+          text-align: center;
+          z-index: 100;
+          position: absolute;
+          top: -@module-icon-size/2;
+          right: -@module-icon-size/2;
         }
-    }//gridster-item
-    .gridster-item.selected{
-        @scale-size: 1;
-        -ms-transform: scale(@scale-size); /* IE 9 */
-        -webkit-transform: scale(@scale-size); /* Safari */
-        transform: scale(@scale-size);
 
-        .module{
-            .settings-overlay{
-                display:block;
-                opacity:0.1;
-            }
+        .dropdown-menu {
+          top: 0;
+          right: 0;
+          left: inherit;
+          -webkit-box-shadow: none;
+          box-shadow: none;
+          z-index: 10000;
 
-            .module-settings{
-                display: block;
-            }
+          a {
+            cursor: pointer;;
+          }
         }
+      }
+      // module-settings
     }
-}//gridster
-
-///settings
-#settings-button{
-    display: block;
-    cursor: pointer;
-    position: fixed;
-    bottom:5px;
-    right:5px;
-    top:inherit;
-    margin-bottom:12px;
-    color:@accentColor;
-    font-size:16px;
+    // module
+  }
+  // ul
 }
 
-.global-settings{
-    position: fixed;
-    bottom:-20px;
-    right:5px;
-    margin-right:25px;
-    opacity:0;
-    font-size:16px;
+// gridster
 
-    @scale-size: 0.5;
+.gridster.layout-edit {
+  background-color: #ccc;
+  .gridster-item {
+    @scale-size: 0.8;
     -ms-transform: scale(@scale-size); /* IE 9 */
     -webkit-transform: scale(@scale-size); /* Safari */
     transform: scale(@scale-size);
 
-    -webkit-transition: all @transition-speed !important;
-    transition: all @transition-speed !important;
-
-    ul{
-        list-style: none;
-
-        li{
-            display:inline-block;
-            margin:0 5px;
-            a{
-                cursor:pointer;
-                color:black;
-            }
-            .glyphicon{
-                color:@accentColor;
-            }
-        }
+    .module {
+      .settings-overlay {
+        display: block;
+        opacity: 0.6;
+      }
     }
-
-    #edit-layout.editing{
-        @speed: 1.2s;
-        animation: editing @speed infinite ease-in-out;
-        -webkit-animation-direction: alternate; /* Chrome, Safari, Opera */
-        animation-direction: alternate;
-    }
-
-
-    @keyframes editing {
-        @scale: 0.9;
-        from {
-            opacity:0.7;
-        }
-        to {
-            opacity:1;
-            -ms-transform: scale(@scale); /* IE 9 */
-            -webkit-transform: scale(@scale); /* Safari */
-            transform: scale(@scale);
-        }
-    }
-}
-
-.global-settings.showing{
-    bottom:5px;
-    right:5px;
-    opacity:1;
-
+  }
+  //gridster-item
+  .gridster-item.selected {
     @scale-size: 1;
     -ms-transform: scale(@scale-size); /* IE 9 */
     -webkit-transform: scale(@scale-size); /* Safari */
     transform: scale(@scale-size);
+
+    .module {
+      .settings-overlay {
+        display: block;
+        opacity: 0.1;
+      }
+
+      .module-settings {
+        display: block;
+      }
+    }
+  }
+}
+
+//gridster
+
+///settings
+#settings-button {
+  display: block;
+  cursor: pointer;
+  position: fixed;
+  bottom: 5px;
+  right: 5px;
+  top: inherit;
+  margin-bottom: 12px;
+  color: @accentColor;
+  font-size: 16px;
+}
+
+.global-settings {
+  position: fixed;
+  bottom: -20px;
+  right: 5px;
+  margin-right: 25px;
+  opacity: 0;
+  font-size: 16px;
+
+  @scale-size: 0.5;
+  -ms-transform: scale(@scale-size); /* IE 9 */
+  -webkit-transform: scale(@scale-size); /* Safari */
+  transform: scale(@scale-size);
+
+  -webkit-transition: all @transition-speed !important;
+  transition: all @transition-speed !important;
+
+  ul {
+    list-style: none;
+
+    li {
+      display: inline-block;
+      margin: 0 5px;
+      a {
+        cursor: pointer;
+        color: black;
+      }
+      .glyphicon {
+        color: @accentColor;
+      }
+    }
+  }
+
+  #edit-layout.editing {
+    @speed: 1.2s;
+    animation: editing @speed infinite ease-in-out;
+    -webkit-animation-direction: alternate; /* Chrome, Safari, Opera */
+    animation-direction: alternate;
+  }
+
+  @keyframes editing {
+    @scale: 0.9;
+    from {
+      opacity: 0.7;
+    }
+    to {
+      opacity: 1;
+      -ms-transform: scale(@scale); /* IE 9 */
+      -webkit-transform: scale(@scale); /* Safari */
+      transform: scale(@scale);
+    }
+  }
+}
+
+.global-settings.showing {
+  bottom: 5px;
+  right: 5px;
+  opacity: 1;
+
+  @scale-size: 1;
+  -ms-transform: scale(@scale-size); /* IE 9 */
+  -webkit-transform: scale(@scale-size); /* Safari */
+  transform: scale(@scale-size);
 }

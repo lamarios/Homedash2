@@ -1,0 +1,79 @@
+@import 'variables.less';
+
+#page-title {
+  cursor: pointer;
+  color: @accentColor;
+}
+
+#pages {
+  background-color: @accentColor;
+  color: @background;
+  position: fixed;
+  top: 0;
+  left: -0;
+  bottom: 0;
+  width: 250px;
+  z-index: 10;
+  -webkit-transition: all @transition-speed !important;
+  transition: all @transition-speed !important;
+
+  transform-origin: center left;
+  @angle: -90deg;
+  -webkit-transform: rotateY(@angle); /* Safari */
+  transform: rotateY(@angle);
+
+  .icons {
+    a {
+      position: absolute;
+      color: @background;
+      font-size: 20px;
+      display: block;
+      cursor: pointer;
+    }
+
+    .close-panel {
+      top: 10px;
+      left: 10px;
+    }
+
+    .add {
+      bottom: 10px;
+      right: 60px;
+    }
+
+    .edit {
+      bottom: 10px;
+      right: 10px;
+    }
+
+  }
+  .edit-icon {
+    display: none;
+    cursor: pointer;
+  }
+
+  ul {
+    padding-top: 60px;
+    list-style: none;
+    li {
+      color: @background;
+      display: block;
+      font-size: 18px;
+      margin: 10px 5px;
+      cursor: pointer;
+    }
+  }
+}
+
+#pages.showing {
+  left: 0;
+
+  @angle: 0deg;
+  -webkit-transform: rotateY(@angle); /* Safari */
+  transform: rotateY(@angle);
+}
+
+#pages.editing .edit-icon {
+  display: inline-block;
+  margin: 0 10px;
+}

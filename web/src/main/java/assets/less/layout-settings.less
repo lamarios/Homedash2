@@ -1,0 +1,62 @@
+@import 'variables.less';
+
+.layout {
+  .grid {
+    background-color: @accentColor;
+    max-width: 100px;
+    max-height:100px;
+    display: inline-block;
+    margin: 0 3px;
+
+
+    -webkit-transition: all @transition-speed !important;
+    transition: all @transition-speed !important;
+
+    animation-name: popin;
+    animation-duration: @transition-speed;
+  }
+
+  .grid.add, .grid.remove {
+    background-color: @background;
+    border: 1px solid @accentColor
+  }
+
+  min-height:120px;
+  box-sizing: border-box;
+  border: 1px solid @accentColor;
+  border-radius: @border-radius;
+  margin: 5px;
+  padding:10px;
+}
+
+.layout.invalid{
+    .grid{
+      background-color: red;
+    }
+}
+
+@keyframes popin {
+  0% {
+    opacity: 0;
+
+    @scale-size: 0.5;
+    -ms-transform: scale(@scale-size); /* IE 9 */
+    -webkit-transform: scale(@scale-size); /* Safari */
+    transform: scale(@scale-size);
+  }
+  60% {
+    opacity: 1;
+
+    @scale-size: 1.1;
+    -ms-transform: scale(@scale-size); /* IE 9 */
+    -webkit-transform: scale(@scale-size); /* Safari */
+    transform: scale(@scale-size);
+  }
+
+  100% {
+    @scale-size: 1;
+    -ms-transform: scale(@scale-size); /* IE 9 */
+    -webkit-transform: scale(@scale-size); /* Safari */
+    transform: scale(@scale-size);
+  }
+}

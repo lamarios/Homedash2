@@ -34,8 +34,8 @@ public class PluginModuleMaintainer {
 	 * @throws InstantiationException 
 	 */
 	public static Plugin getPluginForModule(int moduleId) throws Exception {
+		logger.info("Looking for module  {}", moduleId);
 		Module module = DB.MODULE_DAO.queryForId(moduleId);
-
 		if (module != null) {
 			return getPluginForModule(module);
 		} else {

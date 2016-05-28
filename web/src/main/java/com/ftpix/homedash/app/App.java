@@ -51,6 +51,13 @@ public class App {
 
 			webSocket("/ws", MainWebSocket.class);
 
+			//No cache policy, especially against Edge and IE
+			before((req, res)->{
+				res.header("Cache-Control","no-cache, no-store, must-revalidate"); // HTTP 1.1.
+				res.header("Pragma","no-cache"); // HTTP 1.0.
+				res.header("Expires", "0"); // Proxies.
+			});
+
 			createDefaultData();
 			Endpoints.define();
 			Endpoints.pluginResources();
@@ -96,14 +103,14 @@ public class App {
 		logger.info("Creating the 3 default layouts");
 		Layout desktop = new Layout();
 		desktop.setId(1);
-		desktop.setMaxGridWidth(10);
+		desktop.setMaxGridWidth(11);
 		desktop.setName("Desktop");
 
 		DB.LAYOUT_DAO.createOrUpdate(desktop);
 
 		Layout tablet = new Layout();
 		tablet.setId(2);
-		tablet.setMaxGridWidth(5);
+		tablet.setMaxGridWidth(8);
 		tablet.setName("Tablet");
 
 		DB.LAYOUT_DAO.createOrUpdate(tablet);

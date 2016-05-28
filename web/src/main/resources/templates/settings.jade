@@ -2,7 +2,9 @@ extends ./layout.jade
 block content
     .head-links
         a(href="/") << Back
-    h1 Settings
+    h1
+        | Settings
+        a(href="/layout-settings") Layout Settings
     form(method="post", action="/settings")
         .settings-box
             h2 Authentication

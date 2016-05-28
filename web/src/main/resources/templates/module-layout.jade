@@ -8,19 +8,24 @@
                     ul.dropdown-menu.multi-level(role="menu")
                         li
                             a(href="/module/#{layout.getModule().getId()}/settings")
-                                span(class="glyphicon glyphicon-pencil")  Edit settings
-                        li
+                                span(class="glyphicon glyphicon-pencil")
+                                | Edit settings
+                        li.move(data-id="#{layout.getModule().getId()}")
                             a
-                                span(class="glyphicon glyphicon-pause")  Move to page
+                                span(class="glyphicon glyphicon-pause")
+                                | Move to page
                         li.divider
                         li.module-sizes
                             a
-                                span(class="glyphicon glyphicon-resize-full")  Resize:
+                                span(class="glyphicon glyphicon-resize-full")
+                                | Resize:
                         li.divider
                         li.delete(data-id="#{layout.getModule().getId()}")
                             a
-                                span(class="glyphicon glyphicon-remove")  Delete
+                                span(class="glyphicon glyphicon-remove")
+                                | Delete
                 .settings-overlay
                 .loading
                     .loader
                 div(class="content #{plugins.get(layout.getModule().getId()).getId()} #{layout.getSize()}")
+                    !{plugins.get(layout.getModule().getId()).getView(layout.getSize())}

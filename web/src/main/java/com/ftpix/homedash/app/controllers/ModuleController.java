@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import com.ftpix.homedash.app.PluginModuleMaintainer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,6 +18,7 @@ import com.ftpix.homedash.plugins.Plugin;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
+import spark.Session;
 
 public class ModuleController {
 
@@ -43,7 +45,8 @@ public class ModuleController {
 	public List<Module> getModulesForPage(Page page) throws SQLException {
 		return getModulesForPage(page.getId());
 	}
-	
+
+
 	
 	/**
 	 * Get the plugin class for a module
@@ -64,7 +67,7 @@ public class ModuleController {
 	 * @throws NumberFormatException
 	 * @throws SQLException
 	 */
-	public int saveModuleWithSettings(Map<String, String[]> postParams) throws NumberFormatException, SQLException {
+	public int saveModuleWithSettings(Map<String, String[]> postParams, int pageId) throws NumberFormatException, SQLException {
 		final Module module;
 		if (postParams.containsKey("module_id")) {
 			logger.info("Editing a module");
@@ -73,7 +76,7 @@ public class ModuleController {
 			logger.info("Creating new module");
 			module = new Module();
 			module.setPluginClass(postParams.get("class")[0]);
-			Page page = DB.PAGE_DAO.queryForId(1);
+			Page page = DB.PAGE_DAO.queryForId(pageId);
 			logger.info("using page #[{}]:{}", page.getId(), page.getName());
 			module.setPage(page);
 		}
@@ -102,4 +105,26 @@ public class ModuleController {
 		logger.info("Module saved, id:[{}]", module.getId());
 		return module.getId();
 	}
+
+	/**
+	 * Deletes a module
+	 * @param id
+	 * @return
+	 * @throws SQLException
+     */
+	public boolean deleteModule(int id) throws SQLException{
+		logger.info("deleteModule({})", id);
+		Module module = MODULE_DAO.queryForId(id);
+		if(module != null) {
+			MODULE_LAYOUT_DAO.delete(module.getLayouts());
+			MODULE_SETTINGS_DAO.delete(module.getSettings());
+
+			PluginModuleMaintainer.removeModule(id);
+			MODULE_DAO.delete(module);
+			return true;
+		}else{
+			return false;
+		}
+	}
+
 }

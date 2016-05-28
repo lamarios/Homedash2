@@ -4,6 +4,7 @@ import java.lang.reflect.Modifier;
 
 import com.google.gson.GsonBuilder;
 
+import com.google.gson.annotations.SerializedName;
 import io.gsonfire.GsonFireBuilder;
 
 public class WebSocketMessage {
@@ -12,6 +13,7 @@ public class WebSocketMessage {
 
 	private String command;
 	private Object message, extra;
+	@SerializedName("id")
 	private int moduleId;
 
 	
