@@ -116,7 +116,7 @@ local.properties
 
 
 #intellij
-.idea
+.idea/
 *.iml
 
 #Homedash2
