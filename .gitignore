@@ -115,6 +115,10 @@ local.properties
 .recommenders/
 
 
+#intellij
+.idea
+*.iml
+
 #Homedash2
 cache/
 homedash.mv.db
