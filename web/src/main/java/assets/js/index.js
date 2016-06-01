@@ -241,9 +241,19 @@ function getLayout() {
 
     // getting th layout for the page and view port
     $.get('/modules-layout/' + PAGE + '/' + viewportWidth, function (html) {
-        $('#layout').html(html);
-        getLayoutInfo(viewportWidth);
-    }).fail(function () {
+            $('#layout').html(html);
+            getLayoutInfo(viewportWidth);
+
+            $('.gridster-item').each(function (index, module) {
+                var module = MODULES[$(this).attr('data-module')];
+                if (module != undefined && module.documentReady != undefined) {
+                    module.documentReady();
+                }
+            });
+
+
+        }
+    ).fail(function () {
         PAGE = 1;
         //finding which page we are
         if (typeof(Storage) !== "undefined") {

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <parent>
+        <artifactId>homedash</artifactId>
+        <groupId>com.ftpix.homedash</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>plugins</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>systeminfo</module>
+        <module>docker</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>models</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+
+            <plugins>
+                <plugin>
+                    <groupId>org.lesscss</groupId>
+                    <artifactId>lesscss-maven-plugin</artifactId>
+                </plugin>
+
+                <plugin>
+                    <groupId>net.tqh.plugins</groupId>
+                    <artifactId>uglifyjs-maven-plugin</artifactId>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                </plugin>
+
+                <!-- UGLIFYJS -->
+                <plugin>
+                    <groupId>net.tqh.plugins</groupId>
+                    <artifactId>uglifyjs-maven-plugin</artifactId>
+                    <version>1.0</version>
+                    <executions>
+                        <execution>
+                            <id>uglify-js</id>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>uglify</goal>
+                            </goals>
+                            <configuration>
+                                <sourceDirectory>${project.build.sourceDirectory}/assets/js</sourceDirectory>
+
+                                <outputDirectory>${project.build.resources[0].directory}/web/${name}/js</outputDirectory>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.lesscss</groupId>
+                    <artifactId>lesscss-maven-plugin</artifactId>
+                    <version>1.7.0.1.1</version>
+                    <configuration>
+                        <sourceDirectory>${project.build.sourceDirectory}/assets/less</sourceDirectory>
+                        <outputDirectory>${project.build.resources[0].directory}/web/${name}/css</outputDirectory>
+                        <compress>true</compress>
+                        <includes>
+                            <include>*.less</include>
+                        </includes>
+                        <excludes>
+                            <exclude>variables.less</exclude>
+                        </excludes>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>compile</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.8</version>
+                    <executions>
+                        <execution>
+                            <id>copy-plugins-templates</id>
+                            <phase>generate-resources</phase>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                            <configuration>
+                                <tasks>
+                                    <copy todir="src/main/resources/templates">
+                                        <fileset dir="src/main/java/assets/templates">
+                                            <include name="**/*.jade"/>
+                                        </fileset>
+                                    </copy>
+                                </tasks>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>copy-plugins-files</id>
+                            <phase>generate-resources</phase>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                            <configuration>
+                                <tasks>
+                                    <copy todir="src/main/resources/web/${name}/files">
+                                        <fileset dir="src/main/java/assets/files">
+                                            <include name="**/*"/>
+                                        </fileset>
+                                    </copy>
+                                </tasks>
+                            </configuration>
+                        </execution>
+
+
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>

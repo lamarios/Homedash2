@@ -20,8 +20,7 @@
 		<module>web</module>
 
 		<!-- plugins -->
-		<module>plugin-systeminfo</module>
-		<module>plugin-docker</module>
+		<module>plugins</module>
 	</modules>
 
 	<pluginRepositories>
@@ -34,52 +33,6 @@
 	<build>
 		<pluginManagement>
 			<plugins>
-				<!-- UGLIFYJS -->
-				<plugin>
-					<groupId>net.tqh.plugins</groupId>
-					<artifactId>uglifyjs-maven-plugin</artifactId>
-					<version>1.0</version>
-					<executions>
-						<execution>
-							<id>uglify-js</id>
-							<phase>compile</phase>
-							<goals>
-								<goal>uglify</goal>
-							</goals>
-							<configuration>
-								<skip>false</skip>
-								<sourceDirectory>${project.build.sourceDirectory}/assets/js</sourceDirectory>
-
-								<outputDirectory>${project.build.resources[0].directory}/web/${name}/js</outputDirectory>
-							</configuration>
-						</execution>
-					</executions>
-				</plugin>
-				<!-- LESS CSS -->
-				<plugin>
-					<groupId>org.lesscss</groupId>
-					<artifactId>lesscss-maven-plugin</artifactId>
-					<version>1.7.0.1.1</version>
-					<configuration>
-						<sourceDirectory>${project.build.sourceDirectory}/assets/less</sourceDirectory>
-						<outputDirectory>${project.build.resources[0].directory}/web/${name}/css</outputDirectory>
-						<compress>true</compress>
-						<includes>
-							<include>*.less</include>
-						</includes>
-						<excludes>
-							<exclude>variables.less</exclude>
-						</excludes>
-					</configuration>
-					<executions>
-						<execution>
-							<goals>
-								<goal>compile</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>exec-maven-plugin</artifactId>
@@ -96,47 +49,7 @@
 						<mainClass>${main.class}</mainClass>
 					</configuration>
 				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-antrun-plugin</artifactId>
-					<version>1.8</version>
-					<executions>
-						<execution>
-							<id>copy-plugins-templates</id>
-							<phase>generate-resources</phase>
-							<goals>
-								<goal>run</goal>
-							</goals>
-							<configuration>
-								<tasks>
-									<copy todir="src/main/resources/templates">
-										<fileset dir="src/main/java/assets/templates">
-											<include name="**/*.jade" />
-										</fileset>
-									</copy>
-								</tasks>
-							</configuration>
-						</execution>
-						<execution>
-							<id>copy-plugins-files</id>
-							<phase>generate-resources</phase>
-							<goals>
-								<goal>run</goal>
-							</goals>
-							<configuration>
-								<tasks>
-									<copy todir="src/main/resources/web/${name}/files">
-										<fileset dir="src/main/java/assets/files">
-											<include name="**/*" />
-										</fileset>
-									</copy>
-								</tasks>
-							</configuration>
-						</execution>
 
-
-					</executions>
-				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>

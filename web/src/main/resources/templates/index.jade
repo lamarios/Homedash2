@@ -55,6 +55,4 @@ block scripts
         script(type="text/javascript").
             var moduleId = #{plugin.getModule().getId()};
             MODULES[moduleId] = new #{plugin.getId()}(moduleId);
-            if(MODULES[moduleId].documentReady != undefined)
-            MODULES[moduleId].documentReady();
     script(src="/js/websocket.js")

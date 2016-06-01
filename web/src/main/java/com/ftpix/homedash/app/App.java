@@ -3,16 +3,12 @@ package com.ftpix.homedash.app;
 import static spark.Spark.*;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.Properties;
-import java.util.Scanner;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.DateBuilder;
