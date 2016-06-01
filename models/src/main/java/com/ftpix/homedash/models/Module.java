@@ -32,8 +32,8 @@ public class Module {
 	@ForeignCollectionField(eager = false, maxEagerLevel = 0)
 	public ForeignCollection<ModuleLayout> layouts;
 	
-	
-	
+
+
 	public int getId() {
 		return id;
 	}
@@ -98,6 +98,6 @@ public class Module {
 		this.id = id;
 	}
 
-	
+
 	
 }

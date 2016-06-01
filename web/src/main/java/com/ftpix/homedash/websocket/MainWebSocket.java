@@ -240,12 +240,11 @@ public class MainWebSocket {
      */
     private static List<ModuleLayout> getModuleLayoutsToRefresh() {
         List<ModuleLayout> layouts = new ArrayList<>();
-        LayoutController controller = new LayoutController();
 
         sessions.stream().filter(s -> s.getLayout() != null && s.getPage() != null).forEach(s -> {
             try {
                 logger.info("Getting module layout for settings page:[{}], Layout[{}]", s.getPage().getName(), s.getLayout().getName());
-                layouts.addAll(controller.generatePageLayout(s.getPage(), s.getLayout()));
+                layouts.addAll(LayoutController.getInstance().generatePageLayout(s.getPage(), s.getLayout()));
             } catch (Exception e) {
                 logger.error("Can't get layouts for page:[" + s.getPage().getId() + "], layout [" + s.getLayout().getName() + "]", e);
             }

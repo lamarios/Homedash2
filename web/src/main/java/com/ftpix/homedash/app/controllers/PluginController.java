@@ -16,10 +16,28 @@ import com.ftpix.homedash.plugins.Plugin;
 
 import de.neuland.jade4j.exceptions.JadeException;
 
-public class PluginController {
+public  class PluginController implements Controller{
 	private Logger logger = LogManager.getLogger();
 
-	
+	///Singleton
+	private static PluginController controller;
+
+	private PluginController(){}
+
+	public static PluginController getInstance(){
+		if(controller == null){
+			controller = new PluginController();
+		}
+
+		return controller;
+	}
+	//end of singleton
+
+
+	public  void defineEndpoints(){
+
+	}
+
 	/**
 	 * Lists all the available controller, looking for class implementing the Plugin class
 	 * @return

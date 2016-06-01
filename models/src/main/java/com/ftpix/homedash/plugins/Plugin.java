@@ -22,7 +22,7 @@ import de.neuland.jade4j.template.TemplateLoader;
 public abstract class Plugin {
 	protected Logger logger = LogManager.getLogger();
 
-	public static int NEVER = 0, ONE_SECOND = 1, ONE_HOUR = 60;
+	public static int NEVER = 0, ONE_SECOND = 1, ONE_MINUTE = 60, ONE_HOUR = 60*ONE_MINUTE;
 
 	private Module module;
 
