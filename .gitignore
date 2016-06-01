@@ -125,4 +125,4 @@ homedash.mv.db
 web/src/main/resources/native-libs
 web/src/main/resources/web/web
 web/src/main/resources/conf/homedash.properties
-plugin-*/src/main/resources/
+plugins/*/src/main/resources/*

@@ -1,1 +1,0 @@
-function docker(d){this.moduleId=d,this.documentReady=function(){}}
