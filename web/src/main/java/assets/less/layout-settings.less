@@ -1,13 +1,21 @@
 @import 'variables.less';
 
+.container{
+  padding: 0 15px;
+}
+
+h1 a{
+  font-size: 20px;
+  margin: 0 20px;
+}
+
 .layout {
   .grid {
     background-color: @accentColor;
     max-width: 100px;
-    max-height:100px;
+    max-height: 100px;
     display: inline-block;
     margin: 0 3px;
-
 
     -webkit-transition: all @transition-speed !important;
     transition: all @transition-speed !important;
@@ -21,18 +29,30 @@
     border: 1px solid @accentColor
   }
 
-  min-height:120px;
+  min-height: 120px;
   box-sizing: border-box;
   border: 1px solid @accentColor;
   border-radius: @border-radius;
   margin: 5px;
-  padding:10px;
+  padding: 10px;
+
+  a {
+    color: @accentColor;
+  }
+
+  .glyphicon {
+    display: inline-block;
+    width: 30px;
+    cursor: pointer;
+    color: @accentColor;
+    text-align: center;
+  }
 }
 
-.layout.invalid{
-    .grid{
-      background-color: red;
-    }
+.layout.invalid {
+  .grid {
+    background-color: red;
+  }
 }
 
 @keyframes popin {

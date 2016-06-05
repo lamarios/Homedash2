@@ -10,6 +10,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import io.gsonfire.GsonFireBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import spark.Spark;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -21,11 +22,11 @@ import static spark.Spark.post;
 /**
  * Created by gz on 28-May-16.
  */
-public class PageController implements Controller{
+public class PageController implements Controller<Page, Integer>{
 
     private Logger logger = LogManager.getLogger();
 
-    final Gson gson = new GsonFireBuilder().enableExposeMethodResult().createGsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+    private final Gson gson = new GsonFireBuilder().enableExposeMethodResult().createGsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
 
 
@@ -42,45 +43,47 @@ public class PageController implements Controller{
     }
     // end of singleton
 
+
+    @Override
     public void defineEndpoints(){
 
 
         /**
          * gets all pages as json
          */
-        get("/pages", (req, res) -> {
-            return DB.PAGE_DAO.queryForAll();
+        Spark.get("/pages", (req, res) -> {
+            return getAll();
         }, gson::toJson);
 
 
         /**
          * add a pages and return the whole list of pages as json
          */
-        post("/pages/add", (req, res) -> {
+        Spark.post("/pages/add", (req, res) -> {
             String pageName = req.queryMap("name").value();
             Page page = new Page();
             page.setName(pageName);
 
-            DB.PAGE_DAO.create(page);
-            return DB.PAGE_DAO.queryForAll();
+            create(page);
+            return getAll();
         }, gson::toJson);
 
 
         /**
          * Rename a page
          */
-        post("/pages/edit/:id", (req, res) -> {
+        Spark.post("/pages/edit/:id", (req, res) -> {
 
             int id = Integer.parseInt(req.params("id"));
 
             String pageName = req.queryMap("name").value();
-            Page page = DB.PAGE_DAO.queryForId(id);
+            Page page = get(id);
 
             if (page != null) {
                 page.setName(pageName);
 
-                DB.PAGE_DAO.update(page);
-                return DB.PAGE_DAO.queryForAll();
+               update(page);
+                return getAll();
             } else {
                 res.status(503);
             }
@@ -93,15 +96,46 @@ public class PageController implements Controller{
         /**
          * gets all pages as json
          */
-        delete("/page/:id", (req, res) -> {
+        Spark.delete("/page/:id", (req, res) -> {
             int id = Integer.parseInt(req.params("id"));
 
             if(id > 1) {
                 //Deleting all the modules on this page
                 deletePage(id);
             }
-            return DB.PAGE_DAO.queryForAll();
+            return getAll();
         }, gson::toJson);
+    }
+
+    @Override
+    public Page get(Integer id) throws SQLException {
+        return DB.PAGE_DAO.queryForId(id);
+    }
+
+    @Override
+    public List<Page> getAll() throws SQLException {
+        return DB.PAGE_DAO.queryForAll();
+    }
+
+    @Override
+    public boolean deleteById(Integer id) throws SQLException {
+        return DB.PAGE_DAO.deleteById(id) == 1;
+    }
+
+    @Override
+    public boolean delete(Page object) throws SQLException {
+        return DB.PAGE_DAO.delete(object) == 1;
+    }
+
+    @Override
+    public boolean update(Page object) throws SQLException {
+        return DB.PAGE_DAO.update(object) == 1;
+    }
+
+    @Override
+    public Integer create(Page object) throws SQLException {
+        DB.PAGE_DAO.create(object);
+        return object.getId();
     }
 
 
@@ -113,14 +147,14 @@ public class PageController implements Controller{
      */
     public boolean deletePage(int id) throws SQLException {
         logger.info("deletePage({})", id);
-        Page page = DB.PAGE_DAO.queryForId(id);
+        Page page = get(id);
 
 
         page.getModules().forEach((module)->{
 
             try {
-               ModuleController.getInstance().deleteModule(module.getId());
-            } catch (SQLException e) {
+               ModuleController.getInstance().delete(module);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 

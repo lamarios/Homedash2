@@ -1,26 +1,51 @@
 @import 'variables.less';
 
+@pages-width: 250px;
+
 #page-title {
   cursor: pointer;
   color: @accentColor;
 }
 
-#pages {
-  background-color: @accentColor;
-  color: @background;
-  position: fixed;
-  top: 0;
-  left: -0;
-  bottom: 0;
-  width: 250px;
-  z-index: 10;
+#pages-overlay, #pages {
   -webkit-transition: all @transition-speed !important;
   transition: all @transition-speed !important;
 
-  transform-origin: center left;
   @angle: -90deg;
   -webkit-transform: rotateY(@angle); /* Safari */
   transform: rotateY(@angle);
+  z-index: 10;
+}
+
+#pages-overlay {
+  position: fixed;
+  top: 0;
+  left: @pages-width;
+  bottom: 0;
+  right: 0;
+
+  opacity: 0;
+
+  background-color: rgba(0, 0, 0, 0.5);
+  transform-origin: center right;
+
+}
+
+#pages {
+  background-color: @accentColor;
+  color: @background;
+
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  width: @pages-width;
+  transform-origin: center left;
+
+  //z-index: 11;
+  //position: fixed;
+  height: 100%;
 
   .icons {
     a {
@@ -38,12 +63,12 @@
 
     .add {
       bottom: 10px;
-      right: 60px;
+      left: @pages-width - 80px;
     }
 
     .edit {
       bottom: 10px;
-      right: 10px;
+      left: @pages-width - 30px;
     }
 
   }
@@ -53,27 +78,60 @@
   }
 
   ul {
-    padding-top: 60px;
     list-style: none;
+    padding-top: 60px;
+
     li {
       color: @background;
       display: block;
       font-size: 18px;
       margin: 10px 5px;
       cursor: pointer;
+
+      a {
+        color: white;
+
+      }
+
+      a :hover {
+        text-decoration: none;
+      }
     }
   }
 }
 
-#pages.showing {
-  left: 0;
+#pages-overlay.showing, #pages.showing {
 
   @angle: 0deg;
   -webkit-transform: rotateY(@angle); /* Safari */
   transform: rotateY(@angle);
+
+  opacity: 1;
+
 }
 
-#pages.editing .edit-icon {
-  display: inline-block;
-  margin: 0 10px;
+#pages.showing.editing {
+  .edit-icon {
+    display: inline-block;
+    margin: 0 10px;
+  }
+}
+
+#page-move-modal {
+  .modal-body div {
+    display: block;
+    padding: 5px 15px;
+    margin: 0 0 10px 0;
+    font-size: 17px;
+    cursor: pointer;
+    -webkit-transition: all @transition-speed;
+    transition: all @transition-speed;
+  }
+
+  .modal-body div:hover {
+    @scale: 1.05;
+    -ms-transform: scale(@scale); /* IE 9 */
+    -webkit-transform: scale(@scale); /* Safari */
+    transform: scale(@scale);
+  }
 }

@@ -88,7 +88,7 @@ public class App {
 	 * 
 	 * @throws SQLException
 	 */
-	private static void createDefaultData() throws SQLException {
+	public static void createDefaultData() throws SQLException {
 		logger.info("Creating first page if it doesn't exist");
 		Page page = new Page();
 		page.setId(1);

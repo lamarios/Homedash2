@@ -1,35 +1,44 @@
 $(document).ready(function () {
     getPages();
 
-    $('#page-title, #pages .close-panel').click(function () {
-        $('#pages').toggleClass('showing');
+    $('#page-title, #pages .close-panel, #pages-overlay').click(function (event) {
+        $('#pages-overlay, #pages').toggleClass('showing');
     });
 
-    $('#pages .icons .edit').click(function () {
+    $('#pages .icons .edit').click(function (event) {
         $('#pages').toggleClass('editing');
+        event.stopPropagation();
+
     });
 
-    $('#pages .add').click(addPage);
+    $('#pages .add').click(function (event) {
+        addPage();
+        event.stopPropagation();
+    });
 
-    $(document).on('click', '#pages .edit-icon.glyphicon-pencil', function () {
+
+    $(document).on('click', '#pages .edit-icon.glyphicon-pencil', function (event) {
+        event.stopPropagation();
+
         var pageId = $(this).parents('li').attr('data-id');
         editPage(pageId);
     });
 
-    $(document).on('click', '#pages .edit-icon.glyphicon-remove', function () {
+    $(document).on('click', '#pages .edit-icon.glyphicon-remove', function (event) {
+        event.stopPropagation();
+
         var pageId = $(this).parents('li').attr('data-id');
         deletePage(pageId);
     });
 
-    $(document).on('click', '#pages ul li .page-name', function () {
+
+    $(document).on('click', '.page-name', function () {
         var pageId = $(this).parents('li').attr('data-id');
         changePage(pageId);
     });
 
-    $(document).on('click', '.gridster .module  li.move', function () {
-        var element = $(this);
-
-        moveModule(element.attr('data-id'));
+    $(document).on('click', '#module-modal p.move', function (event) {
+        moveModule($('#module-modal').attr('data-id'));
     });
 
     $(document).on('click', '#page-move-modal .page', function () {
@@ -52,7 +61,7 @@ function changePage(id) {
     sendMessage(-1, 'changePage', PAGE);
     getLayout();
     getPages();
-    $('#pages').removeClass('showing');
+    $('#pages-overlay, #pages').removeClass('showing');
 
     //finding which page we are
     if (typeof(Storage) !== "undefined") {
@@ -66,7 +75,7 @@ function changePage(id) {
  * @param moduleId
  */
 function moveModule(moduleId) {
-
+    $('#module-modal').modal('hide');
 
     if ($('#page-move-modal').length == 0) {
         var modal = [];
@@ -97,7 +106,7 @@ function moveModule(moduleId) {
         var html = [];
         $.each(pages, function (index, page) {
             if (page.id != PAGE) {
-                html.push('<div data-id="', page.id, '" data-module="',moduleId,'" class="page">', page.name, '</div>');
+                html.push('<div data-id="', page.id, '" data-module="', moduleId, '" class="page">', page.name, '</div>');
             }
         });
 
@@ -111,8 +120,8 @@ function moveModule(moduleId) {
  * @param moduleId
  * @param pageId
  */
-function moveModuleToPage(moduleId, pageId){
-    $.get('/module/'+moduleId+'/move-to-page/'+pageId, function(){
+function moveModuleToPage(moduleId, pageId) {
+    $.get('/module/' + moduleId + '/move-to-page/' + pageId, function () {
         getLayout();
         $('#page-move-modal').modal('hide');
         $('#edit-layout').removeClass('editing');
@@ -138,7 +147,7 @@ function pages2html(pages) {
         if (page.id == PAGE) {
             $('#page-title .name').html(page.name);
         }
-        html.push('<li data-id="', page.id, '"><span class="page-name">', page.name, '</span> <span class="glyphicon glyphicon-pencil edit-icon" aria-hidden="true"></span>');
+        html.push('<li data-id="', page.id, '"><a class="page-name">', page.name, '</a> <span class="glyphicon glyphicon-pencil edit-icon" aria-hidden="true"></span>');
         if (page.id > 1) {
             html.push('<span class="glyphicon glyphicon-remove edit-icon" aria-hidden="true"></span>');
         }

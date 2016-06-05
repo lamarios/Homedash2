@@ -1,0 +1,36 @@
+@import 'variables.less';
+
+#module-modal {
+
+  p {
+    a {
+      display: block;
+      color: #222;
+      .glyphicon {
+        color: @accentColor;
+        margin: 0 10px;
+      }
+    }
+
+    a:hover{
+      text-decoration: none;
+    }
+
+    cursor: pointer;
+    -webkit-transition: all @transition-speed;
+    transition: all @transition-speed;
+
+  }
+
+  p:hover{
+    @scale: 1.05;
+    -ms-transform: scale(@scale); /* IE 9 */
+    -webkit-transform: scale(@scale); /* Safari */
+    transform: scale(@scale);
+  }
+
+  .resize-size {
+    margin: 0px 20px;
+  }
+
+}

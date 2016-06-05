@@ -39,26 +39,32 @@ $(document).ready(function () {
     $(document).on('click', '.gridster .module .module-settings-icon', function () {
         var element = $(this);
 
-        getSizes(element);
+
+        var id = $(this).attr('data-id');
+        $('#module-modal').find('a.edit').attr('href', '/module/'+id+'/settings');
+        $('#module-modal').attr('data-id', id);
+
+        $('#module-modal').modal('show');
+
+        getSizes();
 
     });
 
     /**
      * Changes the size of a module
      */
-    $(document).on('click', '.gridster .module .resize-size', function () {
-        var element = $(this);
-        changeSize(element);
+    $(document).on('click', '#module-modal .resize-size', function () {
+        var element = $('#module-modal');
+        changeSize(element.attr('data-id'), $(this).attr('data-size'));
     });
 
 
     /**
      * delete a module
      */
-    $(document).on('click', '.gridster .module  li.delete', function () {
-        var element = $(this);
+    $(document).on('click', '#module-modal  p.delete', function () {
 
-        deleteModule(element.attr('data-id'));
+        deleteModule($('#module-modal').attr('data-id'));
     });
 
 
@@ -101,11 +107,10 @@ $(document).ready(function () {
 /**
  * Get the available sizes for a module
  */
-function getSizes(element) {
+function getSizes() {
 
-    var moduleElement = element.parents('.module');
-    var moduleId = moduleElement.attr('data-module');
-    var sizes = moduleElement.find('.module-sizes');
+    var moduleId = $('#module-modal').attr('data-id');
+    var sizes = $('#module-modal').find('.module-sizes');
 
 
     console.log('Getting available sizes for module ' + moduleId);
@@ -115,7 +120,7 @@ function getSizes(element) {
 
         var html = [];
         $.each(json, function (index, value) {
-            html.push('<li class="resize-size" data-size="', value, '"><a>', value, '</a></li>');
+            html.push('<p class="resize-size" data-size="', value, '"><a>', value, '</a></p>');
         });
         sizes.siblings('.resize-size').remove();
         sizes.after(html.join(''));
@@ -125,19 +130,23 @@ function getSizes(element) {
 /**
  * Changes the size of a module
  */
-function changeSize(element) {
-    var gridsterElem = element.parents('.gridster-item');
-    var moduleElem = element.parents('.module');
-    var size = element.attr('data-size').split('x');
+function changeSize(moduleId, size) {
+
+    var gridsterElem =  $('.gridster .gridster-item[data-module="'+moduleId+'"]');
+
+
+    var moduleElem = gridsterElem.find('.module');
 
     console.log(size);
+    size = size.split('x');
     var width = size[0];
     var height = size[1];
     moduleElem.attr('data-size', width + 'x' + height);
 
     gridster.resize_widget(gridsterElem, width, height, function () {
         savePositions();
-        getModuleContent(moduleElem.attr('data-module'), moduleElem.attr('data-size'))
+        getModuleContent(moduleElem.attr('data-module'), moduleElem.attr('data-size'));
+        $('#module-modal').modal('hide');
     });
 }
 
@@ -218,6 +227,7 @@ function deleteModule(moduleId) {
             type: 'DELETE',
             success: function (result) {
                 getLayout();
+                $('#module-modal').modal('hide');
             }
         });
     }
@@ -240,9 +250,9 @@ function getLayout() {
     var viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
 
     // getting th layout for the page and view port
-    $.get('/modules-layout/' + PAGE + '/' + viewportWidth, function (html) {
-            $('#layout').html(html);
-            getLayoutInfo(viewportWidth);
+    $.getJSON('/modules-layout/' + PAGE + '/' + viewportWidth, function (json) {
+            $('#layout').html(json.html);
+            updateLayoutInfo(json.layout);
 
             $('.gridster-item').each(function (index, module) {
                 var module = MODULES[$(this).attr('data-module')];
@@ -255,7 +265,7 @@ function getLayout() {
         }
     ).fail(function () {
         PAGE = 1;
-        //finding which page we are
+
         if (typeof(Storage) !== "undefined") {
             localStorage.setItem("page", PAGE);
         }
@@ -267,9 +277,9 @@ function getLayout() {
 /**
  * Get the layout information so we can use it to initate the grid
  */
-function getLayoutInfo(viewportWidth) {
-    $.getJSON('/layout-info/json/' + viewportWidth, function (json) {
-        LAYOUT = json;
+function updateLayoutInfo(layoutJson) {
+
+        LAYOUT = layoutJson;
         console.log(LAYOUT);
         initGridster();
         // Starting the websocket or just refreshing the layout
@@ -282,5 +292,4 @@ function getLayoutInfo(viewportWidth) {
         $('#layout-wrapper .loading').fadeOut('fast');
         $('#page-title .layout').html(' (' + LAYOUT.name + ')');
 
-    });
 }

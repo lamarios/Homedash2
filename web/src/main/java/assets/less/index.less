@@ -2,12 +2,22 @@
 @import 'loader.less';
 @import 'dropdown-multilevel.less';
 @import 'pages.less';
+@import 'module-modal.less';
 
-#page-title{
+.container {
+  margin: 0;
+  padding: 0;
+}
 
-  .layout{
+#page-title {
+  font-size: 30px;
+  margin: 10px;
+  .name{
+    color: #222;
+  }
+  .layout {
     color: #999;
-    font-size:14px;
+    font-size: 14px;
   }
 }
 
@@ -22,7 +32,7 @@
     background-color: @background;
     text-align: center;
     z-index: 9;
-    padding-top:50px;
+    padding-top: 50px;
     .loader {
       margin: auto;
     }
@@ -38,6 +48,10 @@
   margin: 0 auto;
   -webkit-transition: all @transition-speed;
   transition: all @transition-speed;
+
+  animation-name: show-grid;
+  animation-duration: 0.75s;
+
   .gridster-item {
     -webkit-transition: all @transition-speed !important;
     transition: all @transition-speed !important;
@@ -110,6 +124,32 @@
     // module
   }
   // ul
+}
+
+
+@keyframes show-grid{
+  0%{
+    opacity: 0;
+    @scale: 0;
+    -ms-transform: scale(@scale); /* IE 9 */
+    -webkit-transform: scale(@scale); /* Safari */
+    transform: scale(@scale);
+  }
+
+  60%{
+    opacity: 1;
+    @scale: 1.1;
+    -ms-transform: scale(@scale); /* IE 9 */
+    -webkit-transform: scale(@scale); /* Safari */
+    transform: scale(@scale);
+  }
+
+  100%{
+    @scale: 1;
+    -ms-transform: scale(@scale); /* IE 9 */
+    -webkit-transform: scale(@scale); /* Safari */
+    transform: scale(@scale);
+  }
 }
 
 // gridster

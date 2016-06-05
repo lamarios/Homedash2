@@ -6,7 +6,7 @@ block css
         link(href="/plugin/#{plugin.getId()}/css/#{plugin.getId()}.css", rel="stylesheet")
 block content
     h1#page-title
-        span.glyphicon.glyphicon-option-vertical(aria-hidden="true")
+        span.glyphicon.glyphicon-chevron-right(aria-hidden="true")
         span.name
         span.layout
     div#layout-wrapper
@@ -30,6 +30,7 @@ block content
                     span.glyphicon.glyphicon-object-align-top
                     |  Edit Layout
 
+    #pages-overlay
     #pages
         div.icons
             a.close-panel
@@ -40,6 +41,33 @@ block content
             a.edit
                 span.glyphicon.glyphicon-pencil(aria-hidden="true")
         ul
+
+    #module-modal.modal.fade(tabindex="1", role="dialog")
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    button.close(type="button", data-dismiss="modal", aria-label="Close")
+                        span(aria-hidden="true") &times;
+                    h4.modal-title Module Settings
+                .modal-body
+                    p.item
+                        a.edit(href="")
+                            span(class="glyphicon glyphicon-pencil")
+                            | Edit settings
+                    p.item.move
+                        a
+                            span(class="glyphicon glyphicon-pause")
+                            | Move to page
+                    hr
+                    p.item.module-sizes
+                        a
+                            span(class="glyphicon glyphicon-resize-full")
+                            | Resize:
+                    hr
+                    p.item.delete
+                        a
+                            span(class="glyphicon glyphicon-remove")
+                            | Delete
 
                     
                     

@@ -16,7 +16,7 @@ import com.ftpix.homedash.plugins.Plugin;
 
 import de.neuland.jade4j.exceptions.JadeException;
 
-public  class PluginController implements Controller{
+public  class PluginController{
 	private Logger logger = LogManager.getLogger();
 
 	///Singleton

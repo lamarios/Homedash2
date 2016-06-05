@@ -17,7 +17,20 @@ block content
             .layout-display.col-sm-8(data-max="#{layout.getMaxGridWidth()}")
 
             .layout-name.col-sm-4
-                p #{layout.getName()}
+                p
+                    strong.name #{layout.getName()}
+                    if layout.getId() > 3
+                        a(class="rename")
+                            span.glyphicon.glyphicon-pencil
+                        a(class="delete")
+                            span.glyphicon.glyphicon-remove
+
+                p
+                    | Grid Width:
+                    span.grid-width
+                p
+                    | Min. window width:
+                    span.screen-width
                 if layout.getId() > 3
                     p
                         a(class="remove")

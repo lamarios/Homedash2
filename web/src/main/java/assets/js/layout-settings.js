@@ -14,12 +14,52 @@ $(document).ready(function () {
         addItem(parent);
     });
 
+    $(document).on('click', '.layout .rename', function () {
+        var parent = $(this).parents('.layout');
+
+        renameLayout(parent);
+    });
+
+
+    $(document).on('click', '.layout .delete', function () {
+        var parent = $(this).parents('.layout');
+
+        deleteLayout(parent);
+    });
+
     $('#add-layout').click(addLayout);
 });
 
+function deleteLayout(layoutElement){
+    var id = layoutElement.attr('data-id');
+
+    if(confirm("Delete Layout ?")){
+        $.getJSON('/layout/' + id + '/delete', function(){
+            alert('Layout deleted');
+            layoutElement.remove();
+        });
+    }
+}
+
 
 /**
- * Prefil layouts based on the attribute value
+ * Renamesa  layout
+ * @param layoutElement
+ */
+function renameLayout(layoutElement) {
+    var id = layoutElement.attr('data-id');
+
+    var name = prompt('New name');
+
+    if (name != undefined && $.trim(name).length > 0) {
+        $.post('/layout/' + id + '/rename', {name: name}, function(){
+            layoutElement.find('.name').html(name);
+        }, "json");
+    }
+}
+
+/**
+ * Prefill layouts based on the attribute value
  */
 function generateLayout() {
     $('.layout-display').each(function () {
@@ -27,8 +67,20 @@ function generateLayout() {
             $(this).append('<div class="grid item"></div>');
         }
 
+
+        displayLayoutInfo($(this).parents('.layout'));
         resizeItems($(this));
     });
+}
+
+/**
+ * Will display the minimum screen width and grid length here
+ */
+function displayLayoutInfo(layoutElement) {
+    var itemsLength = layoutElement.find('.grid.item').length;
+    layoutElement.find('.grid-width').html(itemsLength);
+    layoutElement.find('.screen-width').html((itemsLength * 102) + 'px');
+
 }
 
 /**
@@ -40,6 +92,7 @@ function removeItem(element) {
         element.find('.grid.item:last-of-type').remove();
         validateAndSave(element);
         resizeItems(element);
+        displayLayoutInfo(element);
     }
 }
 
@@ -52,6 +105,7 @@ function addItem(element) {
     element.find('.grid.item:last-of-type').after('<div class="grid item"></div>');
     validateAndSave(element);
     resizeItems(element);
+    displayLayoutInfo(element);
 }
 
 /**
@@ -88,7 +142,7 @@ function validateAndSave(element) {
     if (valid) {
 
         element.removeClass('invalid');
-        $.get('/layout/'+element.attr('data-id')+'/set-size/'+grid.length);
+        $.get('/layout/' + element.attr('data-id') + '/set-size/' + grid.length);
     } else {
 
         element.addClass('invalid');

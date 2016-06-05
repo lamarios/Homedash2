@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.ftpix.homedash.app.controllers.ModuleLayoutController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.websocket.api.Session;
@@ -244,7 +245,7 @@ public class MainWebSocket {
         sessions.stream().filter(s -> s.getLayout() != null && s.getPage() != null).forEach(s -> {
             try {
                 logger.info("Getting module layout for settings page:[{}], Layout[{}]", s.getPage().getName(), s.getLayout().getName());
-                layouts.addAll(LayoutController.getInstance().generatePageLayout(s.getPage(), s.getLayout()));
+                layouts.addAll(ModuleLayoutController.getInstance().generatePageLayout(s.getPage(), s.getLayout()));
             } catch (Exception e) {
                 logger.error("Can't get layouts for page:[" + s.getPage().getId() + "], layout [" + s.getLayout().getName() + "]", e);
             }

@@ -40,6 +40,8 @@ public class Endpoints {
         PageController.getInstance().defineEndpoints();
         PluginController.getInstance().defineEndpoints();
         SettingsController.getInstance().defineEndpoints();
+        ModuleLayoutController.getInstance().defineEndpoints();
+        ModuleSettingsController.getInstance().defineEndpoints();
 
 
 
