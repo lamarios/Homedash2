@@ -2,9 +2,11 @@ package com.ftpix.homedash.plugins;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.nio.channels.NotYetBoundException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ftpix.homedash.models.ModuleExposedData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,6 +25,8 @@ public abstract class Plugin {
 	protected Logger logger = LogManager.getLogger();
 
 	public static int NEVER = 0, ONE_SECOND = 1, ONE_MINUTE = 60, ONE_HOUR = 60*ONE_MINUTE;
+
+	private String cacheBase;
 
 	private Module module;
 
@@ -59,6 +63,19 @@ public abstract class Plugin {
 	 * @return
 	 */
 	public abstract String getDescription();
+
+
+	/**
+	 * Provide an external link if available
+	 * @return
+     */
+	public abstract String getExternalLink();
+
+	/**
+	 * Give chance to a plugin to run some stuff when creating it
+	 * Settings can be accessed via settings object
+	 */
+	protected abstract void init();
 
 	/**
 	 * Get the szes available for this module
@@ -106,6 +123,29 @@ public abstract class Plugin {
 	 * @return
 	 */
 	public abstract int getRefreshRate();
+
+
+	/**
+	 * Validates a given set of settings
+	 * @param settings
+	 * @return
+     */
+	public abstract Map<String, String> validateSettings(Map<String, String> settings);
+
+
+	/**
+	 * Expose a chunk of selected data on request
+	 * @return
+     */
+	public abstract ModuleExposedData exposeData();
+
+
+	/**
+	 * Expose a chunk of selected settings on request
+	 * @return
+	 */
+	public abstract Map<String, String> exposeSettings();
+
 
 	/**
 	 * Gets the html for a specific size
@@ -204,8 +244,18 @@ public abstract class Plugin {
 	 * @param module
 	 */
 	public void setModule(Module module) {
+		Map<String, String> oldSettings = null;
+		if(this.module != null){
+
+			oldSettings = getSettingsAsMap();
+		}
 		this.module = module;
+
 		this.settings = getSettingsAsMap();
+
+		if(oldSettings == null ||!getSettingsAsMap().equals(oldSettings)){
+			init();
+		}
 
 		// Converts the data
 		if (module.getData() != null) {
@@ -224,6 +274,22 @@ public abstract class Plugin {
 	 */
 	public void saveData() {
 		module.setData(gson.toJson(data));
+	}
+
+
+	public void setCacheBase(String cacheBase){
+		this.cacheBase = cacheBase;
+		if(!cacheBase.endsWith("/")){
+			this.cacheBase+="/";
+		}
+	}
+
+	protected String getCacheFolder() throws NotYetBoundException{
+		if(module != null) {
+			return cacheBase + module.getId()+"/";
+		}else {
+			throw new NotYetBoundException();
+		}
 	}
 
 }

@@ -1,0 +1,151 @@
+@transition-speed: 0.5s;
+
+.sonarrtv {
+  background-color: #222;
+
+  .shows-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    .show {
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      position: absolute;
+
+      background-repeat: no-repeat;
+      background-position: center 30%;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+      background-color: grey;
+      color: white;
+
+      -webkit-transition: all @transition-speed;
+      transition: all @transition-speed;
+      opacity: 0;
+
+      @scale: 0;
+      -ms-transform: scale(@scale); /* IE 9 */
+      -webkit-transform: scale(@scale); /* Safari */
+      transform: scale(@scale);
+
+      .show-info {
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+    }
+
+    .show.active {
+      opacity: 1;
+
+      @scale: 1;
+      -ms-transform: scale(@scale); /* IE 9 */
+      -webkit-transform: scale(@scale); /* Safari */
+      transform: scale(@scale);
+    }
+  }
+
+  .buttons a {
+    color: white;
+
+    cursor: pointer;
+    text-shadow: 0px 0px 5px #222;
+    z-index: 5;
+  }
+}
+
+//Size specific CSS
+.sonarrtv.size-2x2 {
+  .show-info {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 15px;
+
+    .show-title {
+      font-size: 18px;
+      display: block;
+      padding: 0;
+    }
+
+    .show-date {
+      font-size: 13px;
+      display: block;
+    }
+  }
+
+  .buttons a {
+    font-size: 25px;
+    margin: 5px 0 0 5px;
+  }
+}
+
+.sonarrtv.size-3x1 {
+  .show {
+    top: 0;
+    left: 0;
+    right: 50%;
+    bottom: 0;
+    position: absolute;
+
+    .show-info {
+      bottom: 0;
+      left: 100%;
+      width: 100%;
+      top: 0;
+      padding: 5px;
+
+      .show-title {
+        font-size: 15px;
+        display: block;
+        padding: 0;
+      }
+
+      .show-date {
+        font-size: 13px;
+        display: block;
+      }
+    }
+  }
+
+  .buttons{
+    position:absolute;
+    top:0;
+    right:0;
+    a{
+      font-size:20px;
+    }
+  }
+}
+
+.sonarrtv.size-3x3, .sonarrtv.size-4x4, {
+  .show-info {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 15px;
+
+    .show-title {
+      font-size: 20px;
+      display: block;
+      padding: 0;
+    }
+
+    .show-date {
+      font-size: 15px;
+      display: block;
+    }
+  }
+
+  .buttons a {
+    font-size: 25px;
+    margin: 5px 0 0 5px;
+  }
+}

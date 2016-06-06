@@ -27,5 +27,5 @@
                 .settings-overlay
                 .loading
                     .loader
-                div(class="content #{plugins.get(layout.getModule().getId()).getId()} #{layout.getSize()}")
+                div(class="content #{plugins.get(layout.getModule().getId()).getId()} size-#{layout.getSize()}")
                     !{plugins.get(layout.getModule().getId()).getView(layout.getSize())}

@@ -311,7 +311,6 @@ public class ModuleController implements Controller<Module, Integer> {
                     MODULE_SETTINGS_DAO.create(ms);
                 }
             } catch (Exception e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         });

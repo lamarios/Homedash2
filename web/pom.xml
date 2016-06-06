@@ -97,6 +97,11 @@
             <artifactId>docker</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>sonarrtv</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 

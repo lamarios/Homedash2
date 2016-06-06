@@ -120,7 +120,12 @@ function getSizes() {
 
         var html = [];
         $.each(json, function (index, value) {
-            html.push('<p class="resize-size" data-size="', value, '"><a>', value, '</a></p>');
+            var width = value.split('x')[0];
+
+            //We hide the sizes bigger than current layout
+            if(width <= LAYOUT.maxGridWidth) {
+                html.push('<p class="resize-size" data-size="', value, '"><a>', value, '</a></p>');
+            }
         });
         sizes.siblings('.resize-size').remove();
         sizes.after(html.join(''));
@@ -169,6 +174,11 @@ function getModuleContent(moduleId, size) {
         module.find('.content').html(html);
         module.find('.loading').fadeOut("slow");
         sendMessage(moduleId, 'refresh', size);
+
+        module.find('.content').removeClass (function (index, css) {
+            return (css.match (/(^|\s)size-\S+/g) || []).join(' ');
+        });
+        module.find('.content').addClass('size-'+size);
     });
 }
 
@@ -270,7 +280,7 @@ function getLayout() {
             localStorage.setItem("page", PAGE);
         }
 
-        getLayout();
+        setTimeout(getLayout, 500);
     });
 }
 

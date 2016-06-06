@@ -56,8 +56,7 @@ public class App {
 
 			createDefaultData();
 			Endpoints.define();
-			Endpoints.pluginResources();
-			
+
 			prepareJobs();
 
 		} catch (Exception e) {

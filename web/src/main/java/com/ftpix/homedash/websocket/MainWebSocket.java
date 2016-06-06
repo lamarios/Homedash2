@@ -138,6 +138,7 @@ public class MainWebSocket {
             plugin.saveData();
             DB.MODULE_DAO.update(plugin.getModule());
         } catch (Exception e) {
+            logger.error("Error while refreshing " + plugin.getDisplayName(), e);
             response.setCommand(COMMAND_ERROR);
             response.setMessage("Error while refreshing " + plugin.getDisplayName() + ": " + e.getMessage());
         }

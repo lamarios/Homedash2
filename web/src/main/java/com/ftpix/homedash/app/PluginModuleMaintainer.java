@@ -57,9 +57,13 @@ public class PluginModuleMaintainer {
         Plugin plugin = null;
         if (PLUGIN_INSTANCES.containsKey(module.getId())) {
             plugin = PLUGIN_INSTANCES.get(module.getId());
+
         } else {
             logger.info("Instance doesn't exist, recreating it");
             plugin = (Plugin) Class.forName(module.getPluginClass()).newInstance();
+            plugin.setCacheBase(Constants.CACHE_FOLDER);
+
+
         }
 
         plugin.setModule(module);

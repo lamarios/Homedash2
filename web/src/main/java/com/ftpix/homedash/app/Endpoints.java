@@ -4,6 +4,8 @@ import static spark.Spark.delete;
 import static spark.Spark.get;
 import static spark.Spark.post;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,7 +32,6 @@ import spark.template.jade.JadeTemplateEngine;
 
 public class Endpoints {
     private static Logger logger = LogManager.getLogger();
-
 
 
     public static void define() {
@@ -70,15 +71,47 @@ public class Endpoints {
         }, new JadeTemplateEngine());
 
 
-
+        cacheResources();
+        pluginResources();
 
     }
 
+    /**
+     * Endpoints to access resoruces from cache
+     */
+    private static void cacheResources() {
+        // serving file from cache
+        get("/cache/*", (request, response) -> {
+            File file = new File(Constants.CACHE_FOLDER + request.splat()[0]);
+            logger.info("Looking for file [{}]", file.getAbsolutePath());
+
+            if (file.exists()) {
+                response.raw().setContentType("application/octet-stream");
+                response.raw().setHeader("Content-Disposition", "attachment; filename=" + file.getName());
+
+                FileInputStream in = new FileInputStream(file);
+
+                byte[] buffer = new byte[1024];
+                int len;
+                while ((len = in.read(buffer)) > 0) {
+                    response.raw().getOutputStream().write(buffer, 0, len);
+                }
+
+
+                in.close();
+                return response.raw();
+            } else {
+                response.status(404);
+                return "";
+            }
+
+        });
+    }
 
     /**
      * Plugin resources
      */
-    public static void pluginResources() {
+    private static void pluginResources() {
         get("/plugin/:name/files/*", (req, res) -> {
 
             String name = req.params("name");

@@ -3,7 +3,9 @@ package com.ftpix.homedash.plugins.systeminfo;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import com.ftpix.homedash.models.ModuleExposedData;
 import org.hyperic.sigar.Mem;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
@@ -49,6 +51,14 @@ public class SystemInfoPlugin extends Plugin {
 	}
 
 	@Override
+	public String getExternalLink() {
+		return null;
+	}
+
+	@Override
+	protected void init() {}
+
+	@Override
 	public String[] getSizes() {
 		return new String[] { ModuleLayout.SIZE_2x1, ModuleLayout.SIZE_1x1 };
 	}
@@ -61,6 +71,21 @@ public class SystemInfoPlugin extends Plugin {
 	@Override
 	public int getRefreshRate() {
 		return ONE_SECOND * 3;
+	}
+
+	@Override
+	public Map<String, String> validateSettings(Map<String, String> settings) {
+		return null;
+	}
+
+	@Override
+	public ModuleExposedData exposeData() {
+		return null;
+	}
+
+	@Override
+	public Map<String, String> exposeSettings() {
+		return null;
 	}
 
 	@Override
