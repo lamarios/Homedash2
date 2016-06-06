@@ -1,0 +1,6 @@
+.form-group
+    label(for="path") Path
+    if settings && settings.containsKey("path")
+        input.form-control(type="text", id="path", name="path", placeholder="Absolute Path", value='#{settings.get("path")}')
+    else
+        input.form-control(type="text", id="path", name ="path", placeholder = "Absolute Path")

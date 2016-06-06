@@ -166,6 +166,8 @@ public abstract class Plugin {
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("module", module);
 
+		logger.info("id:[{}]", getId());
+		logger.info("size:[{}]", size);
 		JadeTemplate template = config.getTemplate("templates/" + getId() + "-" + size + ".jade");
 
 		return config.renderTemplate(template, model);
@@ -194,7 +196,8 @@ public abstract class Plugin {
 	 * @throws JadeException
 	 * @throws IOException
 	 */
-	public String getSettingsHtml() throws JadeException, IOException {
+	public String getSettingsHtml() throws Exception {
+		try {
 			logger.info("Getting settings for [{}]", this.getId());
 			JadeConfiguration config = new JadeConfiguration();
 
@@ -207,10 +210,17 @@ public abstract class Plugin {
 				model.put("settings", getSettingsAsMap());
 			}
 
-			JadeTemplate template = config.getTemplate("templates/" + getId() + "-settings.jade");
+			System.out.println(getId());
+			String templateFile = "templates/" + getId() + "-settings.jade";
+			logger.info("Looking for template: [{}]", templateFile);
+			JadeTemplate template = config.getTemplate(templateFile);
 
 			logger.info("Found setting template, returning it");
 			return config.renderTemplate(template, model);
+		}catch(Exception e){
+			logger.error("Error while getting settings template", e);
+			throw e;
+		}
 	}
 
 	/**

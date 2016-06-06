@@ -17,6 +17,7 @@
         <module>systeminfo</module>
         <module>docker</module>
         <module>sonarrtv</module>
+        <module>harddisk</module>
     </modules>
 
     <dependencies>

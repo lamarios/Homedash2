@@ -14,6 +14,7 @@ import com.j256.ormlite.stmt.Where;
 import io.gsonfire.GsonFireBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.jetty.http.HttpStatus;
 import spark.ModelAndView;
 import spark.Spark;
 import spark.template.jade.JadeTemplateEngine;
@@ -48,25 +49,31 @@ public class ModuleLayoutController implements Controller<ModuleLayout, Integer>
          * Gets the layout of the modules for the current page
 		 */
         Spark.get("/modules-layout/:page/:width", "application/json",  (req, res) -> {
-            int page = Integer.parseInt(req.params("page"));
-            int width = Integer.parseInt(req.params("width"));
+            try {
+                int page = Integer.parseInt(req.params("page"));
+                int width = Integer.parseInt(req.params("width"));
 
-            logger.info("/modules-layout/{}/{}", page, width);
+                logger.info("/modules-layout/{}/{}", page, width);
 
-            List<ModuleLayout> layouts = generatePageLayout(page, width);
-            Map<String, Object> model = new HashMap<>();
-            model.put("layouts", layouts);
-            model.put("plugins", PluginModuleMaintainer.PLUGIN_INSTANCES);
+                List<ModuleLayout> layouts = generatePageLayout(page, width);
+                Map<String, Object> model = new HashMap<>();
+                model.put("layouts", layouts);
+                model.put("plugins", PluginModuleMaintainer.PLUGIN_INSTANCES);
 
 
-            JadeTemplateEngine engine = new JadeTemplateEngine();
-            String html = engine.render(new ModelAndView(model, "module-layout"));
+                JadeTemplateEngine engine = new JadeTemplateEngine();
+                String html = engine.render(new ModelAndView(model, "module-layout"));
 
-            Map<String, Object>  toJson = new HashMap<String, Object>();
-            toJson.put("html", html);
-            toJson.put("layout", LayoutController.getInstance().findClosestLayout(width));
+                Map<String, Object> toJson = new HashMap<String, Object>();
+                toJson.put("html", html);
+                toJson.put("layout", LayoutController.getInstance().findClosestLayout(width));
 
-            return toJson;
+                return toJson;
+            }catch(Exception e){
+                logger.error("Error found while rendering layout", e);
+                res.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
+                return e.getMessage();
+            }
         }, gson::toJson);
 
 
@@ -168,7 +175,7 @@ public class ModuleLayoutController implements Controller<ModuleLayout, Integer>
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    public boolean savePositions(int layoutId, String queryParams) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+    public boolean savePositions(int layoutId, String queryParams) throws Exception {
         logger.info("savePositions [{}] [{}]", layoutId, queryParams);
 
         Layout layout = LayoutController.getInstance().get(layoutId);
@@ -187,7 +194,30 @@ public class ModuleLayoutController implements Controller<ModuleLayout, Integer>
                 ModuleLayout ml = getLayoutForModule(layout, module);
                 ml.setX(x);
                 ml.setY(y);
-                ml.setSize(size);
+
+                Plugin plugin = PluginModuleMaintainer.getPluginForModule(module);
+
+                String[] availableSizes = PluginController.getInstance().getPluginSizes(plugin);
+
+                //Checking if the size we're trying to save really exists (sometimes resizing can fail);
+                boolean contains = false;
+                for(String s:availableSizes){
+                    if(s.equalsIgnoreCase(size)){
+                        contains = true;
+                        break;
+                    }
+                }
+
+                //if it's not there, we go back to the first and smallest size
+                if(contains){
+                    ml.setSize(size);
+                }else{
+                    ml.setSize(availableSizes[0]);
+                }
+
+
+
+
                 logger.info("Layout update: moduleId:[{}] x:[{}] y:[{}] size:[{}]", module.getId(), ml.getX(), ml.getY(), ml.getSize());
 
                 update(ml);

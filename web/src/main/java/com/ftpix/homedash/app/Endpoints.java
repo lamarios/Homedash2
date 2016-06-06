@@ -7,6 +7,7 @@ import static spark.Spark.post;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -112,21 +113,22 @@ public class Endpoints {
      * Plugin resources
      */
     private static void pluginResources() {
-        get("/plugin/:name/files/*", (req, res) -> {
+        get("/plugin/:name/*", (req, res) -> {
 
             String name = req.params("name");
             String path = req.splat()[0];
-            String fullPath = "web/" + name + "/files/" + path;
+            String fullPath = "web/" + name + "/" + path;
 
-            logger.info("/plugin/{}/images/{}", name, path);
+            logger.info("/plugin/{}/{}", name, path);
 
             try {
                 Path p = Paths.get(fullPath);
                 ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
                 InputStream is = classLoader.getResourceAsStream(fullPath);
 
-                // res.raw().setContentType("text/javascript");
-                res.raw().setHeader("Content-Disposition", "attachment; filename=" + p.getFileName());
+
+               res.raw().setContentType(Files.probeContentType(p));
+                res.raw().setHeader("Content-Disposition", "inline; filename=" + p.getFileName());
 
                 byte[] buffer = new byte[1024];
                 int len;
@@ -134,15 +136,16 @@ public class Endpoints {
                     res.raw().getOutputStream().write(buffer, 0, len);
                 }
 
+                String result = IOUtils.toString(is);
                 is.close();
-                return res.raw();
+                return result.trim();
             } catch (Exception e) {
                 logger.error("Error while getting resource", e);
                 res.status(500);
                 return "";
             }
         });
-
+    /*
         get("/plugin/:name/js/*", (req, res) -> {
 
             String name = req.params("name");
@@ -194,6 +197,7 @@ public class Endpoints {
                 return "";
             }
         });
+        */
 
     }
 }
