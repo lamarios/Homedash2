@@ -2,21 +2,103 @@
 
 body {
   background-color: @background;
-  color:#222;
-  padding-bottom:100px;
+  color: #222;
+  padding-bottom: 100px;
+
+  font-family: 'Roboto', sans-serif;
+  font-weight: 100;
+  -webkit-font-smoothing: antialiased;
+
 }
 
 .modal .modal-content {
   box-shadow: none;
-  border-radius:0;
+  border-radius: 0;
 }
 
-a{
-  color:@accentColor;
+a {
+  color: @accentColor;
 }
 
-
-.btn-primary{
+.btn-primary {
   background-color: @accentColor;
   border-color: @accentColor;
+  border-radius: 0;
+}
+
+#notification {
+  height: 50px;
+  position: absolute;
+  top: -50px;
+  left: 0;
+  right: 0;
+
+  -webkit-transition: all @transition-speed !important;
+  transition: all @transition-speed !important;
+
+  .icon {
+    display: inline-block;
+    width: 50px;
+    text-align: center;
+    height: 100%;
+    color: white;
+    font-size: 20px;
+
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-weight: 400;
+  }
+
+  .icon:before {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+  }
+
+  .message {
+    display: inline-block;
+    text-align: left;
+    color: white;
+    font-size: 20px;
+    padding-left: 20px;
+    vertical-align: top;
+    height: 100%;
+    padding-top: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow-x: hidden;
+
+    width:80%;
+
+  }
+}
+
+#notification.showing {
+  top: 0px;
+}
+
+#notification.success {
+  @color: #2ecc71;
+  background-color: @color;
+  .icon {
+    background-color: darken(@color, 20%);
+    color: lighten(@color, 20%);
+  }
+  .icon:before {
+    content: "\e013";
+  }
+}
+
+#notification.error {
+  @color: #e74c3c;
+  background-color: @color;
+  .icon {
+    content: "\e107";
+    color: lighten(@color, 20%);
+    background-color: darken(@color, 20%);
+  }
+
+  .icon:before {
+    content: "\e107";
+  }
 }

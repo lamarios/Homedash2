@@ -2,20 +2,18 @@ package com.ftpix.homedash.app;
 
 import com.ftpix.homedash.app.controllers.*;
 import com.ftpix.homedash.db.DB;
-import com.ftpix.homedash.models.*;
+import com.ftpix.homedash.models.Layout;
+import com.ftpix.homedash.models.Module;
+import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.plugins.docker.DockerPlugin;
-import com.ftpix.homedash.plugins.systeminfo.SystemInfoPlugin;
+import com.ftpix.homedash.models.ModuleSettings;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
-import java.sql.SQLException;
-import java.util.List;
 
 import static org.junit.Assert.*;
 

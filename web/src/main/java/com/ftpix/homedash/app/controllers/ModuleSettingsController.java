@@ -1,7 +1,6 @@
 package com.ftpix.homedash.app.controllers;
 
 import com.ftpix.homedash.db.DB;
-import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.ModuleSettings;
 
 import java.sql.SQLException;

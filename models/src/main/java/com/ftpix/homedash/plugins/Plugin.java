@@ -6,11 +6,12 @@ import java.nio.channels.NotYetBoundException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.ModuleExposedData;
+import com.ftpix.homedash.models.WebSocketMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.ftpix.homedash.models.Module;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -100,7 +101,7 @@ public abstract class Plugin {
 	 * @param extra
 	 * @return
 	 */
-	public abstract Object processCommand(String command, String message, Object extra);
+	public abstract WebSocketMessage processCommand(String command, String message, Object extra);
 
 	/**
 	 * Do background task if any

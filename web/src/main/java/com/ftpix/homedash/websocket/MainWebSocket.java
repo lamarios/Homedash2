@@ -1,6 +1,6 @@
 package com.ftpix.homedash.websocket;
 
-import static com.ftpix.homedash.websocket.models.WebSocketMessage.*;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,7 +11,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.ftpix.homedash.app.PluginModuleMaintainer;
 import com.ftpix.homedash.app.controllers.ModuleLayoutController;
+import com.ftpix.homedash.db.DB;
+import com.ftpix.homedash.models.Layout;
+import com.ftpix.homedash.models.ModuleLayout;
+import com.ftpix.homedash.models.WebSocketMessage;
+import com.ftpix.homedash.models.WebSocketSession;
+import com.ftpix.homedash.plugins.Plugin;
+import com.ftpix.homedash.utils.Predicates;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.websocket.api.Session;
@@ -20,15 +28,6 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
-import com.ftpix.homedash.app.PluginModuleMaintainer;
-import com.ftpix.homedash.app.controllers.LayoutController;
-import com.ftpix.homedash.db.DB;
-import com.ftpix.homedash.models.Layout;
-import com.ftpix.homedash.models.ModuleLayout;
-import com.ftpix.homedash.plugins.Plugin;
-import com.ftpix.homedash.utils.Predicates;
-import com.ftpix.homedash.websocket.models.WebSocketMessage;
-import com.ftpix.homedash.websocket.models.WebSocketSession;
 import com.google.gson.Gson;
 
 import io.gsonfire.GsonFireBuilder;
@@ -90,18 +89,18 @@ public class MainWebSocket {
                 WebSocketMessage socketMessage = gson.fromJson(message, WebSocketMessage.class);
 
                 switch (socketMessage.getCommand()) {
-                    case COMMAND_REFRESH:
+                    case WebSocketMessage.COMMAND_REFRESH:
                         WebSocketMessage response = refreshSingleModule(socketMessage.getModuleId(), (String) socketMessage.getMessage());
                         final String jsonResponse = gson.toJson(response);
                         client.getSession().getRemote().sendString(jsonResponse);
                         break;
-                    case COMMAND_CHANGE_PAGE:
+                    case WebSocketMessage.COMMAND_CHANGE_PAGE:
                         client.setPage(DB.PAGE_DAO.queryForId(Double.valueOf(socketMessage.getMessage().toString()).intValue()));
                         logger.info("New page for client: [{}]", client.getPage().getName());
                         time = 0;
                         startRefresh();
                         break;
-                    case COMMAND_CHANGE_LAYOUT:
+                    case WebSocketMessage.COMMAND_CHANGE_LAYOUT:
                         Layout layout = DB.LAYOUT_DAO.queryForId(Double.valueOf(socketMessage.getMessage().toString()).intValue());
                         client.setLayout(layout);
                         logger.info("New layout for client: [{}]", client.getLayout().getName());
@@ -126,7 +125,7 @@ public class MainWebSocket {
      */
     private static WebSocketMessage refreshSingleModule(int moduleId, String size) throws Exception {
         WebSocketMessage response = new WebSocketMessage();
-        response.setCommand(COMMAND_REFRESH);
+        response.setCommand(WebSocketMessage.COMMAND_REFRESH);
         response.setModuleId(moduleId);
 
         Plugin plugin = PluginModuleMaintainer.getPluginForModule(moduleId);
@@ -139,7 +138,7 @@ public class MainWebSocket {
             DB.MODULE_DAO.update(plugin.getModule());
         } catch (Exception e) {
             logger.error("Error while refreshing " + plugin.getDisplayName(), e);
-            response.setCommand(COMMAND_ERROR);
+            response.setCommand(WebSocketMessage.COMMAND_ERROR);
             response.setMessage("Error while refreshing " + plugin.getDisplayName() + ": " + e.getMessage());
         }
 
@@ -158,6 +157,7 @@ public class MainWebSocket {
         Plugin plugin = null;
         try {
             plugin = PluginModuleMaintainer.getPluginForModule(message.getModuleId());
+           response =  plugin.processCommand(message.getCommand(), message.getMessage().toString(), message.getExtra());
         } catch (Exception e) {
             logger.error("Error while processing the command", e);
             if (plugin != null) {
@@ -165,13 +165,18 @@ public class MainWebSocket {
             } else {
                 response.setMessage("Error while processing the command:" + e);
             }
-            response.setCommand(COMMAND_ERROR);
-            try {
-                session.getSession().getRemote().sendString(gson.toJson(response));
-            } catch (IOException e1) {
-                logger.error("Errror while sending response", e);
-            }
+            response.setCommand(WebSocketMessage.COMMAND_ERROR);
+
         }
+
+        try {
+            String gsonResponse = gson.toJson(response);
+            logger.info("Sending response: [{}]", gsonResponse);
+            session.getSession().getRemote().sendString(gson.toJson(response));
+        } catch (IOException e) {
+            logger.error("Errror while sending response", e);
+        }
+
 
     }
 

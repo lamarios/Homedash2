@@ -3,70 +3,70 @@
  */
 var ws;
 function initWebsocket() {
-	ws = new WebSocket('ws://' + window.location.host + '/ws');
-	try {
-		ws.onmessage = onMessage;
+    ws = new WebSocket('ws://' + window.location.host + '/ws');
+    try {
+        ws.onmessage = onMessage;
 
-		ws.onopen = function(e) {
-			for (i = 0; i < MODULES.length; i++) {
-				if (MODULES[i] != null && MODULES[i].onConnect != undefined) {
-					MODULES[i].onConnect();
-				}
-			}
-			sendMessage(-1, "changePage", PAGE);
-			sendMessage(-1, "changeLayout", LAYOUT.id);
-		}
+        ws.onopen = function (e) {
+            for (i = 0; i < MODULES.length; i++) {
+                if (MODULES[i] != null && MODULES[i].onConnect != undefined) {
+                    MODULES[i].onConnect();
+                }
+            }
+            sendMessage(-1, "changePage", PAGE);
+            sendMessage(-1, "changeLayout", LAYOUT.id);
+        }
 
-		ws.onerror = function(error) {
-			console.error('There was an un-identified Web Socket error');
-		};
+        ws.onerror = function (error) {
+            console.error('There was an un-identified Web Socket error');
+        };
 
-		ws.onclose = function() {
-			// $("#global-overlay p").html('Connection to server lost.<br /><a
-			// href="' + window.location + '" class="btn btn-warning" > Refresh
-			// page </a>');
-			// $("#global-overlay").show();
-			// $("#global-overlay").addClass('bounceDown');
+        ws.onclose = function () {
+            // $("#global-overlay p").html('Connection to server lost.<br /><a
+            // href="' + window.location + '" class="btn btn-warning" > Refresh
+            // page </a>');
+            // $("#global-overlay").show();
+            // $("#global-overlay").addClass('bounceDown');
 
-		}
-	} catch (e) {
-		console.error('Sorry, the web socket at "%s" is un-available error', WS_ADDRESS);
-		console.log(e);
-	}
+        }
+    } catch (e) {
+        console.error('Sorry, the web socket at "%s" is un-available error', WS_ADDRESS);
+        console.log(e);
+    }
 }
 
 /**
  * what happens when we receive a message
- * 
+ *
  * @param event
  */
 function onMessage(event) {
-	var json = JSON.parse(event.data);
+    var json = JSON.parse(event.data);
 
-	console.log(event.data);
+    console.log(event.data);
 
-	switch (json.command) {
-	case 'success':
-		showSuccessMessage(json.message);
-		break;
-	case 'error':
-		showErrorMessage(json.message);
-		break;
-	case 'reload':
-		location.reload();
-		break;
-	case 'remote404':
-		$('#' + json.id + '-overlay').html('This remote module is not available at the moment.');
-		$('#' + json.id + '-overlay').show();
-		break;
-	default:
-		$('#' + json.id + '-overlay').hide();
-		break;
+    switch (json.command) {
+        case 'success':
+            showSuccessMessage(json.message);
+            break;
+        case 'error':
+            showErrorMessage(json.message);
+            break;
+        case 'reload':
+            location.reload();
+            break;
+        case 'remote404':
+            $('#' + json.id + '-overlay').html('This remote module is not available at the moment.');
+            $('#' + json.id + '-overlay').show();
+            break;
+        default:
+            $('#' + json.id + '-overlay').hide();
+            break;
 
-	}
+    }
 
-	// getting the module element to know the size
-	//var functionName = 'modules[' + json.moduleId + '].onMessage.size' + $('.gridster .module[data-module="' + json.moduleId + '"]').attr('data-size');
+    // getting the module element to know the size
+    //var functionName = 'modules[' + json.moduleId + '].onMessage.size' + $('.gridster .module[data-module="' + json.moduleId + '"]').attr('data-size');
 //	var functionName = 'modules[' + json.moduleId + '].onMessage';
 //	console.log(functionName);
 //	var fn = window[functionName];
@@ -75,29 +75,76 @@ function onMessage(event) {
 //	}else{
 //		console.log(functionName+': not a function')
 //	}
-	var size = $('.gridster .module[data-module="' + json.id + '"]').attr('data-size');
-	MODULES[json.id]['onMessage_'+size](json.command, json.message, json.extra);
+    var size = $('.gridster .module[data-module="' + json.id + '"]').attr('data-size');
+    MODULES[json.id]['onMessage_' + size](json.command, json.message, json.extra);
+}
+
+
+var notificationTimeout;
+
+/**
+ * Show a success notification
+ * @param message
+ */
+function showSuccessMessage(message) {
+    showNotification('success', message);
+}
+
+
+/**
+ * Show Error notification
+ * @param message
+ */
+function showErrorMessage(message) {
+    showNotification('error', message);
+}
+
+
+/**
+ * Show a notification, will remove the current one first if there is
+ * @param type
+ * @param message
+ */
+function showNotification(type, message) {
+
+    var notification = $('#notification');
+    if (notification.hasClass('showing')) {
+        notification.removeClass('showing');
+        clearTimeout(notificationTimeout);
+        notificationTimeout = setTimeout(function () {
+            showNotification(type, message);
+        }, 300);
+    } else {
+        notification.removeClass();
+        notification.find('.message').html(message);
+        notification.addClass(type + ' showing');
+        clearTimeout(notificationTimeout)
+        notificationTimeout = setTimeout(function () {
+            notification.removeClass('showing');
+        }, 1500);
+    }
+
 }
 
 /**
  * sending a message back to the backend
- * 
+ *
  * @param moduleId
  * @param method
  * @param message
  */
 function sendMessage(moduleId, command, message) {
-	var wsMsg = new WebsocketMessage();
-	wsMsg.message = message;
-	wsMsg.id = moduleId;
-	wsMsg.command = command;
-	var json = JSON.stringify(wsMsg);
-	ws.send(json);
-	console.log(json);
+    var wsMsg = new WebsocketMessage();
+    wsMsg.message = message;
+    wsMsg.id = moduleId;
+    wsMsg.command = command;
+    var json = JSON.stringify(wsMsg);
+    ws.send(json);
+    console.log(json);
 }
 
 function WebsocketMessage() {
-	this.id = -1;
-	this.command = "";
-	this.message = "";
+    this.id = -1;
+    this.command = "";
+    this.message = "";
 }

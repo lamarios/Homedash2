@@ -1,14 +1,13 @@
 package com.ftpix.homedash.jobs;
 
+import com.ftpix.homedash.app.PluginModuleMaintainer;
+import com.ftpix.homedash.models.Module;
+import com.ftpix.homedash.plugins.Plugin;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-
-import com.ftpix.homedash.app.PluginModuleMaintainer;
-import com.ftpix.homedash.models.Module;
-import com.ftpix.homedash.plugins.Plugin;
 
 public class BackgroundRefresh implements Job {
 	private Logger logger = LogManager.getLogger();

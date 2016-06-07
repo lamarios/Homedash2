@@ -10,7 +10,6 @@ import com.ftpix.homedash.app.controllers.ModuleController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.ftpix.homedash.db.DB;
 import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.plugins.Plugin;
 

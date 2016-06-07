@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.Properties;
 
+import com.ftpix.homedash.models.Layout;
+import com.ftpix.homedash.plugins.SystemInfoPlugin;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.DateBuilder;
@@ -24,9 +26,7 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import com.ftpix.homedash.db.DB;
 import com.ftpix.homedash.jobs.BackgroundRefresh;
-import com.ftpix.homedash.models.Layout;
 import com.ftpix.homedash.models.Page;
-import com.ftpix.homedash.plugins.systeminfo.SystemInfoPlugin;
 import com.ftpix.homedash.websocket.MainWebSocket;
 
 /**

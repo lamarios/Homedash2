@@ -2,9 +2,10 @@ package com.ftpix.homedash.plugins.docker;
 
 import java.util.Map;
 
+import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.ModuleExposedData;
-import com.ftpix.homedash.models.ModuleLayout;
+import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
 
 public class DockerPlugin extends Plugin {
@@ -54,7 +55,7 @@ public class DockerPlugin extends Plugin {
 	public void doInBackground() {}
 
 	@Override
-	public Object processCommand(String command, String message, Object extra) {
+	public WebSocketMessage processCommand(String command, String message, Object extra) {
 		return null;
 	}
 

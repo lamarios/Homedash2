@@ -1,12 +1,8 @@
 package com.ftpix.homedash.app.controllers;
 
 import com.ftpix.homedash.db.DB;
-import com.ftpix.homedash.models.Module;
-import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.Page;
 import com.google.gson.Gson;
-import com.j256.ormlite.stmt.DeleteBuilder;
-import com.j256.ormlite.stmt.QueryBuilder;
 import io.gsonfire.GsonFireBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

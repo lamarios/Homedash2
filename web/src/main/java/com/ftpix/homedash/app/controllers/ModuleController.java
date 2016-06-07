@@ -1,7 +1,5 @@
 package com.ftpix.homedash.app.controllers;
 
-import static com.ftpix.homedash.db.DB.*;
-
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -9,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.ftpix.homedash.app.PluginModuleMaintainer;
-import com.ftpix.homedash.models.Layout;
 import com.google.gson.Gson;
 import io.gsonfire.GsonFireBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -25,9 +22,10 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import org.eclipse.jetty.http.HttpStatus;
 import spark.ModelAndView;
-import spark.Session;
 import spark.Spark;
 import spark.template.jade.JadeTemplateEngine;
+
+import static com.ftpix.homedash.db.DB.*;
 
 public class ModuleController implements Controller<Module, Integer> {
 

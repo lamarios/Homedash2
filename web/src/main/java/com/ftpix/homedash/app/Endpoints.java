@@ -11,23 +11,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
 import com.ftpix.homedash.app.controllers.*;
-import com.ftpix.homedash.models.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.ftpix.homedash.db.DB;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.utils.Predicates;
-import com.google.gson.Gson;
 
-import io.gsonfire.GsonFireBuilder;
-import org.eclipse.jetty.http.HttpStatus;
 import spark.ModelAndView;
 import spark.template.jade.JadeTemplateEngine;
 

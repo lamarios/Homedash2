@@ -1,0 +1,150 @@
+.transmission {
+  background-color: rgb(72, 176, 247);
+  color: white;
+  padding: 0;
+
+  background-image: url('../files/icon.svg');
+  background-repeat: no-repeat;
+  background-repeat: no-repeat;
+  background-position: 100px -33px;
+  background-size: 80% auto;
+
+  .module-overlay {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #48b0f7;
+    z-index: 2;
+    padding: 20px;
+    font-size: 20px;
+  }
+
+  h4 {
+    margin: 10px 10px 30px 10px;
+  }
+
+  .transmission-content {
+    padding: 10px;
+  }
+
+  a {
+    color: white;
+  }
+
+  .info {
+    text-align: center;
+
+    p:first-of-type {
+      color: #EEEEEE;
+      margin-bottom: 5px;
+    }
+
+    p:last-of-type {
+      color: white;
+      font-size: 25px;
+    }
+  }
+
+  .torrents {
+    float: left;
+  }
+
+  .upload {
+    float: right;
+  }
+
+  .download {
+    width: 100%;
+  }
+
+  .actions {
+    margin-top: 20px;
+
+    .btn {
+      background: none;
+    }
+
+    .btn:hover {
+      background-color: rgb(72, 176, 247);
+    }
+
+    .btn-primary {
+      background-color: rgb(55, 145, 225);
+      border-color: rgb(55, 145, 225);
+      border: none;
+    }
+  }
+}
+
+.transmission.size-2x2 {
+  background-position: 35px -7px;
+  background-size: 102% auto;
+  h4 {
+    margin: 10px;
+  }
+
+  .torrents, .download {
+    display: inline-block;
+    width: 50%;
+    float: none;
+    vertical-align: top;
+  }
+
+  .info.download {
+    text-align: left;
+
+    p {
+      color: #EEEEEE;
+      font-size: inherit;
+      span {
+        color: #fff;
+        font-size: 18px;
+        display: block;
+      }
+    }
+  }
+
+  .actions {
+    margin-top: 0;
+  }
+}
+
+.transmission.size-2x1 {
+
+  h4 {
+    margin: 5px;
+    margin-bottom: 0px;
+  }
+
+  .transmission-content{
+    padding:0;
+  }
+
+  .info.torrents {
+    float: none;
+    padding-left:10px;
+    p {
+      color: #EEEEEE;
+      font-size: inherit;
+      text-align: left;
+      margin:0;
+      span {
+        color: #fff;
+        font-size: 18px;
+        display: inline;
+        margin-left:5px;
+      }
+    }
+  }
+
+  .actions {
+    position: absolute;
+    top: 10px;
+    right: 25px;
+    width: 20px;
+    margin-top:0;
+  }
+}

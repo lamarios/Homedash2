@@ -4,30 +4,22 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 
-import com.ftpix.homedash.app.PluginModuleMaintainer;
+import com.ftpix.homedash.models.Layout;
 import com.google.gson.Gson;
-import com.j256.ormlite.dao.ForeignCollection;
 import io.gsonfire.GsonFireBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ftpix.homedash.db.DB;
-import com.ftpix.homedash.models.Layout;
 import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.ModuleLayout;
-import com.ftpix.homedash.models.Page;
 import com.ftpix.homedash.plugins.Plugin;
-import com.j256.ormlite.stmt.PreparedQuery;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
 
 import de.neuland.jade4j.exceptions.JadeException;
 import org.eclipse.jetty.http.HttpStatus;
 import spark.ModelAndView;
 import spark.Spark;
 import spark.template.jade.JadeTemplateEngine;
-
-import static spark.Spark.*;
 
 public class LayoutController implements Controller<Layout, Integer> {
     private Logger logger = LogManager.getLogger();

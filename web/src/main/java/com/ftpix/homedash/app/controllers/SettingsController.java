@@ -1,9 +1,8 @@
 package com.ftpix.homedash.app.controllers;
 
 
-import com.ftpix.homedash.db.DB;
-import com.ftpix.homedash.models.Page;
 import com.ftpix.homedash.models.Settings;
+import com.ftpix.homedash.db.DB;
 import spark.ModelAndView;
 import spark.Spark;
 import spark.template.jade.JadeTemplateEngine;
@@ -12,7 +11,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static spark.Spark.get;
 import static spark.Spark.post;

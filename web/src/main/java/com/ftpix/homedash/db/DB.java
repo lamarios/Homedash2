@@ -2,16 +2,16 @@ package com.ftpix.homedash.db;
 
 import java.sql.SQLException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.ftpix.homedash.app.Constants;
 import com.ftpix.homedash.models.Layout;
 import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.ModuleLayout;
+import com.ftpix.homedash.models.Settings;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.ftpix.homedash.models.ModuleSettings;
 import com.ftpix.homedash.models.Page;
-import com.ftpix.homedash.models.Settings;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;

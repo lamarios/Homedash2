@@ -1,10 +1,10 @@
 package com.ftpix.homedash.app.controllers;
 
 import com.ftpix.homedash.app.PluginModuleMaintainer;
-import com.ftpix.homedash.db.DB;
 import com.ftpix.homedash.models.Layout;
-import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.ModuleLayout;
+import com.ftpix.homedash.db.DB;
+import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.Page;
 import com.ftpix.homedash.plugins.Plugin;
 import com.google.gson.Gson;
