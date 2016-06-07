@@ -1,10 +1,7 @@
 package com.ftpix.homedash.app.controllers;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -57,7 +54,9 @@ public  class PluginController{
 					logger.error("Error while creating new instance of "+plugin.getCanonicalName(), e);
 				}
 			});
-		
+
+
+		Collections.sort(availablePlugins, (o1, o2)-> o1.getDisplayName().compareTo(o2.getDisplayName()));
 		return availablePlugins;
 	}
 	

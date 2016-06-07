@@ -10,7 +10,7 @@ function systeminfo(moduleId) {
 
 	}
 
-	this.documentReady = function() {
+	this.documentReady = function(size) {
 
 	}
 

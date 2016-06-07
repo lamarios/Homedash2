@@ -6,7 +6,7 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "module_layout")
 public class ModuleLayout {
 
-	public static final String SIZE_1x1 = "1x1", SIZE_2x1 = "2x1", SIZE_2x2 = "2x2";
+	public static final String SIZE_1x1 = "1x1", SIZE_2x1 = "2x1", SIZE_2x2 = "2x2", FULL_SCREEN = "full-screen";
 
 	@DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
 	private int id;

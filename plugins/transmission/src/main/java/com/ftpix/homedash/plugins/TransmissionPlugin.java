@@ -6,11 +6,14 @@ import ca.benow.transmission.model.TorrentStatus;
 import ca.benow.transmission.model.TransmissionSession;
 import com.ftpix.homedash.Utils.ByteUtils;
 import com.ftpix.homedash.models.ModuleExposedData;
+import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
+import com.ftpix.homedash.plugins.models.TorrentObject;
 import com.ftpix.homedash.plugins.models.TorrentSession;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -59,7 +62,7 @@ public class TransmissionPlugin extends Plugin {
 
     @Override
     public String[] getSizes() {
-        return new String[]{"3x2", "2x1", "2x2"};
+        return new String[]{"3x2", "2x1", "2x2", ModuleLayout.FULL_SCREEN};
     }
 
     @Override
@@ -96,13 +99,13 @@ public class TransmissionPlugin extends Plugin {
     @Override
     protected Object refresh(String size) throws Exception {
         try {
-
-            return getSessionStats();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        } catch (JSONException e) {
-            e.printStackTrace();
+            if(size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)){
+                return fullScreenRefresh();
+            }else {
+                return getSessionStats();
+            }
+        } catch (Exception e) {
+           logger.error("Error while refreshing transmission", e);
             return false;
         }
     }
@@ -163,6 +166,31 @@ public class TransmissionPlugin extends Plugin {
 
     //////////////////////////////////////////////////////
     ////// plugin methods
+
+    public TorrentSession fullScreenRefresh(){
+        TorrentSession obj = new TorrentSession();
+
+        try {
+            obj = getSessionStats();
+
+            TorrentStatus.TorrentField[] fields = new TorrentStatus.TorrentField[] { TorrentStatus.TorrentField.name, TorrentStatus.TorrentField.rateDownload, TorrentStatus.TorrentField.rateUpload, TorrentStatus.TorrentField.percentDone, TorrentStatus.TorrentField.id, TorrentStatus.TorrentField.status,
+                    TorrentStatus.TorrentField.downloadedEver, TorrentStatus.TorrentField.uploadedEver, TorrentStatus.TorrentField.totalSize };
+
+            logger.info("" + obj.rpcVersion);
+            obj.torrents = new ArrayList<TorrentObject>();
+            for (TorrentStatus torrent : client.getAllTorrents(fields)) {
+                TorrentObject t = new TorrentObject();
+                t.mapTorrent(torrent, obj.rpcVersion);
+
+                obj.torrents.add(t);
+            }
+        } catch (Exception e) {
+           logger.error("error while getting torrents", e);
+        }
+
+        return obj;
+    }
+
 
     private TransmissionClient createClient(Map<String, String> settings) {
         TransmissionClient client;

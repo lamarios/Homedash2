@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger;
  */
 public class TorrentObject {
 
-    private final Logger logger = LogManager.getLogger();
 
 
     public String name;
@@ -32,6 +31,5 @@ public class TorrentObject {
         downloaded = Long.parseLong(torrent.getField(TorrentStatus.TorrentField.downloadedEver).toString());
         uploaded = Long.parseLong(torrent.getField(TorrentStatus.TorrentField.uploadedEver).toString());
         totalSize = Long.parseLong(torrent.getField(TorrentStatus.TorrentField.totalSize).toString());
-        logger.debug("Torrent #{}, Name: {}, UploadSpeed:{}, DownloadSpeed: {}, PercentDone: {}%, Status:{}", id, name, uploadSpeed, downloadSpeed, percentDone, statusStr);
     }
 }

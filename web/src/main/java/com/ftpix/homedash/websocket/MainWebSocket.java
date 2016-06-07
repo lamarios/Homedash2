@@ -1,7 +1,6 @@
 package com.ftpix.homedash.websocket;
 
 
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -123,7 +122,7 @@ public class MainWebSocket {
      * @param moduleId
      * @return
      */
-    private static WebSocketMessage refreshSingleModule(int moduleId, String size) throws Exception {
+    public static WebSocketMessage refreshSingleModule(int moduleId, String size) throws Exception {
         WebSocketMessage response = new WebSocketMessage();
         response.setCommand(WebSocketMessage.COMMAND_REFRESH);
         response.setModuleId(moduleId);
@@ -157,7 +156,9 @@ public class MainWebSocket {
         Plugin plugin = null;
         try {
             plugin = PluginModuleMaintainer.getPluginForModule(message.getModuleId());
-           response =  plugin.processCommand(message.getCommand(), message.getMessage().toString(), message.getExtra());
+
+            response = plugin.processCommand(message.getCommand(), message.getMessage().toString(), message.getExtra());
+            response.setModuleId(plugin.getModule().getId());
         } catch (Exception e) {
             logger.error("Error while processing the command", e);
             if (plugin != null) {
@@ -166,12 +167,11 @@ public class MainWebSocket {
                 response.setMessage("Error while processing the command:" + e);
             }
             response.setCommand(WebSocketMessage.COMMAND_ERROR);
-
         }
 
         try {
             String gsonResponse = gson.toJson(response);
-            logger.info("Sending response: [{}]", gsonResponse);
+            logger.info("Sending response to command");
             session.getSession().getRemote().sendString(gson.toJson(response));
         } catch (IOException e) {
             logger.error("Errror while sending response", e);
@@ -311,7 +311,7 @@ public class MainWebSocket {
                 time = 0;
 
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             logger.error("Error while shutting down pool", e);
         }
     }

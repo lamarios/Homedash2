@@ -1,0 +1,30 @@
+extends ./layout.jade
+
+block css
+    link(href='/css/full-screen.css', rel='stylesheet')
+    link(href='/plugin/#{plugin.getId()}/css/#{plugin.getId()}.css', rel='stylesheet')
+block scripts
+    script(src="/js/websocket.js")
+    script(src="/js/full-screen.js")
+
+
+    script(src='/plugin/#{plugin.getId()}/js/#{plugin.getId()}.js', type='text/javascript')
+    script(type="text/javascript").
+        var MODULE = new #{plugin.getId()}(#{plugin.getModule().getId()});
+
+block content
+    #notification
+        .icon
+        .message
+
+
+
+
+    .head-links
+        a(href="/") << Back
+    h1 #{plugin.getDisplayName()}
+    hr
+    div(class="content size-full-screen #{plugin.getId()}")
+        !{html}
+
+

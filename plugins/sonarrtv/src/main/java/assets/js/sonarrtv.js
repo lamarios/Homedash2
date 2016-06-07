@@ -7,7 +7,7 @@ function sonarrtv(moduleId) {
     this.currentIndex = 0;
 
 
-    this.documentReady = function () {
+    this.documentReady = function (size) {
 
         var parent = this;
 

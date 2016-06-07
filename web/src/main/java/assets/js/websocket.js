@@ -35,6 +35,36 @@ function initWebsocket() {
     }
 }
 
+function initFullScreenWebsocket() {
+    ws = new WebSocket('ws://' + window.location.host + '/ws-full-screen');
+    try {
+        ws.onmessage = onFullScreenMessage;
+
+        ws.onopen = function (e) {
+            MODULE.onConnect();
+            MODULE.documentReady('full-screen');
+            sendMessage(MODULE.moduleId, "setModule", "");
+
+        }
+
+        ws.onerror = function (error) {
+            console.error('There was an un-identified Web Socket error');
+        };
+
+        ws.onclose = function () {
+            // $("#global-overlay p").html('Connection to server lost.<br /><a
+            // href="' + window.location + '" class="btn btn-warning" > Refresh
+            // page </a>');
+            // $("#global-overlay").show();
+            // $("#global-overlay").addClass('bounceDown');
+
+        }
+    } catch (e) {
+        console.error('Sorry, the web socket at "%s" is un-available error', WS_ADDRESS);
+        console.log(e);
+    }
+}
+
 /**
  * what happens when we receive a message
  *
@@ -64,19 +94,43 @@ function onMessage(event) {
             break;
 
     }
-
-    // getting the module element to know the size
-    //var functionName = 'modules[' + json.moduleId + '].onMessage.size' + $('.gridster .module[data-module="' + json.moduleId + '"]').attr('data-size');
-//	var functionName = 'modules[' + json.moduleId + '].onMessage';
-//	console.log(functionName);
-//	var fn = window[functionName];
-//	if (typeof fn === 'function') {
-//		fn(json.command, json.message, json.extra);
-//	}else{
-//		console.log(functionName+': not a function')
-//	}
+    
     var size = $('.gridster .module[data-module="' + json.id + '"]').attr('data-size');
     MODULES[json.id]['onMessage_' + size](json.command, json.message, json.extra);
+}
+
+
+/**
+ * what happens when we receive a message
+ *
+ * @param event
+ */
+function onFullScreenMessage(event) {
+    var json = JSON.parse(event.data);
+
+    console.log(event.data);
+
+    switch (json.command) {
+        case 'success':
+            showSuccessMessage(json.message);
+            break;
+        case 'error':
+            showErrorMessage(json.message);
+            break;
+        case 'reload':
+            location.reload();
+            break;
+        case 'remote404':
+            $('#' + json.id + '-overlay').html('This remote module is not available at the moment.');
+            $('#' + json.id + '-overlay').show();
+            break;
+        default:
+            $('#' + json.id + '-overlay').hide();
+            break;
+
+    }
+
+    MODULE['onMessage_fullScreen'](json.command, json.message, json.extra);
 }
 
 

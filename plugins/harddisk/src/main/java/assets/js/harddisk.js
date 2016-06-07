@@ -8,7 +8,7 @@ function harddisk(moduleId) {
 
     };
 
-    this.documentReady = function () {
+    this.documentReady = function (size) {
 
     };
 

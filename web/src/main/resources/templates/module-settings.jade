@@ -2,6 +2,8 @@ extends ./layout.jade
 block css
     link(href='/css/module-settings.css', rel='stylesheet')
 block content
+    .head-links
+        a(href="/") << Back
     h1 Settings for #{pluginName}
     
     form(action="/save-module", method="post")

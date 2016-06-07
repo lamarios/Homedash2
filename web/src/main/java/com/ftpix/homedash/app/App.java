@@ -11,6 +11,7 @@ import java.util.Properties;
 
 import com.ftpix.homedash.models.Layout;
 import com.ftpix.homedash.plugins.SystemInfoPlugin;
+import com.ftpix.homedash.websocket.FullScreenWebSocket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.DateBuilder;
@@ -46,6 +47,7 @@ public class App {
 			port(Constants.PORT);
 
 			webSocket("/ws", MainWebSocket.class);
+			webSocket("/ws-full-screen", FullScreenWebSocket.class);
 
 			//No cache policy, especially against Edge and IE
 			before((req, res)->{

@@ -20,9 +20,32 @@ a {
   color: @accentColor;
 }
 
+.btn{
+  border-radius: 0;
+  margin:5px;
+}
+
 .btn-primary {
   background-color: @accentColor;
   border-color: @accentColor;
+
+}
+
+.btn-primary:hover, .btn-primary:focus{
+  background-color: darken(@accentColor, 20%);
+  border-color: darken(@accentColor, 20%);
+}
+
+.btn-primary:active, .btn-primary:active:hover, .btn-primary:active:focus{
+  background-color: darken(@accentColor, 40%);
+  border-color: darken(@accentColor, 40%);
+}
+
+.progress-bar{
+  background-color: @accentColor;
+}
+
+.progress{
   border-radius: 0;
 }
 

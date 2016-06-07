@@ -1,0 +1,36 @@
+.module-overlay Transmission is not available at the moment
+
+p
+    button.btn.add
+        span.glyphicon.glyphicon-plus
+        | Add torrent
+    button.btn.alt
+        span.glyphicon.glyphicon-sort-by-attributes
+        | Alternate Speeds
+
+.torrent-list
+
+h5 Global
+    p.global
+        strong Download:
+        span.dl
+        strong Upload
+        span.ul
+
+
+//modal
+.modal.fade(tabindex="-1", id="modal", rolw="dialog")
+    .modal-dialog
+        .modal-content
+            .modal-header
+                button.close(data-dismiss="modal")
+                    span(aria-hidden="true") &times;
+                h4.modal-title Torrent actions
+            .modal-body
+                p
+                    button.btn.btn-primary.pause-torrent
+                        span.glyphicon.glyphicon-pause
+                        | Pause/Resume torrent
+                    button.btn.btn-danger.remove-torrent
+                        span.glyphicon.glyphicon-remove
+                        | Remove torrent

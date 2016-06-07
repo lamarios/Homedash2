@@ -1,6 +1,7 @@
 var PAGE = 1;
 var LAYOUT;
 var MODULES = [];
+var WIDTH;
 $(document).ready(function () {
     // ///////////////////////////////////////////////
     // ///////////INIT
@@ -27,11 +28,17 @@ $(document).ready(function () {
     var resizeTimeout;
 
     $(window).resize(function () {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(function () {
-            getLayout();
-        }, 500);
+
+        var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+
+        if (width != WIDTH) {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(function () {
+                getLayout();
+            }, 500);
+        }
     });
+
 
     /**
      * show the available sizes for a module
@@ -41,7 +48,7 @@ $(document).ready(function () {
 
 
         var id = $(this).attr('data-id');
-        $('#module-modal').find('a.edit').attr('href', '/module/'+id+'/settings');
+        $('#module-modal').find('a.edit').attr('href', '/module/' + id + '/settings');
         $('#module-modal').attr('data-id', id);
 
         $('#module-modal').modal('show');
@@ -123,7 +130,7 @@ function getSizes() {
             var width = value.split('x')[0];
 
             //We hide the sizes bigger than current layout
-            if(width <= LAYOUT.maxGridWidth) {
+            if (width <= LAYOUT.maxGridWidth && value != "full-screen") {
                 html.push('<p class="resize-size" data-size="', value, '"><a>', value, '</a></p>');
             }
         });
@@ -137,7 +144,7 @@ function getSizes() {
  */
 function changeSize(moduleId, size) {
 
-    var gridsterElem =  $('.gridster .gridster-item[data-module="'+moduleId+'"]');
+    var gridsterElem = $('.gridster .gridster-item[data-module="' + moduleId + '"]');
 
 
     var moduleElem = gridsterElem.find('.module');
@@ -175,10 +182,10 @@ function getModuleContent(moduleId, size) {
         module.find('.loading').fadeOut("slow");
         sendMessage(moduleId, 'refresh', size);
 
-        module.find('.content').removeClass (function (index, css) {
-            return (css.match (/(^|\s)size-\S+/g) || []).join(' ');
+        module.find('.content').removeClass(function (index, css) {
+            return (css.match(/(^|\s)size-\S+/g) || []).join(' ');
         });
-        module.find('.content').addClass('size-'+size);
+        module.find('.content').addClass('size-' + size);
     });
 }
 
@@ -257,10 +264,10 @@ function rootElement(moduleId) {
  */
 function getLayout() {
     $('#layout-wrapper .loading').fadeIn('fast');
-    var viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    WIDTH = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
 
     // getting th layout for the page and view port
-    $.getJSON('/modules-layout/' + PAGE + '/' + viewportWidth, function (json) {
+    $.getJSON('/modules-layout/' + PAGE + '/' + WIDTH, function (json) {
             $('#layout').html(json.html);
             updateLayoutInfo(json.layout);
 
@@ -289,17 +296,17 @@ function getLayout() {
  */
 function updateLayoutInfo(layoutJson) {
 
-        LAYOUT = layoutJson;
-        console.log(LAYOUT);
-        initGridster();
-        // Starting the websocket or just refreshing the layout
-        if (ws === undefined) {
-            initWebsocket();
-        } else {
-            sendMessage(-1, "changeLayout", LAYOUT.id);
-        }
+    LAYOUT = layoutJson;
+    console.log(LAYOUT);
+    initGridster();
+    // Starting the websocket or just refreshing the layout
+    if (ws === undefined) {
+        initWebsocket();
+    } else {
+        sendMessage(-1, "changeLayout", LAYOUT.id);
+    }
 
-        $('#layout-wrapper .loading').fadeOut('fast');
-        $('#page-title .layout').html(' (' + LAYOUT.name + ')');
+    $('#layout-wrapper .loading').fadeOut('fast');
+    $('#page-title .layout').html(' (' + LAYOUT.name + ')');
 
 }

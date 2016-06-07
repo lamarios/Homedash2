@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ftpix.homedash.app.PluginModuleMaintainer;
+import com.ftpix.homedash.models.ModuleLayout;
 import com.google.gson.Gson;
 import io.gsonfire.GsonFireBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -200,6 +201,19 @@ public class ModuleController implements Controller<Module, Integer> {
             }
 
         }, gson::toJson);
+
+
+        Spark.get("/module/:moduleId/full-screen", (req, res)->{
+            Map<String, Object> map = new HashMap<String, Object>();
+
+            int id = Integer.parseInt(req.params("moduleId"));
+
+            Plugin plugin = PluginModuleMaintainer.getPluginForModule(id);
+            map.put("plugin", plugin);
+            map.put("html", plugin.getView(ModuleLayout.FULL_SCREEN));
+
+            return  new ModelAndView(map, "module-full-screen");
+        }, new JadeTemplateEngine());
     }
 
 

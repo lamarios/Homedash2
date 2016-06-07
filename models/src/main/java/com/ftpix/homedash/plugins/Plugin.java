@@ -3,11 +3,14 @@ package com.ftpix.homedash.plugins;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.channels.NotYetBoundException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.ModuleExposedData;
+import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -301,6 +304,22 @@ public abstract class Plugin {
 		}else {
 			throw new NotYetBoundException();
 		}
+	}
+
+	/**
+	 * Boolean to check if a plugin has an external link
+	 * @return
+     */
+	public boolean hasExternalLink(){
+		return getExternalLink() != null;
+	}
+
+	/**
+	 * Boolean to check if an array has full screen view
+	 * @return
+     */
+	public boolean hasFullScreen(){
+		return Arrays.stream(getSizes()).anyMatch((s) -> s.equalsIgnoreCase(ModuleLayout.FULL_SCREEN));
 	}
 
 }

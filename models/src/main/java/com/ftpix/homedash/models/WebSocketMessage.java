@@ -8,7 +8,7 @@ import java.lang.reflect.Modifier;
 
 public class WebSocketMessage {
 	public final static String COMMAND_START = "start", COMMAND_ERROR = "error", COMMAND_SUCCESS = "success", COMMAND_REFRESH = "refresh", COMMAND_CHANGE_PAGE = "changePage",
-			REMOTE_MODULE_NOT_FOUND = "remote404", RELOAD_OTHERS = "reloadOthers", COMMAND_CHANGE_LAYOUT = "changeLayout";
+			REMOTE_MODULE_NOT_FOUND = "remote404", RELOAD_OTHERS = "reloadOthers", COMMAND_CHANGE_LAYOUT = "changeLayout", COMMAND_SET_MODULE = "setModule";
 
 	private String command;
 	private Object message, extra;
