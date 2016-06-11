@@ -78,10 +78,10 @@ $(document).ready(function () {
     /**
      * Enables layout edit mode
      */
-    $('#edit-layout').click(function () {
-        $(this).toggleClass('editing');
+    $('#edit-layout, #layout-edit-mode .close-editing').click(function () {
         toggleLayoutEditMode();
     });
+
 
 
     /**
@@ -252,7 +252,8 @@ function deleteModule(moduleId) {
 
 
 function toggleLayoutEditMode() {
-    $('#layout .gridster').toggleClass('layout-edit');
+    $('#layout, #layout-edit-mode').toggleClass('layout-edit');
+    $('.global-settings').removeClass('showing');
 }
 
 function rootElement(moduleId) {

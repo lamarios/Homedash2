@@ -79,10 +79,10 @@ function transmission(moduleId) {
             var button = root.find('.alt')
             if (json.alternateSpeeds) {
                 button.addClass("btn-primary");
-                button.html('<span class="glyphicon glyphicon-sort-by-attributes-alt" aria-hidden="true"></span>');
+                button.html('<i class="fa fa-sort-amount-desc" aria-hidden="true"></i>');
             } else {
                 button.removeClass("btn-primary");
-                button.html('<span class="glyphicon glyphicon-sort-by-attributes" aria-hidden="true"></span>');
+                button.html('<i class="fa fa-sort-amount-asc" aria-hidden="true"></i>');
             }
 
             root.find('.module-overlay').hide();
@@ -108,11 +108,11 @@ function transmission(moduleId) {
         if (button.hasClass("btn-primary")) {
             setAltSpeed = false;
             button.removeClass("btn-primary");
-            button.html('<span class="glyphicon glyphicon-sort-by-attributes" aria-hidden="true"></span>');
+            button.html('<i class="fa fa-sort-amount-asc" aria-hidden="true"></i>');
         } else {
             setAltSpeed = true;
             button.addClass("btn-primary");
-            button.html('<span class="glyphicon glyphicon-sort-by-attributes-alt" aria-hidden="true"></span>');
+            button.html('<i class="fa fa-sort-amount-desc" aria-hidden="true"></i>');
         }
 
         sendMessage(this.moduleId, 'altSpeed', setAltSpeed);
@@ -139,15 +139,43 @@ function transmission(moduleId) {
 
     this.displayTorrents = function (json) {
         var parent = this;
-        rootElement(parent.moduleId).find('.torrent-list').html('');
-        $.each(json.torrents, function (index, value) {
-            parent.torrents[value.id] = value;
-            rootElement(parent.moduleId).find('.torrent-list').append(
-                parent.torrentToHtml(value, json.rpcVersion));
+        var div = rootElement(parent.moduleId).find('.torrent-list');
+            div.html('');
+
+        var sortedTorrents = new Map();
+        $.each(json.torrents, function (index, torrent) {
+            parent.torrents[torrent.id] = torrent;
+
+            var statusName = parent.getStatusName(torrent.status, json.rpcVersion);
+
+            if(!sortedTorrents.has(statusName)){
+                sortedTorrents.set(statusName, []);
+            }
+
+            sortedTorrents.get(statusName).push(torrent);
+
         });
+
+
+        this.printTorrentCategory('Downloading', sortedTorrents, div, json.rpcVersion);
+        this.printTorrentCategory('Seeding', sortedTorrents, div, json.rpcVersion);
+        this.printTorrentCategory('Checking', sortedTorrents, div, json.rpcVersion);
+        this.printTorrentCategory('Paused', sortedTorrents, div, json.rpcVersion);
+        this.printTorrentCategory('Waiting', sortedTorrents, div, json.rpcVersion);
+        this.printTorrentCategory('Done', sortedTorrents, div, json.rpcVersion);
 
     }
 
+    this.printTorrentCategory = function(name, torrents, element, rpcVersion){
+        if(torrents.has(name)) {
+
+            var parent = this;
+            element.append('<h2>'+name+'</h2>');
+            $.each(torrents.get(name), function (index, value) {
+                element.append(parent.torrentToHtml(value, rpcVersion));
+            });
+        }
+    }
 
     this.torrentToHtml = function (torrent, rpcVersion) {
         var html = [];
@@ -157,7 +185,7 @@ function transmission(moduleId) {
 
         html.push('<div  id="torrent-', torrent.id, '">');
         html.push('<p style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">');
-        html.push('<button  data="', torrent.id, '" class="torrent btn btn-primary btn-xs" style="float: right"><span class="glyphicon glyphicon-pencil"></span></button>');
+        html.push('<button  data="', torrent.id, '" class="torrent btn btn-primary btn-xs" style="float: right"><i class="fa fa-pencil"></i></button>');
         html.push(this.getStatusIcon(torrent.status, rpcVersion), ' ');
         html.push('<strong>', torrent.name, '</strong>');
         html.push('</p>');
@@ -210,6 +238,45 @@ function transmission(moduleId) {
                     return '<i class="fa fa-clock-o"></i>';
                 case 0:
                     return '<i class="fa fa-pause"></i>';
+                default:
+                    return '';
+            }
+        }
+
+    }
+
+    this.getStatusName = function (value, rpcVersion) {
+        if (rpcVersion < 14) {
+            switch (value) {
+                case 16:
+                    return 'Done';
+                case 8:
+                    return 'Seeding';
+                case 4:
+                    return 'Downloading';
+                case 2:
+                    return 'Waiting';
+                case 4:
+                    return 'Waiting';
+                default:
+                    return '';
+            }
+        } else {
+            switch (value) {
+                case 6:
+                    return 'Seeding';
+                case 5:
+                    return 'Waiting';
+                case 4:
+                    return 'Downloading';
+                case 3:
+                    return 'Waiting';
+                case 2:
+                    return 'Refreshing';
+                case 1:
+                    return 'Waiting';
+                case 0:
+                    return 'Paused';
                 default:
                     return '';
             }

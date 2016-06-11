@@ -6,7 +6,7 @@ block css
         link(href="/plugin/#{plugin.getId()}/css/#{plugin.getId()}.css", rel="stylesheet")
 block content
     h1#page-title
-        span.glyphicon.glyphicon-chevron-right(aria-hidden="true")
+        i.fa.fa-chevron-right(aria-hidden="true")
         span.name
         span.layout
     div#layout-wrapper
@@ -14,36 +14,34 @@ block content
             .loader
         #layout
 
-    #notification
-        .icon
-        .message
 
-    span#settings-button.glyphicon.glyphicon-cog
+
+    i#settings-button.fa.fa-cog
     .global-settings
         ul
             li
                 a#add-module
-                    span.glyphicon.glyphicon-plus
+                    i.fa.fa-plus
                     |  Add module
             li 
                 a(href="/settings")
-                    span.glyphicon.glyphicon-wrench
+                    i.fa.fa-wrench
                     |  Settings
             li#edit-layout
                 a
-                    span.glyphicon.glyphicon-object-align-top
+                    i.fa.fa-th
                     |  Edit Layout
 
     #pages-overlay
     #pages
         div.icons
             a.close-panel
-                span.glyphicon.glyphicon-chevron-left(aria-hidden="true")
+                i.fa.fa-chevron-left(aria-hidden="true")
                 |   Pages
             a.add
-                span.glyphicon.glyphicon-plus(aria-hidden="true")
+                i.fa.fa-plus
             a.edit
-                span.glyphicon.glyphicon-pencil(aria-hidden="true")
+                i.fa.fa-pencil
         ul
 
     #module-modal.modal.fade(tabindex="1", role="dialog")
@@ -56,26 +54,30 @@ block content
                 .modal-body
                     p.item
                         a.edit(href="")
-                            span(class="glyphicon glyphicon-pencil")
+                            i.fa.fa-pencil
                             | Edit settings
                     p.item.move
                         a
-                            span(class="glyphicon glyphicon-pause")
+                            i.fa.fa-pause
                             | Move to page
                     hr
                     p.item.module-sizes
                         a
-                            span(class="glyphicon glyphicon-resize-full")
+                            i.fa.fa-expand
                             | Resize:
                     hr
                     p.item.delete
                         a
-                            span(class="glyphicon glyphicon-remove")
+                            i.fa.fa-times
                             | Delete
 
                     
-                    
-                
+
+    #layout-edit-mode
+        .icon
+        .message
+            | You're editing the layout, click on modules to move and set them up
+        .close-editing
 block scripts
     script(src="/js/vendor/gridster/gridster.js")
     script(src="/js/index.js")

@@ -1,4 +1,7 @@
 @import 'variables.less';
+@import 'vendor/font.less';
+@import 'vendor/bootstrap/bootstrap.less';
+@import 'vendor/font_awesome/font-awesome.less';
 
 body {
   background-color: @background;
@@ -16,46 +19,23 @@ body {
   border-radius: 0;
 }
 
-a {
-  color: @accentColor;
-}
-
-.btn{
+.btn {
   border-radius: 0;
-  margin:5px;
+  margin: 5px;
 }
 
-.btn-primary {
-  background-color: @accentColor;
-  border-color: @accentColor;
-
-}
-
-.btn-primary:hover, .btn-primary:focus{
-  background-color: darken(@accentColor, 20%);
-  border-color: darken(@accentColor, 20%);
-}
-
-.btn-primary:active, .btn-primary:active:hover, .btn-primary:active:focus{
-  background-color: darken(@accentColor, 40%);
-  border-color: darken(@accentColor, 40%);
-}
-
-.progress-bar{
-  background-color: @accentColor;
-}
-
-.progress{
+.progress {
   border-radius: 0;
 }
 
 #notification {
   height: 50px;
-  position: absolute;
+  position: fixed;
   top: -50px;
   left: 0;
   right: 0;
 
+  z-index:100;
   -webkit-transition: all @transition-speed !important;
   transition: all @transition-speed !important;
 
@@ -65,17 +45,13 @@ a {
     text-align: center;
     height: 100%;
     color: white;
-    font-size: 20px;
 
-    font-family: 'Glyphicons Halflings';
-    font-style: normal;
-    font-weight: 400;
+    font: 25px FontAwesome;
   }
 
   .icon:before {
     position: absolute;
-    top: 10px;
-    left: 15px;
+    top: 12px;
   }
 
   .message {
@@ -91,7 +67,7 @@ a {
     white-space: nowrap;
     overflow-x: hidden;
 
-    width:80%;
+    width: 80%;
 
   }
 }
@@ -108,7 +84,8 @@ a {
     color: lighten(@color, 20%);
   }
   .icon:before {
-    content: "\e013";
+    content: "\f00c";
+    left: 12px;
   }
 }
 
@@ -116,12 +93,52 @@ a {
   @color: #e74c3c;
   background-color: @color;
   .icon {
-    content: "\e107";
     color: lighten(@color, 20%);
     background-color: darken(@color, 20%);
   }
 
   .icon:before {
-    content: "\e107";
+    left: 20px;
+    content: "\f12a";
   }
+}
+
+#overlay {
+  position: fixed;
+  background-color: white;
+  z-index: 9001;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  -webkit-transition: all @transition-speed !important;
+  transition: all @transition-speed !important;
+
+  @angle: -90deg;
+  -webkit-transform: rotateX(@angle); /* Safari */
+  transform: rotateX(@angle);
+
+  transform-origin: center top;
+
+  padding-top: 50px;
+  p {
+    text-align: center;
+
+  }
+
+  .smiley{
+    color: @accentColor;
+    font-size:150px;
+  }
+
+  .message{
+    font-size:35px;
+  }
+}
+
+#overlay.showing{
+  @angle: 0deg;
+  -webkit-transform: rotateX(@angle); /* Safari */
+  transform: rotateX(@angle);
 }

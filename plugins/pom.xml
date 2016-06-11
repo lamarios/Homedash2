@@ -20,6 +20,7 @@
         <module>sonarrtv</module>
         <module>harddisk</module>
         <module>transmission</module>
+        <module>pihole</module>
     </modules>
 
     <dependencies>

@@ -4,15 +4,15 @@
             div(class="module #{layout.getSize()}", data-module="#{layout.getModule().getId()}", data-size="#{layout.getSize()}")
                 .module-settings
                     .module-settings-icon(data-id="#{layout.getModule().getId()}")
-                        span(class="glyphicon glyphicon-option-horizontal")
+                        i.fa.fa-ellipsis-v
 
                 .module-icons
                     if plugins.get(layout.getModule().getId()).hasFullScreen()
                         a(href="/module/#{layout.getModule().getId()}/full-screen")
-                            span.glyphicon.glyphicon-resize-full
+                            i.fa.fa-expand
                     if plugins.get(layout.getModule().getId()).hasExternalLink()
                         a(href="#{plugins.get(layout.getModule().getId()).getExternalLink()}", target="_blank")
-                            span.glyphicon.glyphicon-share
+                            i.fa.fa-share-square-o
                 .settings-overlay
                 .loading
                     .loader

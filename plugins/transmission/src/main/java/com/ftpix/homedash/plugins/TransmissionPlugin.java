@@ -112,7 +112,7 @@ public class TransmissionPlugin extends Plugin {
 
     @Override
     public int getRefreshRate() {
-        return ONE_SECOND * 10;
+        return ONE_SECOND * 5;
     }
 
     @Override

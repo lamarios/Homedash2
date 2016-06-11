@@ -49,7 +49,6 @@ public class ModuleLayoutController implements Controller<ModuleLayout, Integer>
          * Gets the layout of the modules for the current page
 		 */
         Spark.get("/modules-layout/:page/:width", "application/json",  (req, res) -> {
-            try {
                 int page = Integer.parseInt(req.params("page"));
                 int width = Integer.parseInt(req.params("width"));
 
@@ -69,11 +68,7 @@ public class ModuleLayoutController implements Controller<ModuleLayout, Integer>
                 toJson.put("layout", LayoutController.getInstance().findClosestLayout(width));
 
                 return toJson;
-            }catch(Exception e){
-                logger.error("Error found while rendering layout", e);
-                res.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
-                return e.getMessage();
-            }
+
         }, gson::toJson);
 
 

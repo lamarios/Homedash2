@@ -2,6 +2,15 @@
  * This file will handle all the websocket related stuff
  */
 var ws;
+
+$(document).ready(function(){
+    $('#overlay .reload-page').click(function(){
+        location.reload();
+    });
+});
+
+
+
 function initWebsocket() {
     ws = new WebSocket('ws://' + window.location.host + '/ws');
     try {
@@ -21,14 +30,7 @@ function initWebsocket() {
             console.error('There was an un-identified Web Socket error');
         };
 
-        ws.onclose = function () {
-            // $("#global-overlay p").html('Connection to server lost.<br /><a
-            // href="' + window.location + '" class="btn btn-warning" > Refresh
-            // page </a>');
-            // $("#global-overlay").show();
-            // $("#global-overlay").addClass('bounceDown');
-
-        }
+        ws.onclose = showOfflineOverlay;
     } catch (e) {
         console.error('Sorry, the web socket at "%s" is un-available error', WS_ADDRESS);
         console.log(e);
@@ -51,14 +53,7 @@ function initFullScreenWebsocket() {
             console.error('There was an un-identified Web Socket error');
         };
 
-        ws.onclose = function () {
-            // $("#global-overlay p").html('Connection to server lost.<br /><a
-            // href="' + window.location + '" class="btn btn-warning" > Refresh
-            // page </a>');
-            // $("#global-overlay").show();
-            // $("#global-overlay").addClass('bounceDown');
-
-        }
+        ws.onclose = showOfflineOverlay;
     } catch (e) {
         console.error('Sorry, the web socket at "%s" is un-available error', WS_ADDRESS);
         console.log(e);
@@ -136,6 +131,13 @@ function onFullScreenMessage(event) {
 
 var notificationTimeout;
 
+
+/*
+Display the overlay when the connection is off
+ */
+function showOfflineOverlay(){
+    $('#overlay').addClass('showing');
+}
 /**
  * Show a success notification
  * @param message

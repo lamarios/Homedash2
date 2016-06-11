@@ -29,6 +29,7 @@ import com.ftpix.homedash.db.DB;
 import com.ftpix.homedash.jobs.BackgroundRefresh;
 import com.ftpix.homedash.models.Page;
 import com.ftpix.homedash.websocket.MainWebSocket;
+import static spark.debug.DebugScreen.enableDebugScreen;
 
 /**
  * Hello world!
@@ -58,6 +59,9 @@ public class App {
 
 			createDefaultData();
 			Endpoints.define();
+
+
+			enableDebugScreen();
 
 			prepareJobs();
 

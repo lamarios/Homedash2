@@ -52,12 +52,15 @@
     }
   }
 
-  .buttons a {
-    color: white;
+  .buttons {
+    position:absolute;
+    a {
+      color: white;
 
-    cursor: pointer;
-    text-shadow: 0px 0px 5px #222;
-    z-index: 5;
+      cursor: pointer;
+      text-shadow: 0px 0px 5px #222;
+      z-index: 5;
+    }
   }
 }
 
@@ -117,15 +120,16 @@
 
   .buttons{
     position:absolute;
-    top:0;
-    right:0;
+    bottom: 5px;
+    right:10px;
     a{
       font-size:20px;
+      margin:0 10px;
     }
   }
 }
 
-.sonarrtv.size-3x3, .sonarrtv.size-4x4, {
+.sonarrtv.size-3x3, .sonarrtv.size-4x4{
   .show-info {
     bottom: 0;
     left: 0;

@@ -1,20 +1,29 @@
 doctype html
 html(lang="en")
-  head
-    meta(charset="utf-8")
-    meta(http-equiv="X-UA-Compatible", content="IE=edge")
-    meta(content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0", name="viewport")
-    
-    title HomeDash
-    link(href="http://fonts.googleapis.com/css?family=Roboto:300,300italic", rel="stylesheet", type="text/css")
-    link(href='/css/vendor/bootstrap/css/bootstrap.min.css', rel='stylesheet')
-    link(href='/css/main.css', rel='stylesheet')
-    link(href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css", rel="stylesheet")
+    head
+        meta(charset="utf-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0", name="viewport")
 
-    block css
-  body
-    .container
-        block content
-    script(src="/js/vendor/jquery/jquery-2.2.3.min.js")
-    script(src="/js/vendor/bootstrap/bootstrap.min.js")
-    block scripts
+        title HomeDash
+        //link(href="http://fonts.googleapis.com/css?family=Roboto:300,300italic", rel="stylesheet", type="text/css")
+        link(href='/css/main.css', rel='stylesheet')
+        //link(href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css", rel="stylesheet")
+
+        block css
+    body
+        #notification
+            .icon
+            .message
+
+        #overlay
+            p.smiley :(
+            p.message Can't connect to the server
+            p
+                button.reload-page.btn.btn-primary Reload
+
+        .container
+            block content
+        script(src="/js/vendor/jquery/jquery-2.2.3.min.js")
+        script(src="/js/vendor/bootstrap/bootstrap.min.js")
+        block scripts

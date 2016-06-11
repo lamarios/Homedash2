@@ -17,14 +17,14 @@ $(document).ready(function () {
     });
 
 
-    $(document).on('click', '#pages .edit-icon.glyphicon-pencil', function (event) {
+    $(document).on('click', '#pages .edit-icon.fa-pencil', function (event) {
         event.stopPropagation();
 
         var pageId = $(this).parents('li').attr('data-id');
         editPage(pageId);
     });
 
-    $(document).on('click', '#pages .edit-icon.glyphicon-remove', function (event) {
+    $(document).on('click', '#pages .edit-icon.fa-times', function (event) {
         event.stopPropagation();
 
         var pageId = $(this).parents('li').attr('data-id');
@@ -147,9 +147,9 @@ function pages2html(pages) {
         if (page.id == PAGE) {
             $('#page-title .name').html(page.name);
         }
-        html.push('<li data-id="', page.id, '"><a class="page-name">', page.name, '</a> <span class="glyphicon glyphicon-pencil edit-icon" aria-hidden="true"></span>');
+        html.push('<li data-id="', page.id, '"><a class="page-name">', page.name, '</a> <i class="fa fa-pencil edit-icon" aria-hidden="true"></i>');
         if (page.id > 1) {
-            html.push('<span class="glyphicon glyphicon-remove edit-icon" aria-hidden="true"></span>');
+            html.push('<i class="fa fa-times edit-icon" aria-hidden="true"></i>');
         }
         html.push('</li>');
     });

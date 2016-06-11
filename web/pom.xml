@@ -84,7 +84,11 @@
             <artifactId>quartz-jobs</artifactId>
             <version>2.2.2</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.sparkjava</groupId>
+            <artifactId>spark-debug-tools</artifactId>
+            <version>0.5</version>
+        </dependency>
 
         <!-- plugins -->
         <dependency>
@@ -110,6 +114,11 @@
         <dependency>
             <groupId>com.ftpix.homedash.plugins</groupId>
             <artifactId>transmission</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ftpix.homedash.plugins</groupId>
+            <artifactId>pihole</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

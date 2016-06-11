@@ -4,10 +4,7 @@ package com.ftpix.homedash.websocket;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 import com.ftpix.homedash.app.PluginModuleMaintainer;
@@ -32,15 +29,20 @@ import com.google.gson.Gson;
 import io.gsonfire.GsonFireBuilder;
 
 @WebSocket
-public class MainWebSocket {
+public class MainWebSocket{
 
-    private static final List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
-    protected static Logger logger = LogManager.getLogger();
-    private static boolean refresh = false;
-    private static long time = 0;
-    private static Gson gson = new GsonFireBuilder().enableExposeMethodResult().createGson();
-    private static ExecutorService exec;
-    private static final int THREADS_COUNT = 1;
+    private  final List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
+    protected  Logger logger = LogManager.getLogger();
+    private   boolean refresh = false;
+    private  long time = 0;
+    private  Gson gson = new GsonFireBuilder().enableExposeMethodResult().createGson();
+    private  ExecutorService exec;
+    private  final int THREADS_COUNT = 4;
+
+
+    public MainWebSocket() {
+
+    }
 
     @OnWebSocketConnect
     public void connected(Session session) {
@@ -136,7 +138,7 @@ public class MainWebSocket {
             plugin.saveData();
             DB.MODULE_DAO.update(plugin.getModule());
         } catch (Exception e) {
-            logger.error("Error while refreshing " + plugin.getDisplayName(), e);
+            // logger.error("Error while refreshing " + plugin.getDisplayName(), e);
             response.setCommand(WebSocketMessage.COMMAND_ERROR);
             response.setMessage("Error while refreshing " + plugin.getDisplayName() + ": " + e.getMessage());
         }
@@ -151,7 +153,7 @@ public class MainWebSocket {
      * @param session
      * @param message
      */
-    private static void sendCommandToModule(WebSocketSession session, WebSocketMessage message) {
+    private   void sendCommandToModule(WebSocketSession session, WebSocketMessage message) {
         WebSocketMessage response = new WebSocketMessage();
         Plugin plugin = null;
         try {
@@ -183,7 +185,7 @@ public class MainWebSocket {
     /**
      * Refresh all the modules
      */
-    private static void refreshModules() {
+    private  void refreshModules() {
         while (refresh) {
             logger.info("Refreshing modules");
             List<ModuleLayout> moduleLayouts = getModuleLayoutsToRefresh();
@@ -194,39 +196,36 @@ public class MainWebSocket {
                     Plugin plugin = PluginModuleMaintainer.getPluginForModule(ml.getModule());
                     if (plugin.getRefreshRate() > Plugin.NEVER && time % plugin.getRefreshRate() == 0) {
 
-                        logger.info("Refreshing plugin [{}] for layout[{}]", plugin.getId(), ml.getLayout().getName());
-
-                        WebSocketMessage response = refreshSingleModule(ml.getModule().getId(), ml.getSize());
-
-                        final String jsonResponse = gson.toJson(response);
 
                         // finding which clients to send to and sending
                         // the
                         // message
-                        sessions.stream().filter(s -> {
-                            try {
-                                return (s.getLayout() != null)
-                                        && (s.getPage() != null)
-                                        && (s.getLayout().getId() == ml.getLayout().getId())
-                                        && (s.getPage().getId() == ml.getModule().getPage().getId())
-                                        && s.getSession().isOpen()
-                                        ;
-                            } catch (Exception e) {
-                                logger.error("Error while checking client", e);
-                                return false;
-                            }
-                        }).forEach(s -> {
-                            try {
-                                boolean done = s.getSession().getRemote().sendStringByFuture(jsonResponse).isDone();
-                                logger.info("Sending to client {}, isdone ? {}", jsonResponse, done);
-                            } catch (Exception e) {
-                                logger.error("Errror while sending response", e);
+
+                        exec.execute(new Runnable() {
+                            @Override
+                            public void run() {
+
+
+                                try {
+                                    logger.info("Refreshing plugin [{}] for layout[{}]", plugin.getId(), ml.getLayout().getName());
+
+                                    WebSocketMessage response = refreshSingleModule(ml.getModule().getId(), ml.getSize());
+
+                                    String jsonResponse = gson.toJson(response);
+
+                                    sendMessage(jsonResponse, ml);
+
+                                } catch (Exception e) {
+                                    logger.error("Can't refresh module #" + ml.getModule().getId(), e);
+                                }
+
                             }
                         });
 
                     }
+
+
                 } catch (Exception e) {
-                    logger.error("Can't refresh module #" + ml.getModule().getId(), e);
                 }
             });
 
@@ -245,7 +244,7 @@ public class MainWebSocket {
      *
      * @return
      */
-    private static List<ModuleLayout> getModuleLayoutsToRefresh() {
+    private  List<ModuleLayout> getModuleLayoutsToRefresh() {
         List<ModuleLayout> layouts = new ArrayList<>();
 
         sessions.stream().filter(s -> s.getLayout() != null && s.getPage() != null).forEach(s -> {
@@ -266,7 +265,7 @@ public class MainWebSocket {
     /**
      * Start refreshing the modules
      */
-    private static void startRefresh() {
+    private  void startRefresh() {
         //we will start refresh only if at least one of the clients has a page
         stopRefresh();
 
@@ -281,7 +280,7 @@ public class MainWebSocket {
             logger.info("Start refresh of modules");
             refresh = true;
 
-            exec = Executors.newSingleThreadExecutor();
+            exec = Executors.newFixedThreadPool(THREADS_COUNT);
 
             exec.execute(new Runnable() {
 
@@ -297,7 +296,7 @@ public class MainWebSocket {
     /**
      * Stop the refreshing madness
      */
-    private static void stopRefresh() {
+    private  void stopRefresh() {
         try {
             if (exec != null) {
                 refresh = false;
@@ -322,7 +321,7 @@ public class MainWebSocket {
      * @param session
      * @return
      */
-    private static WebSocketSession getClientFromSession(Session session) {
+    private  WebSocketSession getClientFromSession(Session session) {
         WebSocketSession client = null;
         for (WebSocketSession s : sessions) {
             if (s.equals(session)) {
@@ -332,5 +331,29 @@ public class MainWebSocket {
         }
 
         return client;
+    }
+
+    public  void sendMessage(String message, ModuleLayout ml) {
+        logger.info("Message to send from implementation !!!");
+        sessions.stream().filter(s -> {
+            try {
+                return (s.getLayout() != null)
+                        && (s.getPage() != null)
+                        && (s.getLayout().getId() == ml.getLayout().getId())
+                        && (s.getPage().getId() == ml.getModule().getPage().getId())
+                        && s.getSession().isOpen()
+                        ;
+            } catch (Exception e) {
+                logger.error("Error while checking client", e);
+                return false;
+            }
+        }).forEach(s -> {
+            try {
+                boolean done = s.getSession().getRemote().sendStringByFuture(message).isDone();
+                logger.info("Sending to client {}, isdone ? {}", message, done);
+            } catch (Exception e) {
+                logger.error("Errror while sending response", e);
+            }
+        });
     }
 }
