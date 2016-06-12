@@ -16,9 +16,6 @@ public class Module {
 
 	@DatabaseField
 	private String pluginClass;
-	
-	@DatabaseField
-	private String data;
 
 	@DatabaseField
 	private int remote = LOCAL;
@@ -28,9 +25,12 @@ public class Module {
 
 	@ForeignCollectionField(eager = false, maxEagerLevel = 0)
 	public ForeignCollection<ModuleSettings> settings;
-	
+
 	@ForeignCollectionField(eager = false, maxEagerLevel = 0)
 	public ForeignCollection<ModuleLayout> layouts;
+
+	@ForeignCollectionField(eager = false, maxEagerLevel = 0)
+	public ForeignCollection<ModuleData> data;
 	
 
 
@@ -83,16 +83,13 @@ public class Module {
 		this.layouts = layouts;
 	}
 
-
-	public String getData() {
+	public ForeignCollection<ModuleData> getData() {
 		return data;
 	}
 
-
-	public void setData(String data) {
+	public void setData(ForeignCollection<ModuleData> data) {
 		this.data = data;
 	}
-
 
 	public void setId(int id) {
 		this.id = id;

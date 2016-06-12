@@ -48,7 +48,7 @@ public class Endpoints {
             Map<String, Object> model = new HashMap<>();
 
             try {
-                List<Plugin> plugins = PluginModuleMaintainer.getAllPluginInstances();
+                List<Plugin> plugins = PluginModuleMaintainer.getInstance().getAllPluginInstances();
 
                 // we need to find all the cs and js files to load
                 logger.info("Finding all distinct plugins to load distinct JS files and CSS");

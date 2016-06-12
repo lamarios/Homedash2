@@ -8,6 +8,7 @@ import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 import com.ftpix.homedash.app.PluginModuleMaintainer;
+import com.ftpix.homedash.app.controllers.ModuleController;
 import com.ftpix.homedash.app.controllers.ModuleLayoutController;
 import com.ftpix.homedash.db.DB;
 import com.ftpix.homedash.models.Layout;
@@ -129,14 +130,13 @@ public class MainWebSocket{
         response.setCommand(WebSocketMessage.COMMAND_REFRESH);
         response.setModuleId(moduleId);
 
-        Plugin plugin = PluginModuleMaintainer.getPluginForModule(moduleId);
+        Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(moduleId);
 
         try {
 
 
             response.setMessage(plugin.refreshPlugin(size));
-            plugin.saveData();
-            DB.MODULE_DAO.update(plugin.getModule());
+
         } catch (Exception e) {
             // logger.error("Error while refreshing " + plugin.getDisplayName(), e);
             response.setCommand(WebSocketMessage.COMMAND_ERROR);
@@ -157,7 +157,7 @@ public class MainWebSocket{
         WebSocketMessage response = new WebSocketMessage();
         Plugin plugin = null;
         try {
-            plugin = PluginModuleMaintainer.getPluginForModule(message.getModuleId());
+            plugin = PluginModuleMaintainer.getInstance().getPluginForModule(message.getModuleId());
 
             response = plugin.processCommand(message.getCommand(), message.getMessage().toString(), message.getExtra());
             response.setModuleId(plugin.getModule().getId());
@@ -193,7 +193,7 @@ public class MainWebSocket{
             moduleLayouts.forEach(ml -> {
                 try {
                     // Getting the data to send
-                    Plugin plugin = PluginModuleMaintainer.getPluginForModule(ml.getModule());
+                    Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(ml.getModule());
                     if (plugin.getRefreshRate() > Plugin.NEVER && time % plugin.getRefreshRate() == 0) {
 
 

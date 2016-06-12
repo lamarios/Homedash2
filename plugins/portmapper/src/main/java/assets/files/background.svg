@@ -1,0 +1,97 @@
+<svg class="sys-info-graph" preserveAspectRatio="xMidYMid slice" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 100 100"  opacity="0.2" >
+
+    <style>
+        .line {
+        fill:none;
+        stroke:#455A64;
+        }
+
+        .router{
+        fill:#455A64;
+        stroke:none;
+        }
+    </style>
+
+    <g>
+        <path d="M0, 44 L70,44 L90,25 L100,25" class="line">
+            <animate attributeName="stroke"
+                     id="anim1"
+                     class="blink"
+                     begin="0s; anim7.end+1s"
+                     attributeType="XML"
+                     from="white"
+                     to="#455A64"
+                     dur="1000ms"
+                     repeatCount="1"/>
+        </path>
+        <path d="M0, 46 L70,46 L90,34 L100,34" class="line">
+            <animate attributeName="stroke"
+                     id="anim2"
+                     class="blink"
+                     attributeType="XML"
+                     from="white"
+                     to="#455A64"
+                     dur="1000ms"
+                     begin="anim6.end"
+                     repeatCount="1"/>
+        </path>
+        <path d="M0, 48 L70,48 L90,42 L100,42" class="line">
+            <animate attributeName="stroke"
+                     id="anim3"
+                     class="blink"
+                     attributeType="XML"
+                     from="white"
+                     to="#455A64"
+                     dur="1000ms"
+                     begin="anim2.end+5s"
+                     repeatCount="1"/>
+        </path>
+        <path d="M0, 50 L70,50 L90,50 L100,50" class="line">
+            <animate attributeName="stroke"
+                     id="anim4"
+                     class="blink"
+                     attributeType="XML"
+                     from="white"
+                     to="#455A64"
+                     dur="1000ms"
+                     begin="anim1.end+2s"
+                     repeatCount="1"/>
+        </path>
+        <path d="M0, 52 L70,52 L90,58 L100,58" class="line">
+            <animate attributeName="stroke"
+                     id="anim5"
+                     class="blink"
+                     attributeType="XML"
+                     from="white"
+                     to="#455A64"
+                     dur="1000ms"
+                     begin="anim3.end+2s"
+                     repeatCount="1"/>
+        </path>
+        <path d="M0, 54 L70,54 L90,66 L100,66" class="line">
+            <animate attributeName="stroke"
+                     id="anim6"
+                     class="blink"
+                     attributeType="XML"
+                     from="white"
+                     to="#455A64"
+                     dur="1000ms"
+                     begin="anim4.end+5s"
+                     repeatCount="1"/>
+        </path>
+        <path d="M0, 56 L70,56 L90,75 L100,75" class="line">
+            <animate attributeName="stroke"
+                     id="anim7"
+                     class="blink"
+                     attributeType="XML"
+                     from="white"
+                     to="#455A64"
+                     dur="1000ms"
+                     begin="anim5.end"
+                     repeatCount="1"/>
+        </path>
+    </g>
+    <g>
+        <rect class="router" x="55" y="42" width="17" height="16"></rect>
+    </g>
+</svg>

@@ -1,0 +1,36 @@
+.modal.fade(tabindex="-1", role="dialog")
+    .modal-dialog.modal-sm
+        .modal-content
+            .modal-header
+                button.close(data-dismiss="modal")
+                    span &times;
+                    span.sr-only Close
+                h4.modal-title Add port mapping
+            .modal-body
+                form
+                    .form-group
+                        label Name
+                        input.form-control(type="text", name="name", placeholder="Enter name")
+                    .form-group
+                        label Protocol
+                        select.form-control(name="protocol")
+                            option TCP
+                            option UDP
+                    .form-group
+                        label External Port
+                        input.form-control(type="text", name="externalPort", placeholder="Port")
+                    .form-group
+                        label Internal Port
+                        input.form-control(type="text", name="internalPort", placeholder="Port")
+                    .form-group
+                        label Client
+                        input.form-control(type="text", name="client", placeholder="Internal Client IP")
+                    .checkbox
+                        label
+                            input(type="checkbox", name="force")
+                            | Force port
+                            p
+                                small If the port is not in the UPnP list on refresh, add it again
+            .modal-footer
+                button.btn.btn-default(data-dismiss="modal") Close
+                button.btn.btn-primary.save Save changes

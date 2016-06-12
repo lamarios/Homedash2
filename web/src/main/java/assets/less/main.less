@@ -35,7 +35,7 @@ body {
   left: 0;
   right: 0;
 
-  z-index:100;
+  z-index: 100;
   -webkit-transition: all @transition-speed !important;
   transition: all @transition-speed !important;
 
@@ -127,18 +127,29 @@ body {
 
   }
 
-  .smiley{
+  .smiley {
     color: @accentColor;
-    font-size:150px;
+    font-size: 150px;
   }
 
-  .message{
-    font-size:35px;
+  .message {
+    font-size: 35px;
   }
 }
 
-#overlay.showing{
+#overlay.showing {
   @angle: 0deg;
   -webkit-transform: rotateX(@angle); /* Safari */
   transform: rotateX(@angle);
 }
+
+//
+//.modal-backdrop {
+//  z-index: 0;
+//  background:none;
+//}
+//
+//.modal .modal-content{
+//  box-shadow: 0 0 40px #aaa;
+//}
+

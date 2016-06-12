@@ -177,7 +177,7 @@ function showNotification(type, message) {
         clearTimeout(notificationTimeout)
         notificationTimeout = setTimeout(function () {
             notification.removeClass('showing');
-        }, 1500);
+        }, 4000);
     }
 
 }

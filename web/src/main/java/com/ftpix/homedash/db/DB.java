@@ -3,15 +3,10 @@ package com.ftpix.homedash.db;
 import java.sql.SQLException;
 
 import com.ftpix.homedash.app.Constants;
-import com.ftpix.homedash.models.Layout;
-import com.ftpix.homedash.models.Module;
-import com.ftpix.homedash.models.ModuleLayout;
-import com.ftpix.homedash.models.Settings;
+import com.ftpix.homedash.models.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.ftpix.homedash.models.ModuleSettings;
-import com.ftpix.homedash.models.Page;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
@@ -25,7 +20,8 @@ public class DB {
 	public static Dao<ModuleLayout, Integer> MODULE_LAYOUT_DAO = null;
 	public static Dao<ModuleSettings, Integer> MODULE_SETTINGS_DAO = null;
 	public static Dao<Settings, String> SETTINGS_DAO = null;
-	
+	public static Dao<ModuleData, String> MODULE_DATA_DAO = null;
+
 	private final static String databaseUrl = "jdbc:h2:" + Constants.DB_PATH;
 
 	private static Logger logger = LogManager.getLogger();
@@ -55,10 +51,14 @@ public class DB {
 			logger.info("Creating Module Layout DAO and tables if it doesn't exist");
 			MODULE_LAYOUT_DAO = DaoManager.createDao(connectionSource, ModuleLayout.class);
 			TableUtils.createTableIfNotExists(connectionSource, ModuleLayout.class);
-			
+
 			logger.info("Creating Module Settings DAO and tables if it doesn't exist");
 			MODULE_SETTINGS_DAO = DaoManager.createDao(connectionSource, ModuleSettings.class);
 			TableUtils.createTableIfNotExists(connectionSource, ModuleSettings.class);
+
+			logger.info("Creating Module Data DAO and tables if it doesn't exist");
+			MODULE_DATA_DAO = DaoManager.createDao(connectionSource, ModuleData.class);
+			TableUtils.createTableIfNotExists(connectionSource, ModuleData.class);
 			
 			
 			logger.info("Creating  Settings DAO and tables if it doesn't exist");

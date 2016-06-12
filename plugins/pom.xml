@@ -21,6 +21,7 @@
         <module>harddisk</module>
         <module>transmission</module>
         <module>pihole</module>
+        <module>portmapper</module>
     </modules>
 
     <dependencies>

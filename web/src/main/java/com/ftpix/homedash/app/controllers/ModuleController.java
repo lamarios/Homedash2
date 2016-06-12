@@ -7,16 +7,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.ftpix.homedash.app.PluginModuleMaintainer;
-import com.ftpix.homedash.models.ModuleLayout;
+import com.ftpix.homedash.models.*;
 import com.google.gson.Gson;
 import io.gsonfire.GsonFireBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ftpix.homedash.db.DB;
-import com.ftpix.homedash.models.Module;
-import com.ftpix.homedash.models.ModuleSettings;
-import com.ftpix.homedash.models.Page;
 import com.ftpix.homedash.plugins.Plugin;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -101,7 +98,9 @@ public class ModuleController implements Controller<Module, Integer> {
                     page = req.session().attribute(SESSION_NEW_MODULE_PAGE);
                 }
 
-                saveModuleWithSettings(req.queryMap().toMap(), page);
+                Map<String, String[]> params = req.queryMap().toMap();
+                params.put("class", new String[]{plugin.getClass().getCanonicalName()});
+                saveModuleWithSettings(params, page);
                 res.redirect("/");
                 return null;
             }
@@ -115,7 +114,7 @@ public class ModuleController implements Controller<Module, Integer> {
             int moduleId = Integer.parseInt(req.params("moduleId"));
             logger.info("/add-module/{}/settings");
             try {
-                Plugin plugin = PluginModuleMaintainer.getPluginForModule(moduleId);
+                Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(moduleId);
 
                 Map<String, Object> map = new HashMap<>();
                 map.put("plugin", plugin);
@@ -208,7 +207,7 @@ public class ModuleController implements Controller<Module, Integer> {
 
             int id = Integer.parseInt(req.params("moduleId"));
 
-            Plugin plugin = PluginModuleMaintainer.getPluginForModule(id);
+            Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(id);
             map.put("plugin", plugin);
             map.put("html", plugin.getView(ModuleLayout.FULL_SCREEN));
 
@@ -235,7 +234,7 @@ public class ModuleController implements Controller<Module, Integer> {
     @Override
     public boolean delete(Module object) throws Exception {
         deleteModuleLayoutAndSettings(object);
-
+        DB.MODULE_DATA_DAO.delete(object.getData());
         return DB.MODULE_DAO.delete(object) == 1;
     }
 
@@ -344,11 +343,28 @@ public class ModuleController implements Controller<Module, Integer> {
             ModuleLayoutController.getInstance().deleteMany(module.getLayouts());
             ModuleSettingsController.getInstance().deleteMany(module.getSettings());
 
-            PluginModuleMaintainer.removeModule(module.getId());
+            PluginModuleMaintainer.getInstance().removeModule(module.getId());
             return true;
         } else {
             return false;
         }
     }
 
+
+    /**
+     * Saves a single module data
+     * @param moduleData
+     * @return
+     */
+    public boolean saveModuleData(ModuleData moduleData) throws SQLException {
+        return DB.MODULE_DATA_DAO.createOrUpdate(moduleData).getNumLinesChanged() == 1;
+    }
+
+    /**
+     * Deletes a single module data
+     * @param data
+     */
+    public boolean deleteModuleData(ModuleData data) throws SQLException {
+        return DB.MODULE_DATA_DAO.delete(data) == 1;
+    }
 }

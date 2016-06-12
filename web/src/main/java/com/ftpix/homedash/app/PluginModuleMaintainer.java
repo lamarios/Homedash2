@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.ftpix.homedash.app.controllers.ModuleController;
+import com.ftpix.homedash.models.ModuleData;
+import com.ftpix.homedash.plugins.PluginListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,10 +17,24 @@ import com.ftpix.homedash.plugins.Plugin;
 
 import javassist.NotFoundException;
 
-public class PluginModuleMaintainer {
+public class PluginModuleMaintainer implements PluginListener{
 
-    public static final Map<Integer, Plugin> PLUGIN_INSTANCES = new HashMap<>();
-    private static Logger logger = LogManager.getLogger();
+    public final Map<Integer, Plugin> PLUGIN_INSTANCES = new HashMap<>();
+    private  Logger logger = LogManager.getLogger();
+
+    private static PluginModuleMaintainer pluginModuleMaintainer;
+
+    private PluginModuleMaintainer(){}
+
+    public static PluginModuleMaintainer getInstance(){
+
+        if(pluginModuleMaintainer == null){
+            pluginModuleMaintainer = new PluginModuleMaintainer();
+        }
+
+        return pluginModuleMaintainer;
+    }
+
 
     /**
      * Will get the plug in for a specific module id Will create the instance if
@@ -33,7 +49,7 @@ public class PluginModuleMaintainer {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    public static Plugin getPluginForModule(int moduleId) throws Exception {
+    public Plugin getPluginForModule(int moduleId) throws Exception {
         logger.info("Looking for module  {}", moduleId);
         Module module = ModuleController.getInstance().get(moduleId);
         if (module != null) {
@@ -51,7 +67,7 @@ public class PluginModuleMaintainer {
      * @return
      * @throws Exception
      */
-    public static Plugin getPluginForModule(Module module) throws Exception {
+    public  Plugin getPluginForModule(Module module) throws Exception {
         logger.debug("Module found, checking if the plugin is already instanciated");
         Plugin plugin = null;
         if (PLUGIN_INSTANCES.containsKey(module.getId())) {
@@ -66,6 +82,7 @@ public class PluginModuleMaintainer {
         }
 
         plugin.setModule(module);
+        plugin.addListener(this);
         PLUGIN_INSTANCES.put(module.getId(), plugin);
         return plugin;
     }
@@ -77,7 +94,7 @@ public class PluginModuleMaintainer {
      * @throws Exception
      * @throws SQLException
      */
-    public static List<Plugin> getAllPluginInstances() throws SQLException, Exception {
+    public  List<Plugin> getAllPluginInstances() throws SQLException, Exception {
         List<Plugin> plugins = new ArrayList<>();
         ModuleController.getInstance().getAll().forEach((module) -> {
             try {
@@ -95,9 +112,28 @@ public class PluginModuleMaintainer {
      *
      * @param moduleId
      */
-    public static void removeModule(int moduleId) {
+    public  void removeModule(int moduleId) {
         if (PLUGIN_INSTANCES.containsKey(moduleId)) {
             PLUGIN_INSTANCES.remove(moduleId);
+        }
+    }
+
+
+    @Override
+    public void saveModuleData(ModuleData data) {
+        try {
+            ModuleController.getInstance().saveModuleData(data);
+        }catch(Exception e){
+            logger.error("Error while saving data "+data.getName(), e);
+        }
+    }
+
+    @Override
+    public void removeModuleData(ModuleData data) {
+        try {
+            ModuleController.getInstance().deleteModuleData(data);
+        }catch(Exception e){
+            logger.error("Error while saving data "+data.getName(), e);
         }
     }
 }

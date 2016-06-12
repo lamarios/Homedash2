@@ -105,6 +105,7 @@ $(document).ready(function () {
     $('#settings-button').click(function () {
         $('.global-settings').toggleClass('showing');
     });
+    
 
 });
 

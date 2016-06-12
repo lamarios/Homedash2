@@ -57,7 +57,7 @@ public class ModuleLayoutController implements Controller<ModuleLayout, Integer>
                 List<ModuleLayout> layouts = generatePageLayout(page, width);
                 Map<String, Object> model = new HashMap<>();
                 model.put("layouts", layouts);
-                model.put("plugins", PluginModuleMaintainer.PLUGIN_INSTANCES);
+                model.put("plugins", PluginModuleMaintainer.getInstance().PLUGIN_INSTANCES);
 
 
                 JadeTemplateEngine engine = new JadeTemplateEngine();
@@ -190,7 +190,7 @@ public class ModuleLayoutController implements Controller<ModuleLayout, Integer>
                 ml.setX(x);
                 ml.setY(y);
 
-                Plugin plugin = PluginModuleMaintainer.getPluginForModule(module);
+                Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(module);
 
                 String[] availableSizes = PluginController.getInstance().getPluginSizes(plugin);
 
