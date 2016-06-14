@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+     y="0px"
+     width="200px" height="200px" viewBox="0 0 200 200"
+     preserveAspectRatio="all">
+
+
+    <polygon points="0,150 100,200 100,100 0,50" style="fill:#57CCC1;stroke:#0A7F74;stroke-width:10"/>
+    <polygon points="100,200 200,150 200,50 100,100" style="fill:#57CCC1;stroke:#0A7F74;stroke-width:10"/>
+    <polygon points="0,50 100,100 200,50 100,0" style="fill:#57CCC1;stroke:#0A7F74;stroke-width:10"/>
+
+    <g>
+        <!-- keep:bottom left, bottom right| change: top right, top left-->
+        <polygon points="0,150 100,200 100,200 0,150" style="fill:white;stroke:#0A7F74;stroke-width:10">
+            <animate attributeName="points" dur="1000ms" to="0,150 100,200 100,150 0,100" fill="freeze" />
+        </polygon>
+        <polygon points="100,200 200,150 200,150 100,200" style="fill:white;stroke:#0A7F74;stroke-width:10">
+            <animate attributeName="points" dur="1000ms" to="100,200 200,150 200,100 100,150" fill="freeze"/>
+        </polygon>
+
+    </g>
+
+</svg>
