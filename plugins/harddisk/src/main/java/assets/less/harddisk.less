@@ -1,5 +1,7 @@
+@background: rgb(10, 127, 116);
+@speed: 3s;
 .harddisk {
-  background-color: rgb(10, 127, 116);
+  background-color: @background;
   color: white;
   background-image: url("../files/images/disk.svg");
   background-repeat: no-repeat;
@@ -26,13 +28,17 @@
 
     polygon {
       fill: #57CCC1;
-      stroke: #000;
-      stroke-width: 1;
+      stroke: @background;
+      stroke-width: 5;
     }
 
     g {
       polygon {
         fill: white;
+        animation: harddisk-fill @speed infinite ease-in-out;
+        -webkit-animation-direction: alternate; /* Chrome, Safari, Opera */
+        animation-direction: alternate;
+        transform-origin: center bottom;
       }
     }
   }
@@ -45,7 +51,7 @@
       margin: 0;
       color: #EEEEEE;
       white-space: nowrap;
-      overflow-x: ellipsis;
+      text-overflow: ellipsis;
       width: 100%;
     }
 
@@ -80,4 +86,14 @@
     bottom: 5px;
   }
 
+}
+
+@keyframes harddisk-fill {
+  @scale-size: 0;
+  from {
+    opacity: 0.7;
+  }
+  to {
+    opacity: 1;
+  }
 }

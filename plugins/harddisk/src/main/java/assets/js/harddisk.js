@@ -56,6 +56,7 @@ function harddisk(moduleId) {
 
 
     this.generateSVG = function (percentage) {
+
         var html = [];
         html.push('<svg class="hdd-svg" preserveAspectRatio="all" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 220 220">');
         html.push('<polygon points="10,160 110,210 110,110 10,60" />');
@@ -72,6 +73,11 @@ function harddisk(moduleId) {
         //html.push('<polygon points="110,210 210,160 210,160 110,210" >');
         //html.push('<animate attributeName="points" dur="1000ms" to="110,210 210,160 210,',60+100-percentage,' 110,',110+100-percentage,'" fill="freeze"/>');
         html.push('</polygon>');
+        if(percentage == 100){
+            html.push('<polygon points="10,60 110,110 210,60 110,10" />');
+
+
+        }
 
         html.push('</g>');
 
