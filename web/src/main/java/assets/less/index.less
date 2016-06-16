@@ -221,12 +221,11 @@
 
 .global-settings {
   position: fixed;
-  bottom: -20px;
-  left: 100%;
+  bottom: -20%;
+  right: 5px;
   margin-right: 25px;
   opacity: 0;
   font-size: 16px;
-  background-color: @background;
 
   @scale-size: 0.5;
   -ms-transform: scale(@scale-size); /* IE 9 */
@@ -246,6 +245,8 @@
     border: 1px solid @menu-border-color;
     border-left: 5px solid @accentColor;
     border-radius: 4px;
+    background-color: white;
+    box-shadow: 0 0 10px #666;
     li {
       display: block;
       padding: 10px;
@@ -311,7 +312,7 @@
   bottom: -100px;
   height:50px;
   background-color: @accentColor;
-
+  z-index:10;
   -webkit-transition: all @transition-speed !important;
   transition: all @transition-speed !important;
 

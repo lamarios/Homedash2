@@ -63,21 +63,22 @@ function harddisk(moduleId) {
         html.push('<polygon points="110,210 210,160 210,60 110,110" />');
         html.push('<polygon points="10,60 110,110 210,60 110,10" />');
 
+        
         html.push('<g>');
         html.push('<!-- keep:bottom left, bottom right| change: top right, top left-->');
         //html.push('<polygon points="10,160 110,210 110,200 10,160">');
-        html.push('<polygon points="10,160 110,210 110,',110+(100-percentage),' 10,',60+100-percentage,'">');
+        html.push('<polygon points="10,160 110,210 110,', 110 + (100 - percentage), ' 10,', 60 + 100 - percentage, '">');
         //html.push('<animate attributeName="points" dur="1000ms" to="10,160 110,210 110,',110+(100-percentage),' 10,',60+100-percentage,'" fill="freeze" />');
         html.push('</polygon>');
-        html.push('<polygon points="110,210 210,160 210,',60+100-percentage,' 110,',110+100-percentage,'" >');
+        html.push('<polygon points="110,210 210,160 210,', 60 + 100 - percentage, ' 110,', 110 + 100 - percentage, '" >');
         //html.push('<polygon points="110,210 210,160 210,160 110,210" >');
         //html.push('<animate attributeName="points" dur="1000ms" to="110,210 210,160 210,',60+100-percentage,' 110,',110+100-percentage,'" fill="freeze"/>');
         html.push('</polygon>');
-        if(percentage == 100){
+
+        if (percentage == 100) {
             html.push('<polygon points="10,60 110,110 210,60 110,10" />');
-
-
         }
+
 
         html.push('</g>');
 
