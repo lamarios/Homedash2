@@ -22,6 +22,7 @@ import de.neuland.jade4j.template.JadeTemplate;
 import de.neuland.jade4j.template.TemplateLoader;
 
 public abstract class Plugin {
+
     protected Logger logger = LogManager.getLogger();
 
     public static int NEVER = 0, ONE_SECOND = 1, ONE_MINUTE = 60, ONE_HOUR = 60 * ONE_MINUTE;
@@ -65,7 +66,6 @@ public abstract class Plugin {
      */
     public abstract String getDescription();
 
-
     /**
      * Provide an external link if available
      *
@@ -74,13 +74,13 @@ public abstract class Plugin {
     public abstract String getExternalLink();
 
     /**
-     * Give chance to a plugin to run some stuff when creating it
-     * Settings can be accessed via settings object
+     * Give chance to a plugin to run some stuff when creating it Settings can
+     * be accessed via settings object
      */
     protected abstract void init();
 
     /**
-     * Get the szes available for this module
+     * Get the sizes available for this module
      *
      * @return
      */
@@ -125,7 +125,6 @@ public abstract class Plugin {
      */
     public abstract int getRefreshRate();
 
-
     /**
      * Validates a given set of settings
      *
@@ -134,7 +133,6 @@ public abstract class Plugin {
      */
     public abstract Map<String, String> validateSettings(Map<String, String> settings);
 
-
     /**
      * Expose a chunk of selected data on request
      *
@@ -142,14 +140,12 @@ public abstract class Plugin {
      */
     public abstract ModuleExposedData exposeData();
 
-
     /**
      * Expose a chunk of selected settings on request
      *
      * @return
      */
     public abstract Map<String, String> exposeSettings();
-
 
     /**
      * Gets the html for a specific size
@@ -159,7 +155,7 @@ public abstract class Plugin {
      * @throws JadeException
      * @throws IOException
      */
-    public String getView(String size) throws JadeException, IOException {
+    public final String getView(String size) throws JadeException, IOException {
 
         JadeConfiguration config = new JadeConfiguration();
 
@@ -184,7 +180,7 @@ public abstract class Plugin {
      * @return
      * @throws Exception
      */
-    public Object refreshPlugin(String size) throws Exception {
+    public final Object refreshPlugin(String size) throws Exception {
         if (module.getRemote() == module.LOCAL) {
             Object obj = refresh(size);
             return obj;
@@ -200,7 +196,7 @@ public abstract class Plugin {
      * @throws JadeException
      * @throws IOException
      */
-    public String getSettingsHtml() throws Exception {
+    public final String getSettingsHtml() throws Exception {
         try {
             logger.info("Getting settings for [{}]", this.getId());
             JadeConfiguration config = new JadeConfiguration();
@@ -232,7 +228,7 @@ public abstract class Plugin {
      *
      * @return
      */
-    private Map<String, String> getSettingsAsMap() {
+    private final Map<String, String> getSettingsAsMap() {
         Map<String, String> settings = new HashMap<>();
 
         module.getSettings().forEach(ms -> {
@@ -247,7 +243,7 @@ public abstract class Plugin {
      *
      * @return
      */
-    public Module getModule() {
+    public final Module getModule() {
         return module;
     }
 
@@ -257,7 +253,7 @@ public abstract class Plugin {
      *
      * @param module
      */
-    public void setModule(Module module) {
+    public final void setModule(Module module) {
         Map<String, String> oldSettings = null;
         if (this.module != null) {
 
@@ -267,21 +263,20 @@ public abstract class Plugin {
 
         this.settings = getSettingsAsMap();
 
-        if (oldSettings == null || ! this.settings.equals(oldSettings)) {
+        if (oldSettings == null || !this.settings.equals(oldSettings)) {
             init();
         }
 
-
     }
 
-    public void setCacheBase(String cacheBase) {
+    public final void setCacheBase(String cacheBase) {
         this.cacheBase = cacheBase;
         if (!cacheBase.endsWith("/")) {
             this.cacheBase += "/";
         }
     }
 
-    protected String getCacheFolder() throws NotYetBoundException {
+    protected final String getCacheFolder() throws NotYetBoundException {
         if (module != null) {
             return cacheBase + module.getId() + "/";
         } else {
@@ -294,7 +289,7 @@ public abstract class Plugin {
      *
      * @return
      */
-    public boolean hasExternalLink() {
+    public final boolean hasExternalLink() {
         return getExternalLink() != null;
     }
 
@@ -303,27 +298,24 @@ public abstract class Plugin {
      *
      * @return
      */
-    public boolean hasFullScreen() {
+    public final boolean hasFullScreen() {
         return Arrays.stream(getSizes()).anyMatch((s) -> s.equalsIgnoreCase(ModuleLayout.FULL_SCREEN));
     }
-
 
     /**
      * Adds a listener to the plugin listeners
      *
      * @param listener
      */
-    public void addListener(PluginListener listener) {
+    public final void addListener(PluginListener listener) {
         if (!listeners.contains(listener)) {
             listeners.add(listener);
         }
     }
 
-
-    public void removeListener(PluginListener listener) {
+    public final void removeListener(PluginListener listener) {
         listeners.remove(listener);
     }
-
 
     /**
      * Sets data for a module
@@ -332,7 +324,7 @@ public abstract class Plugin {
      * @param object
      * @param <T>
      */
-    protected <T> void setData(String name, T object) {
+    protected final <T> void setData(String name, T object) {
         ModuleData moduleData = new ModuleData();
         moduleData.setModule(module);
         moduleData.setName(name);
@@ -342,7 +334,6 @@ public abstract class Plugin {
         listeners.forEach(l -> l.saveModuleData(moduleData));
     }
 
-
     /**
      * Get module data
      *
@@ -351,7 +342,7 @@ public abstract class Plugin {
      * @param <T>
      * @return
      */
-    protected <T> T getData(String name, Class<T> classOfT) {
+    protected final <T> T getData(String name, Class<T> classOfT) {
         try {
             List<ModuleData> filtered = module.getData().stream().filter(data -> data.getName().equalsIgnoreCase(name))
                     .collect(Collectors.toList());
@@ -379,7 +370,7 @@ public abstract class Plugin {
      *
      * @return
      */
-    protected Map<String, Object> getAllData() {
+    protected final Map<String, Object> getAllData() {
         Map<String, Object> data = new HashMap<>();
 
         module.getData().forEach(singleData -> {
@@ -396,7 +387,7 @@ public abstract class Plugin {
         return data;
     }
 
-    protected void removeData(String name) {
+    protected final void removeData(String name) {
         List<ModuleData> data = module.getData().stream().filter(d -> d.getName().equalsIgnoreCase(name))
                 .collect(Collectors.toList());
 
@@ -406,4 +397,3 @@ public abstract class Plugin {
 
     }
 }
-
