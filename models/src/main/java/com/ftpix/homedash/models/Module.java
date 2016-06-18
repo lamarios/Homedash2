@@ -7,94 +7,82 @@ import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "modules")
 public class Module {
-	
-	public static final int REMOTE = 1, LOCAL = 0;
-	
-	@DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
-	private int id;
 
+    @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
+    private int id;
 
-	@DatabaseField
-	private String pluginClass;
+    @DatabaseField
+    private String pluginClass;
 
-	@DatabaseField
-	private int remote = LOCAL;
+    @DatabaseField(unknownEnumName = "LOCAL")
+    private ModuleLocation location = ModuleLocation.LOCAL;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
-	private Page page;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
+    private Page page;
 
-	@ForeignCollectionField(eager = false, maxEagerLevel = 0)
-	public ForeignCollection<ModuleSettings> settings;
+    @ForeignCollectionField(eager = false, maxEagerLevel = 0)
+    public ForeignCollection<ModuleSettings> settings;
 
-	@ForeignCollectionField(eager = false, maxEagerLevel = 0)
-	public ForeignCollection<ModuleLayout> layouts;
+    @ForeignCollectionField(eager = false, maxEagerLevel = 0)
+    public ForeignCollection<ModuleLayout> layouts;
 
-	@ForeignCollectionField(eager = false, maxEagerLevel = 0)
-	public ForeignCollection<ModuleData> data;
-	
+    @ForeignCollectionField(eager = false, maxEagerLevel = 0)
+    public ForeignCollection<ModuleData> data;
 
+    public int getId() {
+        return id;
+    }
 
-	public int getId() {
-		return id;
-	}
+    public String getPluginClass() {
+        return pluginClass;
+    }
 
+    public void setPluginClass(String pluginClass) {
+        this.pluginClass = pluginClass;
+    }
 
-	public String getPluginClass() {
-		return pluginClass;
-	}
+    public ModuleLocation getLocation() {
+        return location;
+    }
 
-	public void setPluginClass(String pluginClass) {
-		this.pluginClass = pluginClass;
-	}
+    public void setLocation(ModuleLocation location) {
+        this.location = location;
+    }
 
-	public int getRemote() {
-		return remote;
-	}
+    public Page getPage() {
+        return page;
+    }
 
-	public void setRemote(int remote) {
-		this.remote = remote;
-	}
+    public void setPage(Page page) {
+        this.page = page;
+    }
 
-	public Page getPage() {
-		return page;
-	}
+    public ForeignCollection<ModuleSettings> getSettings() {
+        return settings;
+    }
 
-	public void setPage(Page page) {
-		this.page = page;
-	}
+    public void setSettings(ForeignCollection<ModuleSettings> settings) {
+        this.settings = settings;
+    }
 
+    public ForeignCollection<ModuleLayout> getLayouts() {
+        return layouts;
+    }
 
-	public ForeignCollection<ModuleSettings> getSettings() {
-		return settings;
-	}
+    public void setLayouts(ForeignCollection<ModuleLayout> layouts) {
+        this.layouts = layouts;
+    }
 
+    public ForeignCollection<ModuleData> getData() {
+        return data;
+    }
 
-	public void setSettings(ForeignCollection<ModuleSettings> settings) {
-		this.settings = settings;
-	}
+    public void setData(ForeignCollection<ModuleData> data) {
+        this.data = data;
+    }
 
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public ForeignCollection<ModuleLayout> getLayouts() {
-		return layouts;
-	}
-
-
-	public void setLayouts(ForeignCollection<ModuleLayout> layouts) {
-		this.layouts = layouts;
-	}
-
-	public ForeignCollection<ModuleData> getData() {
-		return data;
-	}
-
-	public void setData(ForeignCollection<ModuleData> data) {
-		this.data = data;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-
-	
 }

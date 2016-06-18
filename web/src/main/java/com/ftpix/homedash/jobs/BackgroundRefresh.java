@@ -3,6 +3,7 @@ package com.ftpix.homedash.jobs;
 import com.ftpix.homedash.app.PluginModuleMaintainer;
 import com.ftpix.homedash.app.controllers.ModuleController;
 import com.ftpix.homedash.models.Module;
+import com.ftpix.homedash.models.ModuleLocation;
 import com.ftpix.homedash.plugins.Plugin;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +24,7 @@ public class BackgroundRefresh implements Job {
 
         try {
             PluginModuleMaintainer.getInstance().getAllPluginInstances().stream()
-                    .filter(p -> p.getBackgroundRefreshRate() > Plugin.NEVER && TIME % p.getBackgroundRefreshRate() == 0 && p.getModule().getRemote() == Module.LOCAL).forEach((plugin) -> {
+                    .filter(p -> p.getBackgroundRefreshRate() > Plugin.NEVER && TIME % p.getBackgroundRefreshRate() == 0 && p.getModule().getLocation() == ModuleLocation.LOCAL).forEach((plugin) -> {
                 try {
                     logger.info("Background task: plugin:[{}] module:[{}]", plugin.getId(), plugin.getModule().getId());
                     plugin.doInBackground();
