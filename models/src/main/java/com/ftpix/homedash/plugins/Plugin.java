@@ -181,11 +181,16 @@ public abstract class Plugin {
      * @throws Exception
      */
     public final Object refreshPlugin(String size) throws Exception {
-        if (module.getRemote() == module.LOCAL) {
-            Object obj = refresh(size);
-            return obj;
-        } else {
-            return null;
+        switch (module.getLocation()) {
+            case LOCAL:
+                Object obj = refresh(size);
+                return obj;
+            case REMOTE:
+                //TODO REMOTE MODULES
+                return null;
+            default:
+                return null;
+
         }
     }
 
