@@ -39,7 +39,7 @@
 					<version>1.2.1</version>
 					<executions>
 						<execution>
-							<phase>verify</phase>
+
 							<goals>
 								<goal>java</goal>
 							</goals>

@@ -1,5 +1,7 @@
 package com.ftpix.homedash.plugins.harddisk;
 
+
+
 import com.ftpix.homedash.Utils.ByteUtils;
 import com.ftpix.homedash.models.ModuleExposedData;
 import com.ftpix.homedash.models.WebSocketMessage;
@@ -12,7 +14,7 @@ import java.util.Map;
 /**
  * Created by gz on 06-Jun-16.
  */
-public class HarddiskPlugin extends Plugin{
+public class HarddiskPlugin extends Plugin {
     private final String SETTING_PATH = "path";
 
 
@@ -59,7 +61,6 @@ public class HarddiskPlugin extends Plugin{
 
     @Override
     public void doInBackground() {
-
     }
 
     @Override

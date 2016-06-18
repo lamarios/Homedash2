@@ -42,7 +42,6 @@ public class App {
 		try {
 			loadNativeLibs();
 
-			
 			staticFileLocation("/web");
 
 			port(Constants.PORT);
