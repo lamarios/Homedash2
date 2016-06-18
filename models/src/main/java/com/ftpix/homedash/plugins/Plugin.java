@@ -190,7 +190,6 @@ public abstract class Plugin {
                 return null;
             default:
                 return null;
-
         }
     }
 
