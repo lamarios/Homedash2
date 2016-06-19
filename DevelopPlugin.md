@@ -340,6 +340,15 @@ You need to create one template file per size you support. It needs to follow th
 You can put pretty much anything you want in there. 
 **Do not put element IDs in your template** it can conflict if your user has more than one instance of your plugin
 
+Example from the Hard disk module on size 2x1 (harddisk-2x1.jade)
+
+```jade
+.storage-icon
+h4.path
+p.data
+.hdd-container
+```
+
 ## CSS
 
 HomeDash is using less css. Style your module using the following rule:
@@ -364,7 +373,7 @@ As the rest of the files, the javascript need to follow a specific name and stru
 Your javascript files should be located in **assets.js** and follow the following structure:
 
 ```javascript
-function harddisk(moduleId) {
+function [plugin-name](moduleId) {
 
     this.moduleId = moduleId;
 
@@ -402,6 +411,6 @@ Things to know:
 Check the harddisk or any other to get some examples of code.
 
 
-## How to use my plugin
+## How to use your plugin
 
 Once HomeDash is started, it should automatically detect your plugin and it should be displayed when trying to add a new module
