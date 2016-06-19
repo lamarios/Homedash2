@@ -416,6 +416,13 @@ Things to know:
 Check the harddisk or any other to get some examples of code.
 
 
+## Native libraries
+
+If your plugin need to use native libraries, put them in the folder [plugin-root]/lib/native
+
+Your plugin needs to be compiled with the WEB module to be able to work with native libraries. You can't just copy/paste the packaged jar in the distribution plugin folder.
+
+
 ## How to use your plugin
 
 Once HomeDash is started, it should automatically detect your plugin and it should be displayed when trying to add a new module
