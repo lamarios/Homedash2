@@ -391,7 +391,7 @@ function [plugin-name](moduleId) {
 
     /*
     * The on message functions are called when your module receives a command from the backend
-    * or the normal timed reresh (command == 'refresh' in that case)
+    * or the normal timed refresh (command == 'refresh' in that case)
     * One function per size your modules handls
     */
     this.onMessage_2x1 = function (command, message, extra) {
