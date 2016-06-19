@@ -39,8 +39,6 @@ public class Endpoints {
         ModuleLayoutController.getInstance().defineEndpoints();
         ModuleSettingsController.getInstance().defineEndpoints();
 
-
-
 		/*
          * Main Page
 		 */

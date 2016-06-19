@@ -21,6 +21,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <main.class>com.ftpix.homedash.app.App</main.class>
         <native.dir>lib/native</native.dir>
+        <project.build.scriptSourceDirectory>startup-scripts</project.build.scriptSourceDirectory>
     </properties>
 
 
@@ -211,6 +212,29 @@
                                 </copy>
                             </tasks>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <!-- Assembly -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4.1</version>
+                <!-- The configuration of the plugin -->
+                <configuration>
+                    <!-- Specifies the configuration file of the assembly plugin -->
+                    <descriptors>
+                        <descriptor>assembly.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

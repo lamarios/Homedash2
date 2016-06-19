@@ -46,6 +46,7 @@ public class HarddiskPlugin extends Plugin {
 
     @Override
     public String[] getSizes() {
+
         return new String[]{"1x1", "2x1"};
     }
 
