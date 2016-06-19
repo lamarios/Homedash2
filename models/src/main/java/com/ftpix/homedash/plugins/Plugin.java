@@ -47,6 +47,7 @@ public abstract class Plugin {
 
     /**
      * Unique name for the plugin
+     * Better if a simple string without any special characters
      *
      * @return
      */
@@ -68,8 +69,10 @@ public abstract class Plugin {
 
     /**
      * Provide an external link if available
+     * for example if your plugin refers to an external service
+     * returning the url of the service here is nice to have
      *
-     * @return
+     * @return null if no link, otherwise an http url
      */
     public abstract String getExternalLink();
 
@@ -81,8 +84,9 @@ public abstract class Plugin {
 
     /**
      * Get the sizes available for this module
-     *
-     * @return
+     * Each size should have the format "{width}x{height}" ex 2x4 or 1x1
+     * If your module handles full screen view getSizes should contain ModuleLayout.FULL_SCREEN
+     * @return an
      */
     public abstract String[] getSizes();
 
@@ -105,7 +109,7 @@ public abstract class Plugin {
     public abstract WebSocketMessage processCommand(String command, String message, Object extra);
 
     /**
-     * Do background task if any
+     * Do background task if getBackgroundRefreshRate() > 0
      */
     public abstract void doInBackground();
 
@@ -119,14 +123,14 @@ public abstract class Plugin {
     protected abstract Object refresh(String size) throws Exception;
 
     /**
-     * Get refresh rate for front page display
+     * Get refresh rate for main page display
      *
      * @return
      */
     public abstract int getRefreshRate();
 
     /**
-     * Validates a given set of settings
+     * Validates a given set of settings when user adds the plugin
      *
      * @param settings
      * @return
@@ -135,6 +139,7 @@ public abstract class Plugin {
 
     /**
      * Expose a chunk of selected data on request
+     * This is not mandatory but nice to have. it's used when creating things like Pinned Site live tiles for windows
      *
      * @return
      */
@@ -142,7 +147,8 @@ public abstract class Plugin {
 
     /**
      * Expose a chunk of selected settings on request
-     *
+     * Used when showing the available modules to a remote instance
+     * DO NOT ADD SENSITIVE DATA HERE it's just to give some hints to user
      * @return
      */
     public abstract Map<String, String> exposeSettings();
