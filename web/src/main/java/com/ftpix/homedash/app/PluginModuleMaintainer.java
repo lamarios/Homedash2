@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ftpix.homedash.app.controllers.ModuleController;
+import com.ftpix.homedash.app.controllers.PluginController;
 import com.ftpix.homedash.models.ModuleData;
 import com.ftpix.homedash.plugins.PluginListener;
 import org.apache.logging.log4j.LogManager;
@@ -75,7 +76,7 @@ public class PluginModuleMaintainer implements PluginListener{
 
         } else {
             logger.info("Instance doesn't exist, recreating it");
-            plugin = (Plugin) Class.forName(module.getPluginClass()).newInstance();
+            plugin = PluginController.getInstance().createPluginFromClass(module.getPluginClass());
             plugin.setCacheBase(Constants.CACHE_FOLDER);
 
 

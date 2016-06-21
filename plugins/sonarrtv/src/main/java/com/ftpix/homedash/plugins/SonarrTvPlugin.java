@@ -102,9 +102,9 @@ public class SonarrTvPlugin extends Plugin {
 
     @Override
     public Map<String, String> validateSettings(Map<String, String> settings) {
-        Map<String, String> errors = new Hashtable<>();
+        Map<String, String> errors = new HashMap<>();
 
-        logger.info("Initiating Sonarr plugin.");
+        logger.info("Initiating Sonarr plugin for settings validation.");
         String url = settings.get(URL);
 
         String apiKey = settings.get(API_KEY);
@@ -114,11 +114,13 @@ public class SonarrTvPlugin extends Plugin {
         try {
             api.checkApi();
         } catch (IOException e) {
-            errors.put("Unavailable", "Unable to reach Sonarr installation, make sure hte address is correct");
+            errors.put("Unavailable", "Unable to reach Sonarr installation, make sure the address is correct");
         } catch (SonarrUnauthorizedException e) {
             errors.put("Unauthorized", "The API key is incorrect");
         }
 
+
+        logger.info("Sonnarr Settings erorr size: {}", errors.size());
         return errors;
     }
 

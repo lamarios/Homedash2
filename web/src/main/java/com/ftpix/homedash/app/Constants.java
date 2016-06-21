@@ -12,13 +12,13 @@ public class Constants {
 	public final static String CACHE_FOLDER;
 	public final static String DB_PATH;
 	public final static int PORT;
-
+	public final static String SALT;
 	private static Logger logger = LogManager.getLogger();
 
 	static {
 		
 		logger.info("Loading conf file");
-		ResourceBundle rs = ResourceBundle.getBundle("conf/homedash");
+		ResourceBundle rs = ResourceBundle.getBundle("homedash");
 
 		String path = rs.getString("cache_path");
 		;
@@ -36,7 +36,8 @@ public class Constants {
 		if (!f.exists()) {
 			f.mkdirs();
 		}
-		
+
+		SALT = rs.getString("salt");
 		
 		logger.info("DB_PATH:{}", DB_PATH);
 		logger.info("Cache folder:{}", CACHE_FOLDER);

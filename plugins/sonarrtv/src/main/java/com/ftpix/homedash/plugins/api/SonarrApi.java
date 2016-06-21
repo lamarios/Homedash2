@@ -132,9 +132,16 @@ public class SonarrApi {
 
         try {
             String response = Unirest.get(url).asString().getBody();
+            logger.info("response: [{}]", response);
+
+            if(response.contains("error")){
+                logger.info("Not authorized");
+                throw new SonarrUnauthorizedException();
+            }
+
         } catch (UnirestException e) {
             logger.info("Error:" + e.getMessage());
-            throw new SonarrUnauthorizedException();
+            throw new IOException();
         }
 
         return true;

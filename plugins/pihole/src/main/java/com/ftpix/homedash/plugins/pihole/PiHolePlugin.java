@@ -12,6 +12,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -87,7 +88,27 @@ public class PiHolePlugin extends Plugin {
 
     @Override
     public Map<String, String> validateSettings(Map<String, String> settings) {
-        return null;
+        Map<String, String> errors = new HashMap<>();
+
+        url = settings.get(SETTING_URL);
+        if (!url.endsWith("/")) {
+            url += "/";
+        }
+
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            url = "http://" + url;
+        }
+
+        try {
+            HttpResponse<String> response = Unirest.post(url + "api.php").header("cache-control", "no-cache").asString();
+            gson.fromJson(response.getBody(), PiHoleStats.class);
+        }catch(Exception e){
+            errors.put("Unavailable", "Unable to reach PiHole admin at the following address: "+url+"api.php");
+        }
+
+
+        return errors;
+
     }
 
     @Override

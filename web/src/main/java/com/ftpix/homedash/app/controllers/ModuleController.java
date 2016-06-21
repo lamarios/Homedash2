@@ -139,15 +139,51 @@ public class ModuleController implements Controller<Module, Integer> {
                 if (req.session().attribute(SESSION_NEW_MODULE_PAGE) != null) {
                     page = req.session().attribute(SESSION_NEW_MODULE_PAGE);
                 }
-
                 logger.info("/save-module ({} params)", req.queryMap().toMap().size());
-                saveModuleWithSettings(req.queryMap().toMap(), page);
+
+                //checking settings
+
+                //flattening post query
+                Map<String, String> flatSettings = new HashMap<String, String>();
+                req.queryMap().toMap().forEach((key, value)->{
+                    flatSettings.put(key, value[0]);
+                });
+
+                Plugin plugin;
+                boolean editing = false;
+                if(flatSettings.containsKey("module_id")){
+                    editing = true;
+                    plugin = PluginModuleMaintainer.getInstance().getPluginForModule(Integer.parseInt(flatSettings.get("module_id")));
+                }else{
+                    plugin = PluginController.getInstance().createPluginFromClass(req.queryParams("class"));
+                }
+
+
+
+                Map<String, String> errors = plugin.validateSettings(flatSettings);
+
+                //No errors, we're good to go
+                if(errors == null || errors.size() == 0) {
+                    saveModuleWithSettings(req.queryMap().toMap(), page);
+                }else{
+                    logger.info("[{}] errors found !", errors.size());
+                    Map<String, Object> map = new HashMap<>();
+                    if(editing) {
+                        map.put("plugin", plugin);
+                    }else{
+                        map.put("pluginClass", plugin.getClass().getCanonicalName());
+                    }
+                    map.put("pluginName", plugin.getDisplayName());
+                    map.put("settings", PluginController.getInstance().getPluginSettingsHtml(plugin, flatSettings));
+                    map.put("errors", errors);
+                    return new ModelAndView(map, "module-settings");
+                }
             } catch (Exception e) {
                 logger.error("Error while saving module", e);
             }
             res.redirect("/");
             return null;
-        });
+        }, new JadeTemplateEngine());
 
 		/*
 		 * Deletes a module

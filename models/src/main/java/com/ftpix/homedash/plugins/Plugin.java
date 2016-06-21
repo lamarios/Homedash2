@@ -207,7 +207,17 @@ public abstract class Plugin {
      * @throws IOException
      */
     public final String getSettingsHtml() throws Exception {
+      if(module!= null) {
+          return getSettingsHtml(getSettingsAsMap());
+      }else{
+          return getSettingsHtml(null);
+      }
+    }
+
+    public final String getSettingsHtml(Map<String, String> settings) throws Exception{
         try {
+
+
             logger.info("Getting settings for [{}]", this.getId());
             JadeConfiguration config = new JadeConfiguration();
 
@@ -216,11 +226,12 @@ public abstract class Plugin {
             config.setTemplateLoader(loader);
 
             Map<String, Object> model = new HashMap<String, Object>();
-            if (module != null) {
-                model.put("settings", getSettingsAsMap());
+
+            if (settings != null) {
+                model.put("settings", settings);
             }
 
-            System.out.println(getId());
+
             String templateFile = "templates/" + getId() + "-settings.jade";
             logger.info("Looking for template: [{}]", templateFile);
             JadeTemplate template = config.getTemplate(templateFile);

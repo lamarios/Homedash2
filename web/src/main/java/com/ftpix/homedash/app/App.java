@@ -14,6 +14,7 @@ import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import com.ftpix.homedash.app.controllers.SettingsController;
 import com.ftpix.homedash.models.Layout;
 import com.ftpix.homedash.plugins.SystemInfoPlugin;
 import com.ftpix.homedash.websocket.FullScreenWebSocket;
@@ -63,6 +64,10 @@ public class App {
                 res.header("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
                 res.header("Pragma", "no-cache"); // HTTP 1.0.
                 res.header("Expires", "0"); // Proxies.
+
+                if (!req.pathInfo().equalsIgnoreCase("/login") && !SettingsController.getInstance().checkSession(req, res)) {
+                    res.redirect("/login");
+                }
             });
 
             createDefaultData();
@@ -78,6 +83,7 @@ public class App {
             System.exit(1);
         }
     }
+
 
     /**
      * Load all the native libs from other modules
