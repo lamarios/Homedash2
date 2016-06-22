@@ -183,6 +183,11 @@ function getModuleContent(moduleId, size) {
         module.find('.loading').fadeOut("slow");
         sendMessage(moduleId, 'refresh', size);
 
+        var moduleObject = MODULES[moduleId];
+        if (moduleObject != undefined && moduleObject.documentReady != undefined) {
+            moduleObject.documentReady(size);
+        }
+
         module.find('.content').removeClass(function (index, css) {
             return (css.match(/(^|\s)size-\S+/g) || []).join(' ');
         });

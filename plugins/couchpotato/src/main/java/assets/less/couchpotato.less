@@ -1,0 +1,118 @@
+.couchpotato {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+
+  background-color: black;
+
+  button {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    bottom: 0;
+    color: white;
+    font-size: 35px;
+    background-color: rgba(0, 0, 0, 0.3);
+    margin: 0;
+  }
+
+  p {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    color: white;
+    text-align: center;
+    margin: 0;
+  }
+}
+
+.cp-modal {
+  .search-form {
+    text-align: center;
+
+    input {
+      width: 250px;
+      height: 34px;
+    }
+  }
+
+  .couchpotato-movie-list {
+
+    text-align: center;
+
+    @poster-width: 150px;
+    @poster-height: 225px;
+    .movie {
+
+      -webkit-transition: all 0.3s;
+      transition: all 0.3s;
+
+      animation-name: show-movie;
+      animation-duration: 0.5s;
+
+      display: inline-block;
+      cursor: pointer;
+
+      margin: 10px;
+      vertical-align: top;
+
+      .movie-poster {
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        background-color: black;
+
+        border-radius: 4px;
+        width: @poster-width;
+        height: @poster-height;
+      }
+
+      .movie-name {
+        width: @poster-width;
+      }
+    }
+
+    .movie:hover {
+      @scale: 1.1;
+      -ms-transform: scale(@scale); /* IE 9 */
+      -webkit-transform: scale(@scale); /* Safari */
+      transform: scale(@scale);
+
+    }
+
+  }
+}
+
+.couchpotato.size-2x1, .couchpotato.size-2x2,.couchpotato.size-2x3, .couchpotato.size-3x2, .couchpotato.size-3x3 {
+  button {
+    font-size: 25px;
+  }
+}
+
+@keyframes show-movie {
+  0% {
+    opacity: 0;
+    @scale: 0.5;
+    -ms-transform: scale(@scale); /* IE 9 */
+    -webkit-transform: scale(@scale); /* Safari */
+    transform: scale(@scale);
+  }
+
+  60% {
+    opacity: 1;
+    @scale: 1.05;
+    -ms-transform: scale(@scale); /* IE 9 */
+    -webkit-transform: scale(@scale); /* Safari */
+    transform: scale(@scale);
+  }
+
+  100% {
+    @scale: 1;
+    -ms-transform: scale(@scale); /* IE 9 */
+    -webkit-transform: scale(@scale); /* Safari */
+    transform: scale(@scale);
+  }
+}

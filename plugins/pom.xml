@@ -22,6 +22,7 @@
         <module>transmission</module>
         <module>pihole</module>
         <module>portmapper</module>
+        <module>couchpotato</module>
     </modules>
 
     <dependencies>
