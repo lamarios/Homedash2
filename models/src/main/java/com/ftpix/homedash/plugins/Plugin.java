@@ -8,6 +8,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.ftpix.homedash.models.*;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,6 +39,8 @@ public abstract class Plugin {
     protected Gson gson = new GsonBuilder().create();
 
     private List<PluginListener> listeners = new ArrayList<>();
+
+    private final static String REMOTE_URL = "url", REMOTE_API_KEY = "key", REMOTE_MODULE_ID = "id";
 
     public Plugin() {
     }
@@ -86,6 +91,7 @@ public abstract class Plugin {
      * Get the sizes available for this module
      * Each size should have the format "{width}x{height}" ex 2x4 or 1x1
      * If your module handles full screen view getSizes should contain ModuleLayout.FULL_SCREEN
+     *
      * @return an
      */
     public abstract String[] getSizes();
@@ -106,7 +112,7 @@ public abstract class Plugin {
      * @param extra
      * @return
      */
-    public abstract WebSocketMessage processCommand(String command, String message, Object extra);
+    protected abstract WebSocketMessage processCommand(String command, String message, Object extra);
 
     /**
      * Do background task if getBackgroundRefreshRate() > 0
@@ -149,6 +155,7 @@ public abstract class Plugin {
      * Expose a chunk of selected settings on request
      * Used when showing the available modules to a remote instance
      * DO NOT ADD SENSITIVE DATA HERE it's just to give some hints to user
+     *
      * @return
      */
     public abstract Map<String, String> exposeSettings();
@@ -186,18 +193,44 @@ public abstract class Plugin {
      * @return
      * @throws Exception
      */
-    public final Object refreshPlugin(String size) throws Exception {
+    public final WebSocketMessage refreshPlugin(String size) throws Exception {
+        WebSocketMessage result = new WebSocketMessage();
+        result.setCommand(WebSocketMessage.COMMAND_REFRESH);
+
+        try {
+            switch (module.getLocation()) {
+                case LOCAL:
+                    result.setMessage(refresh(size));
+                    break;
+                case REMOTE:
+                    result.setMessage(refreshRemote(size));
+                    break;
+                default:
+                    return null;
+            }
+
+        } catch (Exception e) {
+            logger.error("Error while refreshing module", e);
+            result.setCommand(WebSocketMessage.COMMAND_ERROR);
+            result.setMessage("Can't refresh module:" + e.getMessage());
+        }
+        result.setModuleId(module.getId());
+
+        return result;
+    }
+
+    public final WebSocketMessage processIncomingCommand(String command, String message, Object extra) {
         switch (module.getLocation()) {
             case LOCAL:
-                Object obj = refresh(size);
-                return obj;
+                return processCommand(command, message, extra);
             case REMOTE:
-                //TODO REMOTE MODULES
-                return null;
+                return processCommandRemote(command, message, extra);
             default:
                 return null;
         }
+
     }
+
 
     /**
      * Gets the settings view if there's any
@@ -207,14 +240,14 @@ public abstract class Plugin {
      * @throws IOException
      */
     public final String getSettingsHtml() throws Exception {
-      if(module!= null) {
-          return getSettingsHtml(getSettingsAsMap());
-      }else{
-          return getSettingsHtml(null);
-      }
+        if (module != null) {
+            return getSettingsHtml(getSettingsAsMap());
+        } else {
+            return getSettingsHtml(null);
+        }
     }
 
-    public final String getSettingsHtml(Map<String, String> settings) throws Exception{
+    public final String getSettingsHtml(Map<String, String> settings) throws Exception {
         try {
 
 
@@ -249,7 +282,7 @@ public abstract class Plugin {
      *
      * @return
      */
-    private final Map<String, String> getSettingsAsMap() {
+    public final Map<String, String> getSettingsAsMap() {
         Map<String, String> settings = new HashMap<>();
 
         module.getSettings().forEach(ms -> {
@@ -284,7 +317,7 @@ public abstract class Plugin {
 
         this.settings = getSettingsAsMap();
 
-        if (oldSettings == null || !this.settings.equals(oldSettings)) {
+        if (module.getLocation() == ModuleLocation.LOCAL && (oldSettings == null || !this.settings.equals(oldSettings))) {
             init();
         }
 
@@ -408,6 +441,11 @@ public abstract class Plugin {
         return data;
     }
 
+    /**
+     * Remove a specific set of data
+     *
+     * @param name
+     */
     protected final void removeData(String name) {
         List<ModuleData> data = module.getData().stream().filter(d -> d.getName().equalsIgnoreCase(name))
                 .collect(Collectors.toList());
@@ -415,6 +453,90 @@ public abstract class Plugin {
         if (!data.isEmpty()) {
             listeners.forEach(l -> l.removeModuleData(data.get(0)));
         }
+    }
 
+
+    /**
+     * Refresh a remote module
+     *
+     * @return
+     */
+    private final Object refreshRemote(String size) {
+
+        if (module != null && module.getLocation() == ModuleLocation.REMOTE) {
+            String url = settings.get(REMOTE_URL) + "api/refresh/" + settings.get(REMOTE_MODULE_ID) + "/size/" + size;
+            String apiKey = settings.get(REMOTE_API_KEY);
+
+            try {
+                HttpResponse<JsonNode> response = Unirest.get(url).header("Authorization", apiKey).asJson();
+
+                String jsonString = response.getBody().getObject().toString();
+
+                logger.info("Refreshing remote module, calling [{}], responseL [{}]", url, jsonString);
+
+
+                // replacing all the cache url calling by the remote one
+                jsonString = jsonString.replaceAll("cache/", settings.get(REMOTE_URL) + "cache/");
+
+
+                WebSocketMessage result = gson.fromJson(jsonString, WebSocketMessage.class);
+
+
+                return result.getMessage();
+            } catch (Exception e) {
+                logger.error("Couldn't get remote module [" + settings.get(REMOTE_MODULE_ID) + "] from url: [" + url + "]", e);
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+
+    /**
+     * Sends command to remote module
+     *
+     * @param command
+     * @param message
+     * @param extra
+     * @return
+     */
+    private WebSocketMessage processCommandRemote(String command, String message, Object extra) {
+        if (module != null && module.getLocation() == ModuleLocation.REMOTE) {
+            String url = settings.get(REMOTE_URL) + "api/process-command/" + settings.get(REMOTE_MODULE_ID);
+            String apiKey = settings.get(REMOTE_API_KEY);
+
+            try {
+                HttpResponse<JsonNode> response = Unirest.post(url)
+                        .header("Authorization", apiKey)
+                        .field("command", command)
+                        .field("message", message)
+                        .field("extra", gson.toJson(extra))
+                        .asJson();
+
+                String jsonString = response.getBody().getObject().toString();
+
+                logger.info("Refreshing remote module, calling [{}], responseL [{}]", url, jsonString);
+
+                // replacing all the cache url calling by the remote one
+                jsonString = jsonString.replaceAll("cache/", settings.get(REMOTE_URL) + "cache/");
+
+
+                WebSocketMessage result = gson.fromJson(jsonString, WebSocketMessage.class);
+                result.setModuleId(module.getId());
+
+
+                return result;
+            } catch (Exception e) {
+                logger.error("Couldn't get remote module [" + settings.get(REMOTE_MODULE_ID) + "] from url: [" + url + "]", e);
+                WebSocketMessage result = new WebSocketMessage();
+                result.setCommand(WebSocketMessage.COMMAND_ERROR);
+                result.setMessage("Can't refresh module:" + e.getMessage());
+                result.setModuleId(module.getId());
+                return result;
+            }
+        } else {
+            return null;
+        }
     }
 }

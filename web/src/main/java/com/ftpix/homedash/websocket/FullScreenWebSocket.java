@@ -117,7 +117,7 @@ public class FullScreenWebSocket {
             Plugin plugin = null;
             try {
                 plugin = PluginModuleMaintainer.getInstance().getPluginForModule(message.getModuleId());
-                response = plugin.processCommand(message.getCommand(), message.getMessage().toString(), message.getExtra());
+                response = plugin.processIncomingCommand(message.getCommand(), message.getMessage().toString(), message.getExtra());
             } catch (Exception e) {
                 logger.error("Error while processing the command", e);
                 if (plugin != null) {

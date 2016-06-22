@@ -21,6 +21,7 @@ public class DB {
 	public static Dao<ModuleSettings, Integer> MODULE_SETTINGS_DAO = null;
 	public static Dao<Settings, String> SETTINGS_DAO = null;
 	public static Dao<ModuleData, String> MODULE_DATA_DAO = null;
+	public static Dao<RemoteFavorite, Integer> REMOTE_FAVORITE_DAO = null;
 
 	private final static String databaseUrl = "jdbc:h2:" + Constants.DB_PATH;
 
@@ -59,11 +60,16 @@ public class DB {
 			logger.info("Creating Module Data DAO and tables if it doesn't exist");
 			MODULE_DATA_DAO = DaoManager.createDao(connectionSource, ModuleData.class);
 			TableUtils.createTableIfNotExists(connectionSource, ModuleData.class);
-			
-			
+
+
 			logger.info("Creating  Settings DAO and tables if it doesn't exist");
 			SETTINGS_DAO = DaoManager.createDao(connectionSource, Settings.class);
 			TableUtils.createTableIfNotExists(connectionSource, Settings.class);
+
+
+			logger.info("Creating  remote favorite DAO and tables if it doesn't exist");
+			REMOTE_FAVORITE_DAO = DaoManager.createDao(connectionSource, RemoteFavorite.class);
+			TableUtils.createTableIfNotExists(connectionSource, RemoteFavorite.class);
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

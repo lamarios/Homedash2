@@ -18,6 +18,13 @@ public class ModuleSettings {
 	@DatabaseField
 	private String value;
 
+	public ModuleSettings(){}
+
+	public ModuleSettings(String name, String value) {
+		this.name = name;
+		this.value = value;
+	}
+
 	public int getId() {
 		return id;
 	}

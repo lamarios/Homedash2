@@ -126,22 +126,16 @@ public class MainWebSocket{
      * @return
      */
     public static WebSocketMessage refreshSingleModule(int moduleId, String size) throws Exception {
-        WebSocketMessage response = new WebSocketMessage();
-        response.setCommand(WebSocketMessage.COMMAND_REFRESH);
-        response.setModuleId(moduleId);
 
         Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(moduleId);
-
-        try {
-
-
-            response.setMessage(plugin.refreshPlugin(size));
-
-        } catch (Exception e) {
-            // logger.error("Error while refreshing " + plugin.getDisplayName(), e);
-            response.setCommand(WebSocketMessage.COMMAND_ERROR);
-            response.setMessage("Error while refreshing " + plugin.getDisplayName() + ": " + e.getMessage());
-        }
+        WebSocketMessage response = plugin.refreshPlugin(size);
+//        try {
+//            response.setMessage(plugin.refreshPlugin(size));
+//        } catch (Exception e) {
+//            // logger.error("Error while refreshing " + plugin.getDisplayName(), e);
+//            response.setCommand(WebSocketMessage.COMMAND_ERROR);
+//            response.setMessage("Error while refreshing " + plugin.getDisplayName() + ": " + e.getMessage());
+//        }
 
         return response;
 
@@ -159,7 +153,7 @@ public class MainWebSocket{
         try {
             plugin = PluginModuleMaintainer.getInstance().getPluginForModule(message.getModuleId());
 
-            response = plugin.processCommand(message.getCommand(), message.getMessage().toString(), message.getExtra());
+            response = plugin.processIncomingCommand(message.getCommand(), message.getMessage().toString(), message.getExtra());
             response.setModuleId(plugin.getModule().getId());
         } catch (Exception e) {
             logger.error("Error while processing the command", e);

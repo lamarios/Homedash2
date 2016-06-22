@@ -79,8 +79,34 @@ block content
                         input(type="text", class="form-control", id="pushover_app_token", name="pushover_app_token", value='#{settings.get("pushover_app_token")}')
                     else
                         input(type="text", class="form-control", id="pushover_app_token", name="pushover_app_token")
-            div
-                button(type="submit", class="btn btn-primary") Save 
+
+        .settings-box
+            h2 Remote access
+            .checkbox
+                label
+                    if settings.containsKey("use_remote") && settings.get("use_remote").equals("1")
+                        input(type="checkbox", name="use_remote", value="1", checked="true")
+                    else
+                        input(type="checkbox", name="use_remote", value="1")
+                    | Allow remote access
+            .remote(data-dependent="use_remote")
+                .form-group
+                    label(for="remote_name") Name to display to clients
+                    if settings.containsKey("remote_api_key")
+                        input(type="text", class="form-control", id="remote_name", name="remote_name", value='#{settings.get("remote_name")}')
+                    else
+                        input(type="text", class="form-control", id="remote_name", name="remote_name")
+
+                .form-group
+                    label(for="remote_api_key") API Key
+                    if settings.containsKey("remote_api_key")
+                        input(type="text", class="form-control", id="remote_api_key", name="remote_api_key", value='#{settings.get("remote_api_key")}', readonly)
+                    else
+                        input(type="text", class="form-control", id="remote_api_key", name="remote_api_key", readonly)
+                    button#generate-key.btn.btn-primary Generate key
+
+        div
+            button(type="submit", class="btn btn-primary") Save
                             
 block scripts
     script(src="/js/settings.js")

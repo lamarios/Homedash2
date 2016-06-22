@@ -4,11 +4,17 @@ block css
 block content
     .head-links
         a(href="/") << Back
-    h1 Select module to add
+    h1 Add module
+    h2 Add remote module
+    div
+        p You can add a module from a remote instance of HomeDash
+        .add-button
+            a.btn.btn-primary(href="/add-remote") Add remote
+    h2 Select module to add
     .row
         .col-md-12
             for plugin in plugins
-                h2 #{plugin.getDisplayName()}
+                h3 #{plugin.getDisplayName()}
                 p #{plugin.getDescription()}
                 .add-button
                     a(href="/add-module/#{plugin.getClass().getCanonicalName()}", class="btn btn-primary") Add #{plugin.getDisplayName()}

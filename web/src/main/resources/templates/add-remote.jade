@@ -1,0 +1,25 @@
+extends ./layout.jade
+
+block scripts
+    script(src="/js/add-remote.js")
+
+block css
+
+block content
+    .head-links
+        a(href="/") << Back
+
+    h1 Add remote module
+    p Input the details of your server and choose which module you want to add
+
+    div
+        .form-group
+            label(for="remote-url") Remote URL
+            input(type="text", class="form-control", id="remote-url", name="remote-url")
+        .form-group
+            label(for="remote-key") Remote API key
+            input(type="text", class="form-control", id="remote-key", name="remote-key")
+        button#browse-remote.btn.btn-primary Browse remote
+
+    h1#remote-name
+    #remote-modules

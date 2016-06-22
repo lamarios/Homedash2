@@ -90,7 +90,11 @@
             <artifactId>spark-debug-tools</artifactId>
             <version>0.5</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.mashape.unirest</groupId>
+            <artifactId>unirest-java</artifactId>
+            <version>1.4.9</version>
+        </dependency>
         <!-- plugins -->
         <dependency>
             <groupId>com.ftpix.homedash.plugins</groupId>

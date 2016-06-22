@@ -7,6 +7,9 @@
                         i.fa.fa-ellipsis-v
 
                 .module-icons
+                    if layout.getModule().getLocation() == "REMOTE"
+                        span.remote-name #{plugins.get(layout.getModule().getId()).getSettingsAsMap().get("name")}&nbsp;
+                        i.fa.fa-cloud
                     if plugins.get(layout.getModule().getId()).hasFullScreen()
                         a(href="/module/#{layout.getModule().getId()}/full-screen")
                             i.fa.fa-expand

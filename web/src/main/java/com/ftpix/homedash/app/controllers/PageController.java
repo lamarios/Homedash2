@@ -115,12 +115,12 @@ public class PageController implements Controller<Page, Integer>{
 
     @Override
     public boolean deleteById(Integer id) throws SQLException {
-        return DB.PAGE_DAO.deleteById(id) == 1;
+        return deletePage(id);
     }
 
     @Override
     public boolean delete(Page object) throws SQLException {
-        return DB.PAGE_DAO.delete(object) == 1;
+        return deletePage(object.getId());
     }
 
     @Override

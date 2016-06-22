@@ -86,6 +86,10 @@ public class SettingsController implements Controller<Settings, String> {
                 deleteById(Settings.PUSHOVER);
             }
 
+            if (!postParam.containsKey(Settings.USE_REMOTE)) {
+                deleteById(Settings.USE_REMOTE);
+            }
+
             postParam.forEach((name, value) -> {
                 try {
 

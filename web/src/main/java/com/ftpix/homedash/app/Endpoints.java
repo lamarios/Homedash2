@@ -38,6 +38,8 @@ public class Endpoints {
         SettingsController.getInstance().defineEndpoints();
         ModuleLayoutController.getInstance().defineEndpoints();
         ModuleSettingsController.getInstance().defineEndpoints();
+        RemoteController.getInstance().defineEndpoints();
+        APIController.getInstance().defineEndpoints();
 
 		/*
          * Main Page

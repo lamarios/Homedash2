@@ -65,7 +65,7 @@ public class App {
                 res.header("Pragma", "no-cache"); // HTTP 1.0.
                 res.header("Expires", "0"); // Proxies.
 
-                if (!req.pathInfo().equalsIgnoreCase("/login") && !SettingsController.getInstance().checkSession(req, res)) {
+                if (!req.pathInfo().startsWith("/api") && !req.pathInfo().startsWith("/cache") && !req.pathInfo().equalsIgnoreCase("/login") && !SettingsController.getInstance().checkSession(req, res)) {
                     res.redirect("/login");
                 }
             });

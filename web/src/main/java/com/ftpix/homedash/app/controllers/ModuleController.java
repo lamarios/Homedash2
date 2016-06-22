@@ -30,7 +30,7 @@ public class ModuleController implements Controller<Module, Integer> {
     private Logger logger = LogManager.getLogger();
 
     private final Gson gson = new GsonFireBuilder().enableExposeMethodResult().createGsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-    private final String SESSION_NEW_MODULE_PAGE = "new-module-page";
+    public static final String SESSION_NEW_MODULE_PAGE = "new-module-page";
 
 
     ///Singleton
