@@ -119,6 +119,16 @@ local.properties
 .idea/
 *.iml
 
+
+#Netbeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+.nb-gradle/
+
 #Homedash2
 cache/
 homedash.mv.db
