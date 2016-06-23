@@ -1,1 +1,0 @@
-function rootElement(){return $(".content.size-full-screen")}$(document).ready(function(){initFullScreenWebsocket()})

@@ -78,8 +78,6 @@ public class PluginModuleMaintainer implements PluginListener{
             logger.info("Instance doesn't exist, recreating it");
             plugin = PluginController.getInstance().createPluginFromClass(module.getPluginClass());
             plugin.setCacheBase(Constants.CACHE_FOLDER);
-
-
         }
 
         plugin.setModule(module);

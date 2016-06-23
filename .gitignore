@@ -124,5 +124,9 @@ cache/
 homedash.mv.db
 web/src/main/resources/native-libs
 web/src/main/resources/web/web
+web/src/main/resources/web/js/*.js
+web/src/main/resources/web/css/*.css
+
+
 web/src/main/resources/homedash.properties
 plugins/*/src/main/resources/*
