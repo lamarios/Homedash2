@@ -1,4 +1,0 @@
-port=4567
-
-cache_path = cache/
-db_path = ./homedash
