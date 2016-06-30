@@ -31,6 +31,7 @@
             <artifactId>models</artifactId>
             <version>${project.version}</version>
         </dependency>
+
     </dependencies>
 
     <build>
@@ -67,7 +68,8 @@
                             <configuration>
                                 <sourceDirectory>${project.build.sourceDirectory}/assets/js</sourceDirectory>
 
-                                <outputDirectory>${project.build.resources[0].directory}/web/${name}/js</outputDirectory>
+                                <outputDirectory>${project.build.resources[0].directory}/web/${name}/js
+                                </outputDirectory>
                             </configuration>
                         </execution>
                     </executions>
@@ -77,6 +79,7 @@
                     <groupId>org.lesscss</groupId>
                     <artifactId>lesscss-maven-plugin</artifactId>
                     <version>1.7.0.1.1</version>
+
                     <configuration>
                         <sourceDirectory>${project.build.sourceDirectory}/assets/less</sourceDirectory>
                         <outputDirectory>${project.build.resources[0].directory}/web/${name}/css</outputDirectory>
@@ -101,6 +104,27 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-antrun-plugin</artifactId>
                     <version>1.8</version>
+
+
+                    <dependencies>
+                        <dependency>
+                            <groupId>ant-contrib</groupId>
+                            <artifactId>ant-contrib</artifactId>
+                            <version>1.0b3</version>
+                            <exclusions>
+                                <exclusion>
+                                    <groupId>ant</groupId>
+                                    <artifactId>ant</artifactId>
+                                </exclusion>
+                            </exclusions>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.apache.ant</groupId>
+                            <artifactId>ant-nodeps</artifactId>
+                            <version>1.8.1</version>
+                        </dependency>
+                    </dependencies>
+
                     <executions>
                         <execution>
                             <id>copy-plugins-templates</id>
@@ -109,13 +133,13 @@
                                 <goal>run</goal>
                             </goals>
                             <configuration>
-                                <tasks>
+                                <target>
                                     <copy todir="src/main/resources/templates">
                                         <fileset dir="src/main/java/assets/templates">
                                             <include name="**/*.jade"/>
                                         </fileset>
                                     </copy>
-                                </tasks>
+                                </target>
                             </configuration>
                         </execution>
                         <execution>
@@ -125,13 +149,27 @@
                                 <goal>run</goal>
                             </goals>
                             <configuration>
-                                <tasks>
-                                    <copy todir="src/main/resources/web/${name}/files">
-                                        <fileset dir="src/main/java/assets/files">
-                                            <include name="**/*"/>
-                                        </fileset>
-                                    </copy>
-                                </tasks>
+                                <target>
+
+                                    <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+
+                                    <if>
+                                        <available file="src/main/java/assets/files" property="files.present"/>
+                                        <then>
+                                            <copy todir="src/main/resources/web/${name}/files">
+                                                <fileset dir="src/main/java/assets/files">
+                                                    <include name="**/*"/>
+                                                </fileset>
+                                            </copy>
+                                        </then>
+
+                                        <else>
+                                            <echo>The file does not exist</echo>
+                                        </else>
+                                    </if>
+                                </target>
+
+
                             </configuration>
                         </execution>
 
