@@ -138,6 +138,12 @@
             <artifactId>couchpotato</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.ftpix.homedash.plugins</groupId>
+            <artifactId>networkmonitor</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 

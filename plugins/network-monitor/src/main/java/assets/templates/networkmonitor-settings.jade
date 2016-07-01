@@ -1,0 +1,6 @@
+.form-group
+    label(for="network-interface") Network interface to monitor
+    if settings && settings.containsKey("network-interface")
+        input.form-control(type="text", id="network-interface", name="network-interface", placeholder="Interface", value='#{settings.get("network-interface")}')
+    else
+        input.form-control(type="text", id="network-interface", name ="network-interface", placeholder = "Interface")
