@@ -5,6 +5,7 @@ import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.plugins.couchpotato.models.MovieObject;
 import com.mashape.unirest.http.Unirest;
+
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -225,6 +226,9 @@ public class CouchPotatoPlugin extends Plugin {
     }
 
 
+    /**
+     * Search a movie from couchpotato instance
+     */
     private List<MovieObject> searchMovie(String query) throws Exception {
         List<MovieObject> result = new ArrayList<MovieObject>();
         String queryUrl = url + API_MOVIE_SEARCH + URLEncoder.encode(query, "UTF-8");
@@ -232,49 +236,52 @@ public class CouchPotatoPlugin extends Plugin {
         String response = Unirest.get(queryUrl).asString().getBody();
         logger.info("Search query:[{}] response:{}", queryUrl, response);
 
-        JSONObject json = new JSONObject(response);
+        try {
+            JSONObject json = new JSONObject(response);
 
-        JSONArray jsonarray = json.getJSONArray("movies");
+            JSONArray jsonarray = json.getJSONArray("movies");
 
-        for (int i = 0; i < jsonarray.length(); i++) {
+            for (int i = 0; i < jsonarray.length(); i++) {
 
-            JSONObject movie = jsonarray.getJSONObject(i);
+                JSONObject movie = jsonarray.getJSONObject(i);
 
-            MovieObject movieObject = new MovieObject();
-            try {
-                movieObject.imdbId = movie.getString("imdb");
+                MovieObject movieObject = new MovieObject();
+                try {
+                    movieObject.imdbId = movie.getString("imdb");
 
-                JSONArray images = movie.getJSONObject("images").getJSONArray("poster_original");
-                if (images.length() != 0) {
-                    File f = new File(getImagePath() + movieObject.imdbId + ".jpg");
-                    if (!f.exists()) {
-                        FileUtils.copyURLToFile(new java.net.URL(images.getString(0)), f);
+                    JSONArray images = movie.getJSONObject("images").getJSONArray("poster_original");
+                    if (images.length() != 0) {
+                        File f = new File(getImagePath() + movieObject.imdbId + ".jpg");
+                        if (!f.exists()) {
+                            FileUtils.copyURLToFile(new java.net.URL(images.getString(0)), f);
+                        }
+                        movieObject.poster = getImagePath() + movieObject.imdbId + ".jpg";
                     }
-                    movieObject.poster = getImagePath() + movieObject.imdbId + ".jpg";
+                } catch (Exception e) {
+                    logger.error("Error while parsing JSON");
+                    //skipping for this item
+                    continue;
                 }
-            } catch (Exception e) {
 
+                try {
+                    movieObject.inLibrary = movie.getBoolean("in_library");
+                } catch (JSONException e) {
+                    movieObject.inLibrary = true;
+                }
+
+                movieObject.originalTitle = movie.getString("original_title");
+                try {
+                    movieObject.wanted = movie.getBoolean("in_wanted");
+                } catch (JSONException e) {
+                    movieObject.wanted = true;
+                }
+                movieObject.year = movie.getInt("year");
+
+                result.add(movieObject);
             }
-
-            try {
-                movieObject.inLibrary = movie.getBoolean("in_library");
-            } catch (JSONException e) {
-                movieObject.inLibrary = true;
-            }
-
-            movieObject.originalTitle = movie.getString("original_title");
-            try {
-                movieObject.wanted = movie.getBoolean("in_wanted");
-            } catch (JSONException e) {
-                movieObject.wanted = true;
-            }
-            movieObject.year = movie.getInt("year");
-
-            result.add(movieObject);
-
+        } catch (Exception e) {
+            logger.info("No movies found");
         }
-
         return result;
-
     }
 }

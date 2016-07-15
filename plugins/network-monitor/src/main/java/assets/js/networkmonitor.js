@@ -12,7 +12,7 @@ function networkmonitor(moduleId) {
 
     };
 
-    this.onMessage_2x1 = function(command, message, extra){
+    this.onMessage_2x1 = function (command, message, extra) {
         this.width = 2;
         this.processData(message);
     }
@@ -21,7 +21,6 @@ function networkmonitor(moduleId) {
         this.width = 3;
         this.processData(message);
     };
-
 
     this.root = function () {
         return rootElement(this.moduleId);
@@ -40,6 +39,5 @@ function networkmonitor(moduleId) {
         root.find('.interface-name').html(obj.name + '<small> - ' + obj.ip + '</small>');
 
     };
-
 
 }

@@ -7,8 +7,11 @@ import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.models.WebSocketSession;
 import com.ftpix.homedash.plugins.Plugin;
+
 import com.google.gson.Gson;
+
 import io.gsonfire.GsonFireBuilder;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.websocket.api.Session;
@@ -64,7 +67,8 @@ public class FullScreenWebSocket {
 
 
     /**
-     * Inner class, seems like spark can only have one instance per websocket instance so we create a new one each session
+     * Inner class, seems like spark can only have one instance per websocket instance so we create
+     * a new one each session
      */
     private class InnerSocketClass {
         private Logger logger = LogManager.getLogger();
@@ -109,8 +113,6 @@ public class FullScreenWebSocket {
 
         /**
          * Send a command to a module
-         *
-         * @param message
          */
         private void sendCommandToModule(WebSocketMessage message) {
             WebSocketMessage response = new WebSocketMessage();

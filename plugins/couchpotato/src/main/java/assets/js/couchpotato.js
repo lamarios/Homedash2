@@ -2,13 +2,11 @@ function couchpotato(moduleId) {
 
     this.moduleId = moduleId;
 
-
     this.documentReady = function (size) {
         var self = this;
         var root = self.root();
 
         root.find('.modal').attr('data-module', this.moduleId);
-
 
         root.find(".show-search").click(function () {
             self.modal().appendTo("body").modal('show');
@@ -17,7 +15,6 @@ function couchpotato(moduleId) {
         this.modal().find(".search-submit").click(function (event) {
             self.searchMovie();
         });
-
 
         this.modal().on('click', ".movie", function (event) {
 
@@ -61,7 +58,6 @@ function couchpotato(moduleId) {
         this.processData(command, message, extra);
     }
 
-
     this.processData = function (command, message, extra) {
         if (command == 'refresh') {
             this.refresh(message);
@@ -99,17 +95,24 @@ function couchpotato(moduleId) {
         var parent = this;
         var movieList = parent.modal().find('.couchpotato-movie-list');
         movieList.html('');
-        $.each(message, function (index, value) {
-            movieList.append(parent.movieToHtml(value));
-            //$("#cp" + parent.moduleId + "-movieList").append('<hr style="border-color: black; margin:0"/>');
-        });
+        if (message.length > 0) {
+            $.each(message, function (index, value) {
+                movieList.append(parent.movieToHtml(value));
+                //$("#cp" + parent.moduleId + "-movieList").append('<hr style="border-color: black;
+                // margin:0"/>');
+            });
+        } else {
+            movieList.html('<p>No results</p>');
+        }
 
     }
 
     this.movieToHtml = function (movie) {
         var html = [];
-        html.push('<div class="movie" data-imdb="', movie.imdbId, '" data-title="', movie.originalTitle, '">');
-        html.push('<div class="movie-poster" style="background-image:url(', movie.poster, ');"></div>');
+        html.push('<div class="movie" data-imdb="', movie.imdbId, '" data-title="',
+                  movie.originalTitle, '">');
+        html.push('<div class="movie-poster" style="background-image:url(', movie.poster,
+                  ');"></div>');
         html.push('<p class="movie-name"><strong>', movie.originalTitle, ' </strong>');
 
         if (movie.wanted) {
