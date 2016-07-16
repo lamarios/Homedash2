@@ -11,6 +11,7 @@ import com.ftpix.homedash.models.*;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -53,22 +54,16 @@ public abstract class Plugin {
     /**
      * Unique name for the plugin
      * Better if a simple string without any special characters
-     *
-     * @return
      */
     public abstract String getId();
 
     /**
      * Nice to read name of your plugin
-     *
-     * @return
      */
     public abstract String getDisplayName();
 
     /**
      * Description of what it's doing
-     *
-     * @return
      */
     public abstract String getDescription();
 
@@ -99,18 +94,11 @@ public abstract class Plugin {
     /**
      * How often (in second) this module should be refreshed in the background ,
      * 0 = never
-     *
-     * @return
      */
     public abstract int getBackgroundRefreshRate();
 
     /**
      * Process a command sent by a client
-     *
-     * @param command
-     * @param message
-     * @param extra
-     * @return
      */
     protected abstract WebSocketMessage processCommand(String command, String message, Object extra);
 
@@ -123,31 +111,22 @@ public abstract class Plugin {
      * Get data to send to clients via web socket
      *
      * @param size of the module
-     * @return
-     * @throws Exception
      */
     protected abstract Object refresh(String size) throws Exception;
 
     /**
      * Get refresh rate for main page display
-     *
-     * @return
      */
     public abstract int getRefreshRate();
 
     /**
      * Validates a given set of settings when user adds the plugin
-     *
-     * @param settings
-     * @return
      */
     public abstract Map<String, String> validateSettings(Map<String, String> settings);
 
     /**
-     * Expose a chunk of selected data on request
-     * This is not mandatory but nice to have. it's used when creating things like Pinned Site live tiles for windows
-     *
-     * @return
+     * Expose a chunk of selected data on request This is not mandatory but nice to have. it's used
+     * when creating things like Pinned Site live tiles for windows
      */
     public abstract ModuleExposedData exposeData();
 
@@ -155,18 +134,11 @@ public abstract class Plugin {
      * Expose a chunk of selected settings on request
      * Used when showing the available modules to a remote instance
      * DO NOT ADD SENSITIVE DATA HERE it's just to give some hints to user
-     *
-     * @return
      */
     public abstract Map<String, String> exposeSettings();
 
     /**
      * Gets the html for a specific size
-     *
-     * @param size
-     * @return
-     * @throws JadeException
-     * @throws IOException
      */
     public final String getView(String size) throws JadeException, IOException {
 
@@ -188,10 +160,6 @@ public abstract class Plugin {
 
     /**
      * Refresh called from the websocket
-     *
-     * @param size
-     * @return
-     * @throws Exception
      */
     public final WebSocketMessage refreshPlugin(String size) throws Exception {
         WebSocketMessage result = new WebSocketMessage();
@@ -234,10 +202,6 @@ public abstract class Plugin {
 
     /**
      * Gets the settings view if there's any
-     *
-     * @return
-     * @throws JadeException
-     * @throws IOException
      */
     public final String getSettingsHtml() throws Exception {
         if (module != null) {
@@ -279,8 +243,6 @@ public abstract class Plugin {
 
     /**
      * Get the module settings as a map
-     *
-     * @return
      */
     public final Map<String, String> getSettingsAsMap() {
         Map<String, String> settings = new HashMap<>();
@@ -294,8 +256,6 @@ public abstract class Plugin {
 
     /**
      * Get the module
-     *
-     * @return
      */
     public final Module getModule() {
         return module;
@@ -304,8 +264,6 @@ public abstract class Plugin {
     /**
      * Set the module, it will load the settings and the data from the module as
      * well
-     *
-     * @param module
      */
     public final void setModule(Module module) {
         Map<String, String> oldSettings = null;
@@ -340,8 +298,6 @@ public abstract class Plugin {
 
     /**
      * Boolean to check if a plugin has an external link
-     *
-     * @return
      */
     public final boolean hasExternalLink() {
         return getExternalLink() != null;
@@ -349,8 +305,6 @@ public abstract class Plugin {
 
     /**
      * Boolean to check if an array has full screen view
-     *
-     * @return
      */
     public final boolean hasFullScreen() {
         return Arrays.stream(getSizes()).anyMatch((s) -> s.equalsIgnoreCase(ModuleLayout.FULL_SCREEN));
@@ -358,8 +312,6 @@ public abstract class Plugin {
 
     /**
      * Adds a listener to the plugin listeners
-     *
-     * @param listener
      */
     public final void addListener(PluginListener listener) {
         if (!listeners.contains(listener)) {
@@ -373,12 +325,9 @@ public abstract class Plugin {
 
     /**
      * Sets data for a module
-     *
-     * @param name
-     * @param object
-     * @param <T>
      */
-    protected final <T> void setData(String name, T object) {
+    protected final  void setData(String name, Object object) {
+        logger.info("Saving data for module");
         ModuleData moduleData = new ModuleData();
         moduleData.setModule(module);
         moduleData.setName(name);
@@ -391,38 +340,33 @@ public abstract class Plugin {
     /**
      * Get module data
      *
-     * @param name
-     * @param classOfT expected class
-     * @param <T>
-     * @return
+     * @param type expected type
      */
-    protected final <T> T getData(String name, Class<T> classOfT) {
+    protected final Optional getData(String name, Type type) {
         try {
-            List<ModuleData> filtered = module.getData().stream().filter(data -> data.getName().equalsIgnoreCase(name))
-                    .collect(Collectors.toList());
+            Optional<ModuleData> filtered = module.getData().stream().filter(data -> data.getName().equalsIgnoreCase(name))
+                    .findFirst();
 
-            if (!filtered.isEmpty()) {
-                T toReturn = null;
+            if (filtered.isPresent()) {
 
-                ModuleData data = filtered.get(0);
+                ModuleData data = filtered.get();
 
                 Class clazz = Class.forName(data.getDataClass());
 
-                Object o = gson.fromJson(data.getJson(), (Type) classOfT);
+                Object o = gson.fromJson(data.getJson(), type);
 
-                return (T) o;
+                return Optional.of(clazz.cast(o));
+            } else {
+                return Optional.empty();
             }
-            return null;
         } catch (Exception e) {
             logger.error("Error while getting the data", e);
-            return null;
+            return Optional.empty();
         }
     }
 
     /**
      * Get all the data as a map
-     *
-     * @return
      */
     protected final Map<String, Object> getAllData() {
         Map<String, Object> data = new HashMap<>();
@@ -443,8 +387,6 @@ public abstract class Plugin {
 
     /**
      * Remove a specific set of data
-     *
-     * @param name
      */
     protected final void removeData(String name) {
         List<ModuleData> data = module.getData().stream().filter(d -> d.getName().equalsIgnoreCase(name))
@@ -458,8 +400,6 @@ public abstract class Plugin {
 
     /**
      * Refresh a remote module
-     *
-     * @return
      */
     private final Object refreshRemote(String size) {
 
@@ -495,11 +435,6 @@ public abstract class Plugin {
 
     /**
      * Sends command to remote module
-     *
-     * @param command
-     * @param message
-     * @param extra
-     * @return
      */
     private WebSocketMessage processCommandRemote(String command, String message, Object extra) {
         if (module != null && module.getLocation() == ModuleLocation.REMOTE) {

@@ -20,7 +20,7 @@ public class DB {
 	public static Dao<ModuleLayout, Integer> MODULE_LAYOUT_DAO = null;
 	public static Dao<ModuleSettings, Integer> MODULE_SETTINGS_DAO = null;
 	public static Dao<Settings, String> SETTINGS_DAO = null;
-	public static Dao<ModuleData, String> MODULE_DATA_DAO = null;
+	public static Dao<ModuleData, Integer> MODULE_DATA_DAO = null;
 	public static Dao<RemoteFavorite, Integer> REMOTE_FAVORITE_DAO = null;
 
 	private final static String databaseUrl = "jdbc:h2:" + Constants.DB_PATH;

@@ -5,11 +5,15 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.ftpix.homedash.app.PluginModuleMaintainer;
 import com.ftpix.homedash.models.*;
+
 import com.google.gson.Gson;
+
 import io.gsonfire.GsonFireBuilder;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,7 +22,9 @@ import com.ftpix.homedash.plugins.Plugin;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
+
 import org.eclipse.jetty.http.HttpStatus;
+
 import spark.ModelAndView;
 import spark.Spark;
 import spark.template.jade.JadeTemplateEngine;
@@ -145,32 +151,31 @@ public class ModuleController implements Controller<Module, Integer> {
 
                 //flattening post query
                 Map<String, String> flatSettings = new HashMap<String, String>();
-                req.queryMap().toMap().forEach((key, value)->{
+                req.queryMap().toMap().forEach((key, value) -> {
                     flatSettings.put(key, value[0]);
                 });
 
                 Plugin plugin;
                 boolean editing = false;
-                if(flatSettings.containsKey("module_id")){
+                if (flatSettings.containsKey("module_id")) {
                     editing = true;
                     plugin = PluginModuleMaintainer.getInstance().getPluginForModule(Integer.parseInt(flatSettings.get("module_id")));
-                }else{
+                } else {
                     plugin = PluginController.getInstance().createPluginFromClass(req.queryParams("class"));
                 }
-
 
 
                 Map<String, String> errors = plugin.validateSettings(flatSettings);
 
                 //No errors, we're good to go
-                if(errors == null || errors.size() == 0) {
+                if (errors == null || errors.size() == 0) {
                     saveModuleWithSettings(req.queryMap().toMap(), page);
-                }else{
+                } else {
                     logger.info("[{}] errors found !", errors.size());
                     Map<String, Object> map = new HashMap<>();
-                    if(editing) {
+                    if (editing) {
                         map.put("plugin", plugin);
-                    }else{
+                    } else {
                         map.put("pluginClass", plugin.getClass().getCanonicalName());
                     }
                     map.put("pluginName", plugin.getDisplayName());
@@ -186,7 +191,7 @@ public class ModuleController implements Controller<Module, Integer> {
         }, new JadeTemplateEngine());
 
 		/*
-		 * Deletes a module
+         * Deletes a module
 		 */
         Spark.delete("/module/:moduleId", (req, res) -> {
             int moduleId = Integer.parseInt(req.params("moduleId"));
@@ -238,7 +243,7 @@ public class ModuleController implements Controller<Module, Integer> {
         }, gson::toJson);
 
 
-        Spark.get("/module/:moduleId/full-screen", (req, res)->{
+        Spark.get("/module/:moduleId/full-screen", (req, res) -> {
             Map<String, Object> map = new HashMap<String, Object>();
 
             int id = Integer.parseInt(req.params("moduleId"));
@@ -247,7 +252,7 @@ public class ModuleController implements Controller<Module, Integer> {
             map.put("plugin", plugin);
             map.put("html", plugin.getView(ModuleLayout.FULL_SCREEN));
 
-            return  new ModelAndView(map, "module-full-screen");
+            return new ModelAndView(map, "module-full-screen");
         }, new JadeTemplateEngine());
     }
 
@@ -287,10 +292,6 @@ public class ModuleController implements Controller<Module, Integer> {
 
     /**
      * Get all the modules for a specific page
-     *
-     * @param page
-     * @return
-     * @throws SQLException
      */
     public List<Module> getModulesForPage(int page) throws SQLException {
         logger.info("Getting modules on page [{}]", page);
@@ -310,8 +311,6 @@ public class ModuleController implements Controller<Module, Integer> {
 
     /**
      * Get the plugin class for a module
-     *
-     * @throws SQLException
      */
     public Plugin getModulePlugin(int moduleId) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
         Module module = MODULE_DAO.queryForId(moduleId);
@@ -322,11 +321,6 @@ public class ModuleController implements Controller<Module, Integer> {
 
     /**
      * Save a module with its settings
-     *
-     * @param postParams
-     * @return
-     * @throws NumberFormatException
-     * @throws SQLException
      */
     public int saveModuleWithSettings(Map<String, String[]> postParams, int pageId) throws NumberFormatException, SQLException {
         final Module module;
@@ -368,10 +362,6 @@ public class ModuleController implements Controller<Module, Integer> {
 
     /**
      * Deletes a module
-     *
-     * @param module
-     * @return
-     * @throws SQLException
      */
     public boolean deleteModuleLayoutAndSettings(Module module) throws Exception {
         logger.info("deleteModuleLayoutAndSettings({})", module.getId());
@@ -389,18 +379,41 @@ public class ModuleController implements Controller<Module, Integer> {
 
     /**
      * Saves a single module data
-     * @param moduleData
-     * @return
      */
     public boolean saveModuleData(ModuleData moduleData) throws SQLException {
+        getModuleData(moduleData.getModule().getId(),  moduleData.getName()).ifPresent((data)->{
+            moduleData.setId(data.getId());
+        });
         return DB.MODULE_DATA_DAO.createOrUpdate(moduleData).getNumLinesChanged() == 1;
     }
 
     /**
      * Deletes a single module data
-     * @param data
      */
-    public boolean deleteModuleData(ModuleData data) throws SQLException {
-        return DB.MODULE_DATA_DAO.delete(data) == 1;
+    public boolean deleteModuleData(ModuleData moduleData) throws SQLException {
+        getModuleData(moduleData.getModule().getId(),  moduleData.getName()).ifPresent((data)->{
+            moduleData.setId(data.getId());
+        });
+        return DB.MODULE_DATA_DAO.delete(moduleData) == 1;
+    }
+
+
+    /**
+     * Gets  module data by moduleid and name
+     */
+    public Optional<ModuleData> getModuleData(int moduleId, String name) throws SQLException {
+        QueryBuilder<ModuleData, Integer> queryBuilder = DB.MODULE_DATA_DAO.queryBuilder();
+        Where<ModuleData, Integer> where = queryBuilder.where();
+        where.eq("module_id", moduleId).and().eq("name", name);
+
+        PreparedQuery<ModuleData> preparedQuery = queryBuilder.prepare();
+
+
+        ModuleData data = DB.MODULE_DATA_DAO.queryForFirst(preparedQuery);
+        if (data != null) {
+            return Optional.of(data);
+        } else {
+            return Optional.empty();
+        }
     }
 }

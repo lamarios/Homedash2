@@ -7,10 +7,12 @@ import com.ftpix.homedash.models.ModuleLocation;
 import com.ftpix.homedash.plugins.Plugin;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
+@DisallowConcurrentExecution
 public class BackgroundRefresh implements Job {
     private Logger logger = LogManager.getLogger();
 
@@ -20,11 +22,13 @@ public class BackgroundRefresh implements Job {
     @Override
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
 
-        logger.info("Background task dtarting Time:{}", TIME);
+        logger.debug("Background task starting Time:{}", TIME);
+
+        long time = TIME++;
 
         try {
             PluginModuleMaintainer.getInstance().getAllPluginInstances().stream()
-                    .filter(p -> p.getBackgroundRefreshRate() > Plugin.NEVER && TIME % p.getBackgroundRefreshRate() == 0 && p.getModule().getLocation() == ModuleLocation.LOCAL).forEach((plugin) -> {
+                    .filter(p -> p.getBackgroundRefreshRate() > Plugin.NEVER && time % p.getBackgroundRefreshRate() == 0 && p.getModule().getLocation() == ModuleLocation.LOCAL).forEach((plugin) -> {
                 try {
                     logger.info("Background task: plugin:[{}] module:[{}]", plugin.getId(), plugin.getModule().getId());
                     plugin.doInBackground();
@@ -37,7 +41,7 @@ public class BackgroundRefresh implements Job {
             e.printStackTrace();
         }
 
-        TIME++;
+
 
     }
 

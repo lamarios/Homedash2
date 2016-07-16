@@ -1,0 +1,41 @@
+h3
+    | Public IP:
+    span.address
+p
+    small.update-date
+p.actions
+    a.add-provider.btn.btn-primary
+        i.fa.fa-plus
+        |  Add provider
+    a.refresh.btn.btn-primary
+        i.fa.fa-refresh
+        |  Force refresh
+.table-responsive
+    table.providers.table
+        thead
+            tr
+                th Provider
+                th Host
+                th Actions
+        tbody
+
+
+//Modal Dialog
+.modal
+    .modal-dialog
+        .modal-content
+            .modal-header
+                button.close(type="button", data-dismiss="modal", aria-label="Close")
+                    span(aria-hidden="true") &times;
+                h4.modal-title Dynamic DNS provider
+            .modal-body
+                form.provider-form
+                    select.provider-type(name="ddns-provider")
+                        option(value="-1") Select provider
+                        option(value="0") OVH
+                        option(value="1") no-ip.org
+                        option(value="2") Dyn.com
+                    .form-fields
+            .modal-footer
+                button.btn.btn-default(type="button", data-dismiss="modal") Close
+                button.btn.btn-primary.submit Save

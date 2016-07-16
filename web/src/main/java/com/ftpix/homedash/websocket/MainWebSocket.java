@@ -1,6 +1,7 @@
 package com.ftpix.homedash.websocket;
 
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -16,6 +17,7 @@ import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.models.WebSocketSession;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.utils.Predicates;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.websocket.api.Session;
@@ -27,6 +29,7 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import com.google.gson.Gson;
 
 import io.gsonfire.GsonFireBuilder;
+
 import java.util.Optional;
 
 @WebSocket
@@ -36,7 +39,7 @@ public class MainWebSocket {
     protected Logger logger = LogManager.getLogger();
     private boolean refresh = false;
     private long time = 0;
-    private Gson gson = new GsonFireBuilder().enableExposeMethodResult().createGson();
+    private Gson gson = new GsonFireBuilder().enableExposeMethodResult().createGsonBuilder().excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT, Modifier.VOLATILE).serializeSpecialFloatingPointValues().create();
     private ExecutorService exec;
     private final int THREADS_COUNT = 4;
 
@@ -90,7 +93,7 @@ public class MainWebSocket {
             if (optClient.isPresent()) {
                 WebSocketSession client = optClient.get();
                 WebSocketMessage socketMessage = gson.fromJson(message, WebSocketMessage.class);
-                
+
                 switch (socketMessage.getCommand()) {
                     case WebSocketMessage.COMMAND_REFRESH:
                         WebSocketMessage response = refreshSingleModule(socketMessage.getModuleId(), (String) socketMessage.getMessage());
@@ -122,9 +125,6 @@ public class MainWebSocket {
 
     /**
      * Refresh a single module
-     *
-     * @param moduleId
-     * @return
      */
     public static WebSocketMessage refreshSingleModule(int moduleId, String size) throws Exception {
 
@@ -144,9 +144,6 @@ public class MainWebSocket {
 
     /**
      * Send a command to a module
-     *
-     * @param session
-     * @param message
      */
     private void sendCommandToModule(WebSocketSession session, WebSocketMessage message) {
         WebSocketMessage response = new WebSocketMessage();
@@ -231,8 +228,6 @@ public class MainWebSocket {
 
     /**
      * Find all the module layouts to refresh based on the clients connected
-     *
-     * @return
      */
     private List<ModuleLayout> getModuleLayoutsToRefresh() {
         List<ModuleLayout> layouts = new ArrayList<>();
@@ -305,9 +300,6 @@ public class MainWebSocket {
 
     /**
      * Gets a WebSocket session via the session (usually check the hash
-     *
-     * @param session
-     * @return
      */
     private Optional<WebSocketSession> getClientFromSession(Session session) {
 

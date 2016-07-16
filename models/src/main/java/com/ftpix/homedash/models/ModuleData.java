@@ -1,6 +1,8 @@
 package com.ftpix.homedash.models;
 
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.types.LongStringType;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "module_data")
@@ -15,8 +17,9 @@ public class ModuleData {
     @DatabaseField(uniqueCombo = true)
     private String name;
 
-    @DatabaseField
+    @DatabaseField(dataType = DataType.LONG_STRING)
     private String json;
+
 
     @DatabaseField
     private String dataClass;
