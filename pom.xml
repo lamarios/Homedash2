@@ -21,6 +21,7 @@
 
 		<!-- plugins -->
 		<module>plugins</module>
+		<module>notifications</module>
 	</modules>
 
 	<pluginRepositories>

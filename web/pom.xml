@@ -51,17 +51,17 @@
             <artifactId>log4j-core</artifactId>
             <version>2.5</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.sparkjava</groupId>
-            <artifactId>spark-template-jade</artifactId>
-            <version>2.3</version>
-        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.21</version>
         </dependency>
+        <dependency>
+            <groupId>com.sparkjava</groupId>
+            <artifactId>spark-template-jade</artifactId>
+            <version>2.3</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.reflections</groupId>
@@ -96,6 +96,13 @@
             <artifactId>unirest-java</artifactId>
             <version>1.4.9</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.ftpix.homedash</groupId>
+            <artifactId>notifications</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- plugins -->
         <dependency>
             <groupId>com.ftpix.homedash.plugins</groupId>

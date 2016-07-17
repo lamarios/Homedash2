@@ -16,6 +16,7 @@ import java.util.jar.JarFile;
 
 import com.ftpix.homedash.app.controllers.SettingsController;
 import com.ftpix.homedash.models.Layout;
+import com.ftpix.homedash.models.Settings;
 import com.ftpix.homedash.plugins.SystemInfoPlugin;
 import com.ftpix.homedash.websocket.FullScreenWebSocket;
 import com.google.common.io.Files;
@@ -73,6 +74,9 @@ public class App {
             createDefaultData();
             Endpoints.define();
 
+
+            // set up the notifications
+            SettingsController.getInstance().updateNotificationProviders();
 
             enableDebugScreen();
 

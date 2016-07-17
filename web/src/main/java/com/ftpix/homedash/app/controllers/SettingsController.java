@@ -4,9 +4,15 @@ package com.ftpix.homedash.app.controllers;
 import com.ftpix.homedash.app.Constants;
 import com.ftpix.homedash.models.Settings;
 import com.ftpix.homedash.db.DB;
+import com.ftpix.homedash.notifications.Notifications;
+import com.ftpix.homedash.notifications.implementations.PushBullet;
+import com.ftpix.homedash.notifications.implementations.PushOver;
+import com.ftpix.homedash.notifications.implementations.Pushalot;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import spark.*;
 import spark.template.jade.JadeTemplateEngine;
 
@@ -120,6 +126,8 @@ public class SettingsController implements Controller<Settings, String> {
                 }
             });
 
+            updateNotificationProviders();
+
             res.redirect("/settings");
             return "";
         });
@@ -143,7 +151,7 @@ public class SettingsController implements Controller<Settings, String> {
                     logger.info("Logging in successful, redirecting to main");
                     Session session = req.session(true);
                     session.attribute(AUTH_KEY, hash);
-                    res.cookie(AUTH_KEY, hash);
+                    res.cookie(AUTH_KEY, hash, 31557600);//one year
 
                     res.redirect("/");
                     return null;
@@ -208,11 +216,6 @@ public class SettingsController implements Controller<Settings, String> {
 
     /**
      * Generates a hash for password
-     *
-     * @param username
-     * @param password
-     * @return
-     * @throws NoSuchAlgorithmException
      */
     private String hashPassword(String username, String password) throws NoSuchAlgorithmException {
         String toHash = username + Constants.SALT + password;
@@ -224,7 +227,6 @@ public class SettingsController implements Controller<Settings, String> {
     /**
      * Checks user cookies and seee if he is allowed to login
      *
-     * @param req
      * @return ok, if he is allowed to see what he's trying to see
      */
     public boolean checkSession(Request req, Response res) {
@@ -258,12 +260,55 @@ public class SettingsController implements Controller<Settings, String> {
      * H
      *
      * @param password hashed password
-     * @return
-     * @throws SQLException
      */
     private boolean checkPassword(String password) throws SQLException {
         Settings savedPassword = get(Settings.PASSWORD);
         return savedPassword.getValue().equalsIgnoreCase(password);
+    }
+
+
+    /**
+     * Update the notification providers based on the settings
+     */
+    public void updateNotificationProviders() throws SQLException {
+        Notifications.resetRegisteredProvider();
+
+        Settings pushbullet = get(Settings.PUSHBULLET);
+        Settings pushbulletApiKey = get(Settings.PUSHBULLET_API_KEY);
+        if (pushbullet != null && pushbulletApiKey != null && pushbullet.getValue().equalsIgnoreCase("1")) {
+            PushBullet pb = new PushBullet();
+            Map<String, String> settings = new HashMap<String, String>();
+            settings.put(PushBullet.API_KEY, pushbulletApiKey.getValue());
+
+            if (pb.setSettings(settings)) {
+                Notifications.registerProvider(pb);
+            }
+        }
+
+        Settings pushalot = get(Settings.PUSHALOT);
+        Settings pushalotApiKey = get(Settings.PUSHALOT_API_KEY);
+        if (pushalot != null && pushalotApiKey != null && pushalot.getValue().equalsIgnoreCase("1")) {
+            Pushalot pb = new Pushalot();
+            Map<String, String> settings = new HashMap<String, String>();
+            settings.put(Pushalot.API_KEY, pushalotApiKey.getValue());
+
+            if (pb.setSettings(settings)) {
+                Notifications.registerProvider(pb);
+            }
+        }
+
+        Settings pushover = get(Settings.PUSHOVER);
+        Settings pushoverApplicationToken = get(Settings.PUSHOVER_APP_TOKEN);
+        Settings pushoverUserToken = get(Settings.PUSHOVER_API_KEY);
+        if (pushover != null && pushoverApplicationToken != null && pushoverUserToken != null && pushover.getValue().equalsIgnoreCase("1")) {
+            PushOver pb = new PushOver();
+            Map<String, String> settings = new HashMap<String, String>();
+            settings.put(PushOver.APPLICATION_TOKEN, pushoverApplicationToken.getValue());
+            settings.put(PushOver.USER_TOKEN, pushoverUserToken.getValue());
+            if (pb.setSettings(settings)) {
+                Notifications.registerProvider(pb);
+            }
+        }
     }
 
 }
