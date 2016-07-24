@@ -130,6 +130,7 @@ nbactions.xml
 .nb-gradle/
 
 #Homedash2
+logs
 cache/
 homedash.mv.db
 web/src/main/resources/native-libs

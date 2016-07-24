@@ -25,6 +25,7 @@
         <module>couchpotato</module>
         <module>network-monitor</module>
         <module>dynamicdns</module>
+        <module>googlepubliccalendar</module>
     </modules>
 
     <dependencies>

@@ -1,0 +1,78 @@
+@gcBackgroundColor: #00BCD4;
+@transition-speed: 0.25s;
+.googlepubliccalendar {
+  h4 {
+    padding: 10px;
+    font-size: 30px;
+  }
+  .table > tbody > tr {
+    cursor: pointer;
+    -webkit-transition: all @transition-speed !important;
+    transition: all @transition-speed !important;
+  }
+  .table > tbody > tr:hover {
+    background-color: #ccc;
+  }
+
+  .table > tbody > tr > td {
+    padding-top: 10px;
+    padding-botton: 10px;
+    font-size: 17px;
+    border: none;
+  }
+}
+
+.googlepubliccalendar.size-4x4, .googlepubliccalendar.size-3x4 {
+  overflow-y: auto !important;
+  background-image: url("../files/logo.svg");
+  background-repeat: no-repeat;
+  background-position: -10px -10px;
+  background-size: 110% auto;
+  background-color: @gcBackgroundColor;
+  color: white;
+
+  .table > tbody > tr:hover {
+    background-color: #0097A7;
+  }
+}
+
+.googlepubliccalendar.size-3x1 {
+  background-image: url("../files/logo.svg");
+  background-repeat: no-repeat;
+  background-position: -10px -10px;
+  background-size: 110% auto;
+  background-color: @gcBackgroundColor;
+  color: white;
+
+  h4 {
+    padding: 10px;
+    font-size: 15px;
+    margin: 0;
+  }
+
+  .next-event {
+    padding: 10px;
+    cursor: pointer;
+
+    -webkit-transition: all @transition-speed !important;
+    transition: all @transition-speed !important;
+
+    .event-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin: 0;
+    }
+  }
+
+  .next-event:hover {
+    background-color: #0097A7;
+  }
+}
+
+.googlepubliccalendar-modal {
+  .text-wrapping {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
