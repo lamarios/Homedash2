@@ -178,49 +178,55 @@ public class MainWebSocket {
      */
     private void refreshModules() {
         while (refresh) {
-            logger.info("Refreshing modules");
-            List<ModuleLayout> moduleLayouts = getModuleLayoutsToRefresh();
 
-            moduleLayouts.forEach(ml -> {
-                try {
-                    // Getting the data to send
-                    Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(ml.getModule());
-                    if (plugin.getRefreshRate() > Plugin.NEVER && time % plugin.getRefreshRate() == 0) {
+            //sometimes there are no client and it's still running
+            if (sessions.size() > 0) {
+                logger.info("Refreshing modules");
+                List<ModuleLayout> moduleLayouts = getModuleLayoutsToRefresh();
 
-                        // finding which clients to send to and sending
-                        // the
-                        // message
-                        exec.execute(new Runnable() {
-                            @Override
-                            public void run() {
+                moduleLayouts.forEach(ml -> {
+                    try {
+                        // Getting the data to send
+                        Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(ml.getModule());
+                        if (plugin.getRefreshRate() > Plugin.NEVER && time % plugin.getRefreshRate() == 0) {
 
-                                try {
-                                    logger.info("Refreshing plugin [{}] for layout[{}]", plugin.getId(), ml.getLayout().getName());
+                            // finding which clients to send to and sending
+                            // the
+                            // message
+                            exec.execute(new Runnable() {
+                                @Override
+                                public void run() {
 
-                                    WebSocketMessage response = refreshSingleModule(ml.getModule().getId(), ml.getSize());
+                                    try {
+                                        logger.info("Refreshing plugin [{}] for layout[{}]", plugin.getId(), ml.getLayout().getName());
 
-                                    String jsonResponse = gson.toJson(response);
+                                        WebSocketMessage response = refreshSingleModule(ml.getModule().getId(), ml.getSize());
 
-                                    sendMessage(jsonResponse, ml);
+                                        String jsonResponse = gson.toJson(response);
 
-                                } catch (Exception e) {
-                                    logger.error("Can't refresh module #" + ml.getModule().getId(), e);
+                                        sendMessage(jsonResponse, ml);
+
+                                    } catch (Exception e) {
+                                        logger.error("Can't refresh module #" + ml.getModule().getId(), e);
+                                    }
+
                                 }
+                            });
 
-                            }
-                        });
+                        }
 
+                    } catch (Exception e) {
                     }
+                });
 
+                try {
+                    Thread.sleep(1000);
+                    time++;
                 } catch (Exception e) {
+                    logger.error("Error while sleeping", e);
                 }
-            });
-
-            try {
-                Thread.sleep(1000);
-                time++;
-            } catch (Exception e) {
-                logger.error("Error while sleeping", e);
+            } else {
+                stopRefresh();
             }
 
         }
@@ -287,15 +293,18 @@ public class MainWebSocket {
                 logger.info("Stopping refresh of modules");
                 exec.shutdown();
                 logger.info("WAITING TO SHUTDOWN");
-                exec.awaitTermination(10, TimeUnit.MINUTES);
+                exec.awaitTermination(5, TimeUnit.SECONDS);
                 logger.info("FINALLY STOPPED");
-                exec = null;
-                time = 0;
+
 
             }
         } catch (Exception e) {
             logger.error("Error while shutting down pool", e);
+            exec.shutdownNow();
         }
+
+        exec = null;
+        time = 0;
     }
 
     /**
@@ -310,6 +319,10 @@ public class MainWebSocket {
         return webSocketSession;
     }
 
+
+    /**
+     * Sends a message to clients
+     */
     public void sendMessage(String message, ModuleLayout ml) {
         logger.info("Message to send from implementation !!!");
         sessions.stream().filter(s -> {

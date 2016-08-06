@@ -67,7 +67,7 @@ public class SystemInfoPlugin extends Plugin {
 	public int getBackgroundRefreshRate() {
 		return ONE_SECOND * 3;
 	}
-	
+
 	@Override
 	public int getRefreshRate() {
 		return ONE_SECOND * 3;
@@ -121,12 +121,12 @@ public class SystemInfoPlugin extends Plugin {
 			logger.error("[SystemInfo] Error while getting system info", e);
 		}
 	}
-	
+
 	@Override
 	public WebSocketMessage processCommand(String command, String message, Object extra) {
 		return null;
 	}
-	
+
 
 	@Override
 	protected Object refresh(String size) throws Exception {
@@ -171,7 +171,7 @@ public class SystemInfoPlugin extends Plugin {
 	}
 
 
-	
-	
+
+
 
 }
