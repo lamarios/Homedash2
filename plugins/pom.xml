@@ -26,6 +26,7 @@
         <module>network-monitor</module>
         <module>dynamicdns</module>
         <module>googlepubliccalendar</module>
+        <module>mma</module>
     </modules>
 
     <dependencies>
