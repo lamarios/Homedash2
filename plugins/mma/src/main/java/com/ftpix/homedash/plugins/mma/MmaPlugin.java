@@ -7,7 +7,6 @@ import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.sherdogparser.Sherdog;
 import com.ftpix.sherdogparser.models.Event;
 import com.ftpix.sherdogparser.models.Organization;
-import com.mashape.unirest.http.Unirest;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -156,7 +155,11 @@ public class MmaPlugin extends Plugin {
             errors.put("Url", "Organization URL can't be empty");
         } else {
             try {
-                Unirest.get(settings.get(ORGANIZATION_URL)).asString().getBody();
+
+                Organization o = new Sherdog().getOrganization(settings.get(ORGANIZATION_URL));
+                if(o == null){
+                    errors.put("Url", "Organization doesn't exist");
+                }
             } catch (Exception e) {
                 errors.put("Url", "Can't reach the given url");
             }

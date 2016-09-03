@@ -1,10 +1,9 @@
 package com.ftpix.homedash.jobs;
 
 import com.ftpix.homedash.app.PluginModuleMaintainer;
-import com.ftpix.homedash.app.controllers.ModuleController;
-import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.ModuleLocation;
 import com.ftpix.homedash.plugins.Plugin;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
@@ -43,6 +42,14 @@ public class BackgroundRefresh implements Job {
 
 
 
+    }
+
+
+    /**
+     * Resets the background refresh timer
+     */
+    public static void resetTimer(){
+        TIME = 0;
     }
 
 }

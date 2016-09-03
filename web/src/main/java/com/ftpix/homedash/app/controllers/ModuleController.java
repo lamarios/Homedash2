@@ -1,35 +1,38 @@
 package com.ftpix.homedash.app.controllers;
 
 
+import com.google.gson.Gson;
+
+import com.ftpix.homedash.app.PluginModuleMaintainer;
+import com.ftpix.homedash.db.DB;
+import com.ftpix.homedash.jobs.BackgroundRefresh;
+import com.ftpix.homedash.models.Module;
+import com.ftpix.homedash.models.ModuleData;
+import com.ftpix.homedash.models.ModuleLayout;
+import com.ftpix.homedash.models.ModuleSettings;
+import com.ftpix.homedash.models.Page;
+import com.ftpix.homedash.plugins.Plugin;
+import com.j256.ormlite.stmt.PreparedQuery;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.eclipse.jetty.http.HttpStatus;
+
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.ftpix.homedash.app.PluginModuleMaintainer;
-import com.ftpix.homedash.models.*;
-
-import com.google.gson.Gson;
-
 import io.gsonfire.GsonFireBuilder;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import com.ftpix.homedash.db.DB;
-import com.ftpix.homedash.plugins.Plugin;
-import com.j256.ormlite.stmt.PreparedQuery;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
-
-import org.eclipse.jetty.http.HttpStatus;
-
 import spark.ModelAndView;
 import spark.Spark;
 import spark.template.jade.JadeTemplateEngine;
 
-import static com.ftpix.homedash.db.DB.*;
+import static com.ftpix.homedash.db.DB.MODULE_DAO;
+import static com.ftpix.homedash.db.DB.MODULE_SETTINGS_DAO;
 
 public class ModuleController implements Controller<Module, Integer> {
 
@@ -355,6 +358,8 @@ public class ModuleController implements Controller<Module, Integer> {
                 e.printStackTrace();
             }
         });
+
+        BackgroundRefresh.resetTimer();
 
         logger.info("Module saved, id:[{}]", module.getId());
         return module.getId();
