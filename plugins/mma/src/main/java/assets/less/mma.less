@@ -1,13 +1,6 @@
 @backgroundColor: #039BE5;
 
 .mma {
-  background-color: @backgroundColor;
-  color: white;
-  background-image: url('../files/logo.svg');
-  background-size: 100% auto;
-  background-repeat: no-repeat;
-  overflow-y: auto !important;
-
   h3 {
     margin-left: 5px;
   }
@@ -21,6 +14,17 @@
       background-color: darken(@backgroundColor, 20%);
     }
   }
+
+}
+
+.mma.size-3x4, .mma.size-4x4 {
+  background-color: @backgroundColor;
+  color: white;
+  background-image: url('../files/logo.svg');
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+  overflow-y: auto !important;
+
 }
 
 .mma-modal {

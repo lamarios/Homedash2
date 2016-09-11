@@ -1,6 +1,7 @@
 package com.ftpix.homedash.plugins.mma;
 
 import com.ftpix.homedash.models.ModuleExposedData;
+import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.notifications.Notifications;
 import com.ftpix.homedash.plugins.Plugin;
@@ -16,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -25,8 +27,8 @@ public class MmaPlugin extends Plugin {
     private Organization organization;
 
     private final String ORGANIZATION_URL = "url", NOTIFICATION_SETTING = "notifications";
-    private final String COMMAND_GET_EVENT = "getEvent", COMMAND_GET_FIGHTER = "getFighter";
-    private String organizationUrl;
+    private final String COMMAND_GET_EVENT = "getEvent", COMMAND_GET_FIGHTER = "getFighter", COMMAND_SEARCH = "search";
+    private String organizationUrl, searchQuery = "";
     private boolean sendNotifications;
     private Sherdog sherdog;
     //keeping the hserdog url of last event so we can avoid sending notification more than once
@@ -62,7 +64,7 @@ public class MmaPlugin extends Plugin {
 
     @Override
     public String[] getSizes() {
-        return new String[]{"3x4", "4x4"};
+        return new String[]{"3x4", "4x4", ModuleLayout.FULL_SCREEN};
     }
 
     @Override
@@ -82,6 +84,10 @@ public class MmaPlugin extends Plugin {
                 case COMMAND_GET_FIGHTER:
                     response.setCommand(COMMAND_GET_FIGHTER);
                     response.setMessage(sherdog.getFighter(message));
+                    break;
+                case COMMAND_SEARCH:
+                    this.searchQuery = message;
+                    break;
             }
         } catch (Exception e) {
             logger.error("Error while getting event or fight", e);
@@ -96,12 +102,9 @@ public class MmaPlugin extends Plugin {
         logger.info("Getting organization...");
         try {
             organization = sherdog.getOrganization(organizationUrl);
-            ZonedDateTime today = ZonedDateTime.now();
-            today.minus(1, ChronoUnit.DAYS);
+
             logger.info("Found {} with [{}] events", organization.getName(), organization.getEvents().size());
 
-            organization.setEvents(organization.getEvents().stream().filter(e -> today.isBefore(e.getDate())).collect(Collectors.toList()));
-            logger.info("Found {} with [{}] upcoming events", organization.getName(), organization.getEvents().size());
 
             //Checking if we need to send notification
             if (sendNotifications && !organization.getEvents().isEmpty()) {
@@ -139,7 +142,14 @@ public class MmaPlugin extends Plugin {
 
     @Override
     protected Object refresh(String size) throws Exception {
-        return organization;
+        if (size != ModuleLayout.FULL_SCREEN) {
+            ZonedDateTime today = ZonedDateTime.now();
+            today.minus(1, ChronoUnit.DAYS);
+
+           return search(e -> today.isBefore(e.getDate()));
+        } else {
+            return search(e -> e.getName().contains(searchQuery));
+        }
     }
 
     @Override
@@ -157,7 +167,7 @@ public class MmaPlugin extends Plugin {
             try {
 
                 Organization o = new Sherdog().getOrganization(settings.get(ORGANIZATION_URL));
-                if(o == null){
+                if (o == null) {
                     errors.put("Url", "Organization doesn't exist");
                 }
             } catch (Exception e) {
@@ -189,5 +199,14 @@ public class MmaPlugin extends Plugin {
         settings.put("Sherdog url", organizationUrl);
 
         return settings;
+    }
+
+
+    private Organization search(Predicate<Event> filter){
+        Organization org = new Organization();
+        org.setName(organization.getName());
+        org.setSherdogUrl(organization.getSherdogUrl());
+        org.setEvents(organization.getEvents().stream().filter(filter).collect(Collectors.toList()));
+        return org;
     }
 }

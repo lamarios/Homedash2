@@ -3,11 +3,17 @@ function mma(moduleId) {
     this.moduleId = moduleId;
     this.history = [];
 
+    this.size;
+    this.timer = null
+
     this.onConnect = function () {
 
     };
 
     this.documentReady = function (size) {
+
+        this.size = size;
+console.log('size: '+size);
         var root = rootElement(this.moduleId);
         var self = this;
         root.find('.modal').attr('data-module', this.moduleId);
@@ -19,8 +25,19 @@ function mma(moduleId) {
             self.modal().find('.modal-title').html('...');
             self.modal().find('.modal-body').html('<div class="loader"></div>');
 
+            self.history = [];
             //Adding to history
             self.history.push({command: 'getEvent', url: $(this).attr('data-url')});
+        });
+
+        root.on('keyup', '.search', function(){
+            var query = $(this).val();
+            if(self.timer !== null) {
+                clearTimeout(self.timer);
+            }
+            self.timer = setTimeout(function(){
+                sendMessage(self.moduleId, 'search', query);
+            }, 500);
         });
 
         this.modal().on('click', '.mma-link', function () {
@@ -37,6 +54,11 @@ function mma(moduleId) {
             self.modal().find('.modal-body').html('<div class="loader"></div>');
             self.goBack();
         });
+
+
+        if(this.size == 'full-screen'){
+            sendMessage(self.moduleId, 'search', '');
+        }
     };
 
     this.modal = function () {
@@ -44,6 +66,10 @@ function mma(moduleId) {
     }
 
     this.onMessage_3x4 = function (command, message, extra) {
+        this.onMessage_4x4(command, message, extra);
+    }
+
+    this.onMessage_fullScreen = function (command, message, extra) {
         this.onMessage_4x4(command, message, extra);
     }
 
@@ -72,6 +98,9 @@ function mma(moduleId) {
     };
 
     this.eventListHtml = function (events) {
+        if (this.size == 'full-screen') {
+            events = events.reverse();
+        }
         var html = [];
         $.each(events, function (index, value) {
             html.push('<tr data-url="', value.sherdogUrl, '">');
@@ -137,7 +166,8 @@ function mma(moduleId) {
         body.push("<p>Birth date: ", fighter.birthday, '</p>');
 
         body.push('<h3>Fights</h3>');
-        body.push('<div class="table-responsive"><table class=" fighter-fights table table-condensed">');
+        body.push(
+            '<div class="table-responsive"><table class=" fighter-fights table table-condensed">');
         body.push(
             '<thead><tr><th>Opponent</th><th>Event</th><th>Method</th><th>Round</th><th>Time</th></tr></thead>');
         body.push('<tbody>');
