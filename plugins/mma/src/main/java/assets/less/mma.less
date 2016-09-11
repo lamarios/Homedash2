@@ -1,0 +1,91 @@
+@backgroundColor: #039BE5;
+
+.mma {
+  background-color: @backgroundColor;
+  color: white;
+  background-image: url('../files/logo.svg');
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+  overflow-y: auto !important;
+
+  h3 {
+    margin-left: 5px;
+  }
+
+  .table {
+    tbody tr {
+      cursor: pointer;
+      transition: all 0.5s;
+    }
+    tbody tr:hover {
+      background-color: darken(@backgroundColor, 20%);
+    }
+  }
+}
+
+.mma-modal {
+
+  .mma-back {
+    padding: 0 20px 0 0;
+    cursor: pointer;
+  }
+
+  .modal-body {
+    p {
+      margin: 0;
+    }
+
+    .fighter-picture {
+      position: absolute;
+      background-size: cover;
+      background-repeat: no-repeat;
+      width: 120px;
+      height: 175px;
+      border-radius: 4px;
+      top: 5px;
+      right: 5px;
+    }
+
+    a {
+      color: #222;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    h3:first-of-type {
+      margin-top: 5px;
+    }
+
+    .fighter-fights {
+
+      .FIGHTER_1_WIN {
+        background-color: #DCEDC8;
+      }
+
+      .FIGHTER_2_WIN {
+        background-color: #FFCDD2;
+      }
+    }
+
+    .event {
+      .FIGHTER_1_WIN {
+        td:first-of-type {
+          background-color: #DCEDC8;
+        }
+        td:nth-of-type(3) {
+          background-color: #FFCDD2;
+        }
+      }
+
+      .FIGHTER_2_WIN {
+        td:first-of-type {
+          background-color: #FFCDD2;
+        }
+        td:nth-of-type(3) {
+          background-color: #DCEDC8;
+        }
+      }
+    }
+
+  }
+}
