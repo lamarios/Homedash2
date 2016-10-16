@@ -1,14 +1,8 @@
 package com.ftpix.homedash.websocket;
 
-import java.io.IOException;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.*;
-import java.util.stream.Collectors;
+import com.google.gson.Gson;
 
 import com.ftpix.homedash.app.PluginModuleMaintainer;
-import com.ftpix.homedash.app.controllers.ModuleController;
 import com.ftpix.homedash.app.controllers.ModuleLayoutController;
 import com.ftpix.homedash.db.DB;
 import com.ftpix.homedash.models.Layout;
@@ -26,11 +20,18 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
-import com.google.gson.Gson;
+import java.io.IOException;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import io.gsonfire.GsonFireBuilder;
-
-import java.util.Optional;
 
 @WebSocket
 public class MainWebSocket {
@@ -188,7 +189,7 @@ public class MainWebSocket {
                     try {
                         // Getting the data to send
                         Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(ml.getModule());
-                        if (plugin.getRefreshRate() > Plugin.NEVER && time % plugin.getRefreshRate() == 0) {
+                        if (plugin.getRefreshRate(ml.getSize()) > Plugin.NEVER && time % plugin.getRefreshRate(ml.getSize()) == 0) {
 
                             // finding which clients to send to and sending
                             // the

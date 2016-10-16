@@ -1,18 +1,23 @@
 package com.ftpix.homedash.plugins;
 
+import com.ftpix.homedash.models.ModuleExposedData;
+import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.api.SonarrApi;
 import com.ftpix.homedash.plugins.api.SonarrUnauthorizedException;
 import com.ftpix.homedash.plugins.api.models.SonarrCalendar;
-import com.ftpix.homedash.models.ModuleExposedData;
-import com.ftpix.homedash.models.ModuleLayout;
-import org.apache.commons.io.FileUtils;
 
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by gz on 06-Jun-16.
@@ -96,7 +101,7 @@ public class SonarrTvPlugin extends Plugin {
     }
 
     @Override
-    public int getRefreshRate() {
+    public int getRefreshRate(String size) {
         return ONE_HOUR;
     }
 
@@ -171,11 +176,14 @@ public class SonarrTvPlugin extends Plugin {
     private void downloadFanArt(SonarrCalendar series) {
         File f = new File(getImagePath() + series.getSeriesId() + "-fanart.jpg");
 
+        logger.info("Series: \n {}", series.toString());
+
         if (!f.exists()) {
             for (int i = 1; i <= 10; i++) {
                 try {
 
                     String poster = series.getFanart();
+                    logger.info("Download from: {}", poster);
 
                     FileUtils.copyURLToFile(new URL(poster), f);
 

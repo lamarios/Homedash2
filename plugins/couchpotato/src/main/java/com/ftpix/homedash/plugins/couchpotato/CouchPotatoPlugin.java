@@ -13,9 +13,14 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * Created by gz on 22-Jun-16.
@@ -162,7 +167,7 @@ public class CouchPotatoPlugin extends Plugin {
     }
 
     @Override
-    public int getRefreshRate() {
+    public int getRefreshRate(String size) {
         return ONE_MINUTE * 10;
     }
 

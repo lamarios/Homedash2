@@ -1,14 +1,16 @@
 .form-group
     label(for="url") SonarrTV address
     if settings && settings.containsKey("url")
-        input.form-control(type="text", id="url", name="url", placeholder="Enter URL", value='#{settings.get("url")}')
+        input.form-control(type="text", id="url", name="url", placeholder="Enter URL", value='#{settings.get(
+                "url")}')
     else
         input.form-control(type="text", id="url", name ="url", placeholder = "Enter URL")
 
 .form-group
     label(for="apiKey") API Key
     if settings && settings.containsKey("apiKey")
-        input.form-control(type="text", id="apiKey", name="apiKey", placeholder="API Key", value='#{settings.get("apiKey")}')
+        input.form-control(type="text", id="apiKey", name="apiKey", placeholder="API Key", value='#{settings.get(
+                "apiKey")}')
     else
         input.form-control(type="text", id="apiKey", name ="apiKey", placeholder = "API Key")
 

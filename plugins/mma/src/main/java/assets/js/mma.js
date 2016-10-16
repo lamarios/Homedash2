@@ -13,7 +13,7 @@ function mma(moduleId) {
     this.documentReady = function (size) {
 
         this.size = size;
-console.log('size: '+size);
+        console.log('size: ' + size);
         var root = rootElement(this.moduleId);
         var self = this;
         root.find('.modal').attr('data-module', this.moduleId);
@@ -30,12 +30,12 @@ console.log('size: '+size);
             self.history.push({command: 'getEvent', url: $(this).attr('data-url')});
         });
 
-        root.on('keyup', '.search', function(){
+        root.on('keyup', '.search', function () {
             var query = $(this).val();
-            if(self.timer !== null) {
+            if (self.timer !== null) {
                 clearTimeout(self.timer);
             }
-            self.timer = setTimeout(function(){
+            self.timer = setTimeout(function () {
                 sendMessage(self.moduleId, 'search', query);
             }, 500);
         });
@@ -55,8 +55,7 @@ console.log('size: '+size);
             self.goBack();
         });
 
-
-        if(this.size == 'full-screen'){
+        if (this.size == 'full-screen') {
             sendMessage(self.moduleId, 'search', '');
         }
     };

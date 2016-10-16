@@ -1,27 +1,31 @@
 .form-group
     label(for="url") Transmission address
     if settings && settings.containsKey("url")
-        input.form-control(type="text", id="url", name="url", placeholder="URL", value='#{settings.get("url")}')
+        input.form-control(type="text", id="url", name="url", placeholder="URL", value='#{settings.get(
+                "url")}')
     else
         input.form-control(type="text", id="url", name ="url", placeholder = "URL")
 
 .form-group
     label(for="port") Port
     if settings && settings.containsKey("port")
-        input.form-control(type="text", id="port", name="port", placeholder="9091", value='#{settings.get("port")}')
+        input.form-control(type="text", id="port", name="port", placeholder="9091", value='#{settings.get(
+                "port")}')
     else
         input.form-control(type="text", id="port", name ="port", placeholder = "9091")
 
 .form-group
     label(for="username") Username
     if settings && settings.containsKey("username")
-        input.form-control(type="text", id="username", name="username", placeholder="", value='#{settings.get("username")}')
+        input.form-control(type="text", id="username", name="username", placeholder="", value='#{settings.get(
+                "username")}')
     else
         input.form-control(type="text", id="username", name ="username", placeholder = "")
 
 .form-group
     label(for="password") Path
     if settings && settings.containsKey("password")
-        input.form-control(type="password", id="password", name="password", placeholder="", value='#{settings.get("password")}')
+        input.form-control(type="password", id="password", name="password", placeholder="", value='#{settings.get(
+                "password")}')
     else
         input.form-control(type="password", id="password", name ="password", placeholder = "")

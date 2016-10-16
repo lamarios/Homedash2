@@ -1,19 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="INFO">
+<Configuration status="debug">
+    <Properties>
+        <Property name="log-path">logs</Property>
+    </Properties>
+
     <Appenders>
-        <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
-        </Console>
-        <File name="MyFile" fileName="logs/app.log">
+        <RollingFile name="file-log" fileName="${log-path}/app.log"
+                     filePattern="${log-path}/app.log-%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <Pattern>%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Pattern>
             </PatternLayout>
-        </File>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
     </Appenders>
     <Loggers>
-        <Root level="info">
-            <AppenderRef ref="Console" />
-            <AppenderRef ref="MyFile"/>
+        <Logger name="com.mycuteblog" level="info" additivity="false">
+            <appender-ref ref="file-log" level="info"/>
+        </Logger>
+        <Root level="info" additivity="false">
+            <appender-ref ref="console"/>
         </Root>
     </Loggers>
 </Configuration>

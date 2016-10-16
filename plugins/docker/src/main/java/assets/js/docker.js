@@ -1,7 +1,7 @@
 function docker(moduleId) {
-	this.moduleId = moduleId;
-	
-	this.documentReady = function() {
-	}
-	
+    this.moduleId = moduleId;
+
+    this.documentReady = function () {
+    }
+
 }

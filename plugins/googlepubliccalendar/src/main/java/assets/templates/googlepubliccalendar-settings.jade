@@ -1,14 +1,16 @@
 .form-group
     label(for="calendarId") Calendar ID
     if settings && settings.containsKey("calendarId")
-        input.form-control(type="text", id="calendarId", name="calendarId", placeholder="Enter URL", value='#{settings.get("calendarId")}')
+        input.form-control(type="text", id="calendarId", name="calendarId", placeholder="Enter URL", value='#{settings.get(
+                "calendarId")}')
     else
         input.form-control(type="text", id="calendarId", name ="calendarId", placeholder = "Enter URL")
 
 .form-group
     label(for="apiKey") API key
     if settings && settings.containsKey("apiKey")
-        input.form-control(type="text", id="apiKey", name="apiKey", placeholder="API Key", value='#{settings.get("apiKey")}')
+        input.form-control(type="text", id="apiKey", name="apiKey", placeholder="API Key", value='#{settings.get(
+                "apiKey")}')
     else
         input.form-control(type="text", id="apiKey", name ="apiKey", placeholder = "API Key")
 

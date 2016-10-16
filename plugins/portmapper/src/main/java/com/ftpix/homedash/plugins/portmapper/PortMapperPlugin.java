@@ -4,21 +4,20 @@ import com.ftpix.homedash.models.ModuleExposedData;
 import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+
 import org.bitlet.weupnp.GatewayDevice;
 import org.bitlet.weupnp.GatewayDiscover;
 import org.bitlet.weupnp.PortMappingEntry;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Created by gz on 12-Jun-16.
@@ -181,7 +180,7 @@ public class PortMapperPlugin extends Plugin {
     }
 
     @Override
-    public int getRefreshRate() {
+    public int getRefreshRate(String size) {
         return ONE_SECOND * 10;
     }
 

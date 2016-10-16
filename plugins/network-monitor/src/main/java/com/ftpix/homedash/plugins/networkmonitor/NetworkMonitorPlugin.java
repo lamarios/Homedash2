@@ -5,11 +5,14 @@ import com.ftpix.homedash.models.ModuleExposedData;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.plugins.networkmonitor.models.NetworkInfo;
-import org.hyperic.sigar.*;
 
-import java.util.ArrayList;
+import org.hyperic.sigar.NetFlags;
+import org.hyperic.sigar.NetInterfaceConfig;
+import org.hyperic.sigar.NetInterfaceStat;
+import org.hyperic.sigar.Sigar;
+import org.hyperic.sigar.SigarException;
+
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -71,7 +74,7 @@ public class NetworkMonitorPlugin extends Plugin {
     }
 
     @Override
-    public int getRefreshRate() {
+    public int getRefreshRate(String size) {
         return ONE_SECOND * 2;
     }
 

@@ -20,6 +20,6 @@ public class MappingObject {
 
     @Override
     public String toString() {
-        return protocol+"-"+externalPort;
+        return protocol + "-" + externalPort;
     }
 }

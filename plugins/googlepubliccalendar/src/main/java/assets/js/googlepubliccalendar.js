@@ -47,7 +47,7 @@ function googlepubliccalendar(moduleId) {
     this.onMessage_3x1 = function (command, message, extra) {
         var root = this.root();
 
-        root.find('.title').html('Next on '+message.title);
+        root.find('.title').html('Next on ' + message.title);
 
         if (message.events.length > 0) {
             var event = message.events[0];

@@ -2,15 +2,14 @@ function portmapper(moduleId) {
 
     this.moduleId = moduleId;
 
-
     this.onConnect = function () {
 
     };
 
     this.width = 2;
 
-    this.modal = function(){
-        return $(document).find('.modal[data-module="'+this.moduleId+'"]');
+    this.modal = function () {
+        return $(document).find('.modal[data-module="' + this.moduleId + '"]');
     }
 
     this.documentReady = function (size) {
@@ -29,8 +28,8 @@ function portmapper(moduleId) {
             return false;
         });
 
-       this.modal().find('.save').click(function () {
-           parent.modal().find('form').submit();
+        this.modal().find('.save').click(function () {
+            parent.modal().find('form').submit();
         });
 
         root.on('click', '.remove-port', function () {
@@ -80,7 +79,6 @@ function portmapper(moduleId) {
 
     };
 
-
     this.getRouter = function (router, getMappings) {
         var root = rootElement(this.moduleId);
 
@@ -95,16 +93,15 @@ function portmapper(moduleId) {
     this.getMappings = function (mappings) {
         var root = rootElement(this.moduleId);
 
-
         if (mappings != undefined) {
-            if(this.width > 2) {
+            if (this.width > 2) {
                 var table = root.find('.table tbody');
                 table.html('');
                 var parent = this;
                 $.each(mappings, function (index, mapping) {
                     table.append(parent.port2Html(mapping));
                 });
-            }else{
+            } else {
                 root.find('.port-count').html(mappings.length);
             }
         }
@@ -123,12 +120,16 @@ function portmapper(moduleId) {
         html.push('<td>', mapping.internalPort, '</td>');
         html.push('<td>', mapping.internalIp, '</td>');
         html.push('<td>');
-        html.push('<button class="btn btn-danger btn-xs mapper remove-port" data="', mapping.externalPort, '|', mapping.protocol, '"><i class="fa fa-minus"></i></button>');
+        html.push('<button class="btn btn-danger btn-xs mapper remove-port" data="',
+                  mapping.externalPort, '|', mapping.protocol,
+                  '"><i class="fa fa-minus"></i></button>');
 
         if (!mapping.forced) {
             html.push('&nbsp;&nbsp;');
-            html.push('<button class="btn btn-success btn-xs mapper save-port" data="', mapping.externalPort, '|', mapping.protocol, '|', mapping.internalIp, '|', mapping.name,
-                '"><i class="fa fa-plus"></i></button>');
+            html.push('<button class="btn btn-success btn-xs mapper save-port" data="',
+                      mapping.externalPort, '|', mapping.protocol, '|', mapping.internalIp, '|',
+                      mapping.name,
+                      '"><i class="fa fa-plus"></i></button>');
         }
 
         html.push('</td>');
@@ -140,14 +141,13 @@ function portmapper(moduleId) {
     this.addPort = function () {
         var root = rootElement(this.moduleId);
 
+        var name = this.modal().find('form input[name="name"]').val();
+        var protocol = this.modal().find('form select[name="protocol"]').val();
+        var externalPort = this.modal().find('form input[name="externalPort"]').val();
+        var internalPort = this.modal().find('form input[name="internalPort"]').val();
+        var internalIp = this.modal().find('form input[name="client"]').val();
 
-        var name =  this.modal().find('form input[name="name"]').val();
-        var protocol =  this.modal().find('form select[name="protocol"]').val();
-        var externalPort =  this.modal().find('form input[name="externalPort"]').val();
-        var internalPort =  this.modal().find('form input[name="internalPort"]').val();
-        var internalIp =  this.modal().find('form input[name="client"]').val();
-
-        var force =  this.modal().find('form input[name="force"]:checked').length > 0;
+        var force = this.modal().find('form input[name="force"]:checked').length > 0;
 
         var data = [];
         data.push(name, '|', protocol, '|', externalPort, '|', internalPort, '|', internalIp);
@@ -171,6 +171,5 @@ function portmapper(moduleId) {
     this.savePort = function (data) {
         sendMessage(this.moduleId, 'savePort', data);
     }
-
 
 }

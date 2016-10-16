@@ -1,10 +1,11 @@
 package com.ftpix.homedash.plugins.pihole;
 
+import com.google.gson.Gson;
+
 import com.ftpix.homedash.models.ModuleExposedData;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.plugins.pihole.models.PiHoleStats;
-import com.google.gson.Gson;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -82,7 +83,7 @@ public class PiHolePlugin extends Plugin {
     }
 
     @Override
-    public int getRefreshRate() {
+    public int getRefreshRate(String size) {
         return ONE_MINUTE;
     }
 
@@ -102,8 +103,8 @@ public class PiHolePlugin extends Plugin {
         try {
             HttpResponse<String> response = Unirest.post(url + "api.php").header("cache-control", "no-cache").asString();
             gson.fromJson(response.getBody(), PiHoleStats.class);
-        }catch(Exception e){
-            errors.put("Unavailable", "Unable to reach PiHole admin at the following address: "+url+"api.php");
+        } catch (Exception e) {
+            errors.put("Unavailable", "Unable to reach PiHole admin at the following address: " + url + "api.php");
         }
 
 

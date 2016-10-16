@@ -1,14 +1,11 @@
 package com.ftpix.homedash.plugins.models;
 
 import ca.benow.transmission.model.TorrentStatus;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * Created by gz on 07-Jun-16.
  */
 public class TorrentObject {
-
 
 
     public String name;

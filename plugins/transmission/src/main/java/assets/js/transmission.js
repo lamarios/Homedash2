@@ -39,7 +39,6 @@ function transmission(moduleId) {
         }
     }
 
-
     this.onMessage_3x2 = function (command, message, extra) {
         if (command == 'refresh') {
             this.processData(message);
@@ -65,7 +64,6 @@ function transmission(moduleId) {
         }
     }
 
-
     this.processData = function (json) {
         var root = rootElement(this.moduleId);
 
@@ -73,7 +71,8 @@ function transmission(moduleId) {
             root.find('.module-overlay').show();
         } else {
             root.find('.count').html(json.status.obj.map.torrentCount);
-            root.find('.dl').html(this.humanFileSize(json.status.obj.map.downloadSpeed, true) + '/s');
+            root.find('.dl')
+                .html(this.humanFileSize(json.status.obj.map.downloadSpeed, true) + '/s');
             root.find('.ul').html(this.humanFileSize(json.status.obj.map.uploadSpeed, true) + '/s');
 
             var button = root.find('.alt')
@@ -88,7 +87,6 @@ function transmission(moduleId) {
             root.find('.module-overlay').hide();
         }
     }
-
 
     this.addTorrent = function (event) {
         var url = prompt("Margnet link", '');
@@ -118,11 +116,11 @@ function transmission(moduleId) {
         sendMessage(this.moduleId, 'altSpeed', setAltSpeed);
     }
 
-
     this.humanFileSize = function (bytes, si) {
         var thresh = si ? 1000 : 1024;
-        if (bytes < thresh)
+        if (bytes < thresh) {
             return bytes + ' B';
+        }
         var units = si ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] : [
             'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
         var u = -1;
@@ -133,14 +131,12 @@ function transmission(moduleId) {
         return bytes.toFixed(1) + ' ' + units[u];
     }
 
-
 //Full screen specific methods
-
 
     this.displayTorrents = function (json) {
         var parent = this;
         var div = rootElement(parent.moduleId).find('.torrent-list');
-            div.html('');
+        div.html('');
 
         var sortedTorrents = new Map();
         $.each(json.torrents, function (index, torrent) {
@@ -148,14 +144,13 @@ function transmission(moduleId) {
 
             var statusName = parent.getStatusName(torrent.status, json.rpcVersion);
 
-            if(!sortedTorrents.has(statusName)){
+            if (!sortedTorrents.has(statusName)) {
                 sortedTorrents.set(statusName, []);
             }
 
             sortedTorrents.get(statusName).push(torrent);
 
         });
-
 
         this.printTorrentCategory('Downloading', sortedTorrents, div, json.rpcVersion);
         this.printTorrentCategory('Seeding', sortedTorrents, div, json.rpcVersion);
@@ -166,11 +161,11 @@ function transmission(moduleId) {
 
     }
 
-    this.printTorrentCategory = function(name, torrents, element, rpcVersion){
-        if(torrents.has(name)) {
+    this.printTorrentCategory = function (name, torrents, element, rpcVersion) {
+        if (torrents.has(name)) {
 
             var parent = this;
-            element.append('<h2>'+name+'</h2>');
+            element.append('<h2>' + name + '</h2>');
             $.each(torrents.get(name), function (index, value) {
                 element.append(parent.torrentToHtml(value, rpcVersion));
             });
@@ -185,26 +180,29 @@ function transmission(moduleId) {
 
         html.push('<div  id="torrent-', torrent.id, '">');
         html.push('<p style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">');
-        html.push('<button  data="', torrent.id, '" class="torrent btn btn-primary btn-xs" style="float: right"><i class="fa fa-pencil"></i></button>');
+        html.push('<button  data="', torrent.id,
+                  '" class="torrent btn btn-primary btn-xs" style="float: right"><i class="fa fa-pencil"></i></button>');
         html.push(this.getStatusIcon(torrent.status, rpcVersion), ' ');
         html.push('<strong>', torrent.name, '</strong>');
         html.push('</p>');
         html.push('<div class="progress small-progress-bar">');
-        html.push('<div class="progress-bar" role="progressbar" aria-valuenow="', percent, '" aria-valuemin="0" aria-valuemax="100" style="width: ', percent, '%;">');
+        html.push('<div class="progress-bar" role="progressbar" aria-valuenow="', percent,
+                  '" aria-valuemin="0" aria-valuemax="100" style="width: ', percent, '%;">');
         //html.push('<span class="sr-only">', percent, '% Complete</span>');
         html.push('</div>');
         html.push('</div>');
         html.push('<p>');
-        html.push('DL: ', this.humanFileSize(torrent.downloadSpeed, true), '/s | Ul: ', this.humanFileSize(torrent.uploadSpeed, true), '/s');
+        html.push('DL: ', this.humanFileSize(torrent.downloadSpeed, true), '/s | Ul: ',
+                  this.humanFileSize(torrent.uploadSpeed, true), '/s');
         html.push('<span style="float:right">');
-        html.push(this.humanFileSize(torrent.downloaded, true), '/', this.humanFileSize(torrent.totalSize, true));
+        html.push(this.humanFileSize(torrent.downloaded, true), '/',
+                  this.humanFileSize(torrent.totalSize, true));
         html.push('</span>');
         html.push('</p>');
         html.push('<hr />');
 
         return html.join("");
     }
-
 
     this.getStatusIcon = function (value, rpcVersion) {
         if (rpcVersion < 14) {

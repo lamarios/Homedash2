@@ -1,7 +1,6 @@
 package com.ftpix.homedash.plugins.harddisk;
 
 
-
 import com.ftpix.homedash.Utils.ByteUtils;
 import com.ftpix.homedash.models.ModuleExposedData;
 import com.ftpix.homedash.models.WebSocketMessage;
@@ -16,7 +15,6 @@ import java.util.Map;
  */
 public class HarddiskPlugin extends Plugin {
     private final String SETTING_PATH = "path";
-
 
 
     @Override
@@ -85,15 +83,15 @@ public class HarddiskPlugin extends Plugin {
     }
 
     @Override
-    public int getRefreshRate() {
-        return ONE_MINUTE*2;
+    public int getRefreshRate(String size) {
+        return ONE_MINUTE * 2;
     }
 
     @Override
     public Map<String, String> validateSettings(Map<String, String> settings) {
         Map<String, String> errors = new Hashtable<>();
 
-        if(!new File(settings.get(SETTING_PATH)).exists()){
+        if (!new File(settings.get(SETTING_PATH)).exists()) {
             errors.put("Path", "This mount point doesn't exist.");
         }
 
@@ -118,8 +116,6 @@ public class HarddiskPlugin extends Plugin {
         result.put("Path", settings.get(SETTING_PATH));
         return result;
     }
-
-
 
 
 }

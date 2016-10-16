@@ -7,6 +7,7 @@ import com.ftpix.homedash.notifications.Notifications;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.sherdogparser.Sherdog;
 import com.ftpix.sherdogparser.models.Event;
+import com.ftpix.sherdogparser.models.Fighter;
 import com.ftpix.sherdogparser.models.Organization;
 
 import java.io.IOException;
@@ -83,7 +84,9 @@ public class MmaPlugin extends Plugin {
                     break;
                 case COMMAND_GET_FIGHTER:
                     response.setCommand(COMMAND_GET_FIGHTER);
-                    response.setMessage(sherdog.getFighter(message));
+                    Fighter fighter = sherdog.getFighter(message);
+                    fighter.setPicture("/" + fighter.getPicture());
+                    response.setMessage(fighter);
                     break;
                 case COMMAND_SEARCH:
                     this.searchQuery = message;
@@ -146,15 +149,19 @@ public class MmaPlugin extends Plugin {
             ZonedDateTime today = ZonedDateTime.now();
             today.minus(1, ChronoUnit.DAYS);
 
-           return search(e -> today.isBefore(e.getDate()));
+            return search(e -> today.isBefore(e.getDate()));
         } else {
             return search(e -> e.getName().contains(searchQuery));
         }
     }
 
     @Override
-    public int getRefreshRate() {
-        return ONE_HOUR;
+    public int getRefreshRate(String size) {
+        if(size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)){
+            return ONE_SECOND * 3;
+        }else {
+            return ONE_HOUR;
+        }
     }
 
     @Override
@@ -202,7 +209,7 @@ public class MmaPlugin extends Plugin {
     }
 
 
-    private Organization search(Predicate<Event> filter){
+    private Organization search(Predicate<Event> filter) {
         Organization org = new Organization();
         org.setName(organization.getName());
         org.setSherdogUrl(organization.getSherdogUrl());

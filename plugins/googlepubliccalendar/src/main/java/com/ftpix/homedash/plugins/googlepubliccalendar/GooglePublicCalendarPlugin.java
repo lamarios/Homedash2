@@ -106,7 +106,7 @@ public class GooglePublicCalendarPlugin extends Plugin {
     }
 
     @Override
-    public int getRefreshRate() {
+    public int getRefreshRate(String size) {
         return ONE_HOUR;
     }
 

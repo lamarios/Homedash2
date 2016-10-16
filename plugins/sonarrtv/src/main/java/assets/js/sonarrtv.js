@@ -6,7 +6,6 @@ function sonarrtv(moduleId) {
     this.timeout;
     this.currentIndex = 0;
 
-
     this.documentReady = function (size) {
 
         var parent = this;
@@ -21,7 +20,6 @@ function sonarrtv(moduleId) {
             }, 10000);
         });
 
-
         root.on('click', 'a.next', function () {
             parent.showNextShow();
             clearInterval(parent.interval);
@@ -32,7 +30,6 @@ function sonarrtv(moduleId) {
         });
 
     }
-
 
     this.onMessage_2x2 = function (command, message, extra) {
         this.processData(message);
@@ -50,7 +47,6 @@ function sonarrtv(moduleId) {
         this.processData(message);
     }
 
-
     this.processData = function (message) {
         clearInterval(this.interval);
         clearTimeout(this.timeout);
@@ -66,7 +62,6 @@ function sonarrtv(moduleId) {
         this.playSlideShow();
     }
 
-
     /**
      * Display all the shows
      */
@@ -76,7 +71,6 @@ function sonarrtv(moduleId) {
 
         var links = root.find('.next, .previous');
         links.attr('disabled', true);
-
 
         var oldShow = root.find('.shows-container .active');
 
@@ -99,7 +93,6 @@ function sonarrtv(moduleId) {
         }, 600);
     }
 
-
     /**
      * Show data to html
      * @param show
@@ -108,7 +101,8 @@ function sonarrtv(moduleId) {
      */
     this.showToHtml = function (show, index) {
         var html = [];
-        html.push('<div class="show" data-show="', index, '" style="background-image:url(', show.fanart, ')">');
+        html.push('<div class="show" data-show="', index, '" style="background-image:url(',
+                  show.fanart, ')">');
         html.push('<div class="show-info">');
         html.push('<p>');
         html.push('<span class="show-date">', show.airDate, '</span>');
@@ -120,7 +114,6 @@ function sonarrtv(moduleId) {
         return html.join('');
     }
 
-
     /**
      * Compares if the list of shows is identical
      * @param a
@@ -128,23 +121,26 @@ function sonarrtv(moduleId) {
      * @returns {boolean}
      */
     this.compareShows = function (a, b) {
-        if (a === b)
+        if (a === b) {
             return true;
-        if (a == null || b == null)
+        }
+        if (a == null || b == null) {
             return false;
-        if (a.length != b.length)
+        }
+        if (a.length != b.length) {
             return false;
+        }
 
         // If you don't care about the order of the elements inside
         // the array, you should sort both arrays here.
 
         for (var i = 0; i < a.length; ++i) {
-            if (a[i].showId !== b[i].showId)
+            if (a[i].showId !== b[i].showId) {
                 return false;
+            }
         }
         return true;
     }
-
 
     /**
      * Controls
@@ -159,7 +155,6 @@ function sonarrtv(moduleId) {
         this.currentIndex = this.currentIndex + 1;
         this.showShow();
     }
-
 
     /**
      * Automated slideshow

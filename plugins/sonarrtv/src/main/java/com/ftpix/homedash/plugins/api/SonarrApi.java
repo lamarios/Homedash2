@@ -1,6 +1,20 @@
 package com.ftpix.homedash.plugins.api;
 
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import com.ftpix.homedash.plugins.api.models.SonarrCalendar;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -9,18 +23,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import com.ftpix.homedash.plugins.api.models.SonarrCalendar;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 
 /**
@@ -70,6 +72,8 @@ public class SonarrApi {
 
             String response = Unirest.get(url).asString().getBody();
 
+            logger.info("Response from Sonarr: \n {}", response);
+
             JsonParser parser = new JsonParser();
             JsonArray json = (JsonArray) parser.parse(response);
 
@@ -97,8 +101,11 @@ public class SonarrApi {
                     tmp.setSeriesName(series.get("title").getAsString());
                     tmp.setSeriesId(seriesId);
                     tmp.setEpisodeName(calItem.get("title").getAsString());
+
+
                     Iterator<JsonElement> images = series.get("images")
                             .getAsJsonArray().iterator();
+
                     images.forEachRemaining((image) -> {
                         JsonObject imageObject = image.getAsJsonObject();
                         String type = imageObject.get("coverType")
@@ -134,7 +141,7 @@ public class SonarrApi {
             String response = Unirest.get(url).asString().getBody();
             logger.info("response: [{}]", response);
 
-            if(response.contains("error")){
+            if (response.contains("error")) {
                 logger.info("Not authorized");
                 throw new SonarrUnauthorizedException();
             }

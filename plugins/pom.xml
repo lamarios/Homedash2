@@ -76,9 +76,11 @@
                                 <goal>uglify</goal>
                             </goals>
                             <configuration>
-                                <sourceDirectory>${project.build.sourceDirectory}/assets/js</sourceDirectory>
+                                <sourceDirectory>${project.build.sourceDirectory}/assets/js
+                                </sourceDirectory>
 
-                                <outputDirectory>${project.build.resources[0].directory}/web/${name}/js
+                                <outputDirectory>
+                                    ${project.build.resources[0].directory}/web/${name}/js
                                 </outputDirectory>
                             </configuration>
                         </execution>
@@ -91,8 +93,10 @@
                     <version>1.7.0.1.1</version>
 
                     <configuration>
-                        <sourceDirectory>${project.build.sourceDirectory}/assets/less</sourceDirectory>
-                        <outputDirectory>${project.build.resources[0].directory}/web/${name}/css</outputDirectory>
+                        <sourceDirectory>${project.build.sourceDirectory}/assets/less
+                        </sourceDirectory>
+                        <outputDirectory>${project.build.resources[0].directory}/web/${name}/css
+                        </outputDirectory>
                         <compress>true</compress>
                         <includes>
                             <include>*.less</include>
@@ -164,7 +168,8 @@
                                     <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
 
                                     <if>
-                                        <available file="src/main/java/assets/files" property="files.present"/>
+                                        <available file="src/main/java/assets/files"
+                                                   property="files.present"/>
                                         <then>
                                             <copy todir="src/main/resources/web/${name}/files">
                                                 <fileset dir="src/main/java/assets/files">

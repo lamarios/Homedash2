@@ -1,7 +1,5 @@
 package com.ftpix.homedash.plugins.api.models;
 
-import java.util.List;
-
 public class SonarrCalendar {
     private int seasonNumber, episodeNumber, seriesId;
     private String overview, network, airDate, fanart, poster, banner, seriesName, episodeName;
@@ -94,4 +92,21 @@ public class SonarrCalendar {
         this.episodeName = episodeName;
     }
 
+
+    @Override
+    public String toString() {
+        return "SonarrCalendar{" +
+                "seasonNumber=" + seasonNumber +
+                ", episodeNumber=" + episodeNumber +
+                ", seriesId=" + seriesId +
+                ", overview='" + overview + '\'' +
+                ", network='" + network + '\'' +
+                ", airDate='" + airDate + '\'' +
+                ", fanart='" + fanart + '\'' +
+                ", poster='" + poster + '\'' +
+                ", banner='" + banner + '\'' +
+                ", seriesName='" + seriesName + '\'' +
+                ", episodeName='" + episodeName + '\'' +
+                '}';
+    }
 }

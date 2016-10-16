@@ -1,21 +1,23 @@
 package com.ftpix.homedash.plugins;
 
-import ca.benow.transmission.AddTorrentParameters;
-import ca.benow.transmission.TransmissionClient;
-import ca.benow.transmission.model.TorrentStatus;
-import ca.benow.transmission.model.TransmissionSession;
 import com.ftpix.homedash.Utils.ByteUtils;
 import com.ftpix.homedash.models.ModuleExposedData;
 import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.models.TorrentObject;
 import com.ftpix.homedash.plugins.models.TorrentSession;
+
 import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
+
+import ca.benow.transmission.AddTorrentParameters;
+import ca.benow.transmission.TransmissionClient;
+import ca.benow.transmission.model.TorrentStatus;
+import ca.benow.transmission.model.TransmissionSession;
 
 /**
  * Created by gz on 07-Jun-16.
@@ -99,19 +101,19 @@ public class TransmissionPlugin extends Plugin {
     @Override
     protected Object refresh(String size) throws Exception {
         try {
-            if(size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)){
+            if (size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)) {
                 return fullScreenRefresh();
-            }else {
+            } else {
                 return getSessionStats();
             }
         } catch (Exception e) {
-           logger.error("Error while refreshing transmission", e);
+            logger.error("Error while refreshing transmission", e);
             return false;
         }
     }
 
     @Override
-    public int getRefreshRate() {
+    public int getRefreshRate(String size) {
         return ONE_SECOND * 5;
     }
 
@@ -167,14 +169,14 @@ public class TransmissionPlugin extends Plugin {
     //////////////////////////////////////////////////////
     ////// plugin methods
 
-    public TorrentSession fullScreenRefresh(){
+    public TorrentSession fullScreenRefresh() {
         TorrentSession obj = new TorrentSession();
 
         try {
             obj = getSessionStats();
 
-            TorrentStatus.TorrentField[] fields = new TorrentStatus.TorrentField[] { TorrentStatus.TorrentField.name, TorrentStatus.TorrentField.rateDownload, TorrentStatus.TorrentField.rateUpload, TorrentStatus.TorrentField.percentDone, TorrentStatus.TorrentField.id, TorrentStatus.TorrentField.status,
-                    TorrentStatus.TorrentField.downloadedEver, TorrentStatus.TorrentField.uploadedEver, TorrentStatus.TorrentField.totalSize };
+            TorrentStatus.TorrentField[] fields = new TorrentStatus.TorrentField[]{TorrentStatus.TorrentField.name, TorrentStatus.TorrentField.rateDownload, TorrentStatus.TorrentField.rateUpload, TorrentStatus.TorrentField.percentDone, TorrentStatus.TorrentField.id, TorrentStatus.TorrentField.status,
+                    TorrentStatus.TorrentField.downloadedEver, TorrentStatus.TorrentField.uploadedEver, TorrentStatus.TorrentField.totalSize};
 
             logger.info("" + obj.rpcVersion);
             obj.torrents = new ArrayList<TorrentObject>();
@@ -185,7 +187,7 @@ public class TransmissionPlugin extends Plugin {
                 obj.torrents.add(t);
             }
         } catch (Exception e) {
-           logger.error("error while getting torrents", e);
+            logger.error("error while getting torrents", e);
         }
 
         return obj;

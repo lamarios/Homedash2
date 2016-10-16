@@ -1,7 +1,8 @@
 .form-group
     label(for="url") Organization Sherdog URL
     if settings && settings.containsKey("url")
-        input.form-control(type="text", id="url", name="url", placeholder="Url", value='#{settings.get("url")}')
+        input.form-control(type="text", id="url", name="url", placeholder="Url", value='#{settings.get(
+                "url")}')
     else
         input.form-control(type="text", id="url", name ="url", placeholder = "Url")
 

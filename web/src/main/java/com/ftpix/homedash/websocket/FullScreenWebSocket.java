@@ -1,16 +1,11 @@
 package com.ftpix.homedash.websocket;
 
-import com.ftpix.homedash.app.PluginModuleMaintainer;
-import com.ftpix.homedash.db.DB;
-import com.ftpix.homedash.models.Layout;
-import com.ftpix.homedash.models.ModuleLayout;
-import com.ftpix.homedash.models.WebSocketMessage;
-import com.ftpix.homedash.models.WebSocketSession;
-import com.ftpix.homedash.plugins.Plugin;
-
 import com.google.gson.Gson;
 
-import io.gsonfire.GsonFireBuilder;
+import com.ftpix.homedash.app.PluginModuleMaintainer;
+import com.ftpix.homedash.models.ModuleLayout;
+import com.ftpix.homedash.models.WebSocketMessage;
+import com.ftpix.homedash.plugins.Plugin;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,11 +17,12 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import io.gsonfire.GsonFireBuilder;
 
 /**
  * Created by gz on 07-Jun-16.
@@ -170,8 +166,9 @@ public class FullScreenWebSocket {
                 }
 
                 try {
-                    Thread.sleep(1000);
-                    time++;
+                    Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(this.moduleId);
+                    Thread.sleep(plugin.getRefreshRate(ModuleLayout.FULL_SCREEN) * 1000);
+                    time += plugin.getRefreshRate(ModuleLayout.FULL_SCREEN);
                 } catch (Exception e) {
                     logger.error("Error while sleeping", e);
                 }

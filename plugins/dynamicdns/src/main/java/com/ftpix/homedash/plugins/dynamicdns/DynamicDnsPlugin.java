@@ -1,6 +1,5 @@
 package com.ftpix.homedash.plugins.dynamicdns;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
@@ -207,8 +206,12 @@ public class DynamicDnsPlugin extends Plugin {
     }
 
     @Override
-    public int getRefreshRate() {
-        return ONE_MINUTE;
+    public int getRefreshRate(String size) {
+        if (size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)) {
+            return ONE_SECOND * 3;
+        } else {
+            return ONE_MINUTE;
+        }
     }
 
     @Override
