@@ -5,27 +5,30 @@ import com.ftpix.homedash.models.ModuleExposedData;
 import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.models.CpuInfo;
+import com.ftpix.homedash.plugins.models.HardwareInfo;
 import com.ftpix.homedash.plugins.models.RamInfo;
 import com.ftpix.homedash.plugins.models.SystemInfoData;
-
-import org.hyperic.sigar.Mem;
-import org.hyperic.sigar.Sigar;
-import org.hyperic.sigar.SigarException;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import oshi.SystemInfo;
+import oshi.hardware.CentralProcessor;
+import oshi.hardware.GlobalMemory;
+import oshi.hardware.Sensors;
+
 public class SystemInfoPlugin extends Plugin {
 
     private List<CpuInfo> cpuInfo = new ArrayList<CpuInfo>();
     private List<RamInfo> ramInfo = new ArrayList<RamInfo>();
+    private HardwareInfo hardwareInfo = new HardwareInfo();
+
     private final int MAX_INFO_SIZE = 100, WARNING_THRESHOLD = 90;
     private final String SETTING_NOTIFICATIONS = "notifications";
     private final DecimalFormat nf = new DecimalFormat("#,###,###,##0.00");
-
-    private final Sigar sigar = new Sigar();
+    private final SystemInfo systemInfo = new SystemInfo();
 
     public SystemInfoPlugin() {
 
@@ -57,11 +60,21 @@ public class SystemInfoPlugin extends Plugin {
 
     @Override
     protected void init() {
+        CentralProcessor processor = systemInfo.getHardware().getProcessor();
+        hardwareInfo.family = processor.getFamily();
+        hardwareInfo.identifier = processor.getIdentifier();
+        hardwareInfo.logicalCores = processor.getLogicalProcessorCount();
+        hardwareInfo.physicalCores = processor.getPhysicalProcessorCount();
+        hardwareInfo.is64 = processor.isCpu64bit();
+        hardwareInfo.model = processor.getModel();
+        hardwareInfo.name = processor.getName();
+        hardwareInfo.uptime = processor.getSystemUptime();
+        hardwareInfo.vendor = processor.getVendor();
     }
 
     @Override
     public String[] getSizes() {
-        return new String[]{ModuleLayout.SIZE_2x1, ModuleLayout.SIZE_1x1};
+        return new String[]{ModuleLayout.FULL_SCREEN, ModuleLayout.SIZE_2x1, ModuleLayout.SIZE_1x1};
     }
 
     @Override
@@ -94,6 +107,7 @@ public class SystemInfoPlugin extends Plugin {
         try {
             CpuInfo cpu = getCPUInfo();
             RamInfo ram = getRamInfo();
+
 
             if (settings.containsKey(SETTING_NOTIFICATIONS) && cpuInfo.size() > 0 && ramInfo.size() > 0) {
                 CpuInfo oldCpu = cpuInfo.get(cpuInfo.size() - 1);
@@ -138,6 +152,10 @@ public class SystemInfoPlugin extends Plugin {
             data.ramInfo = this.ramInfo;
         }
 
+        if (size == ModuleLayout.FULL_SCREEN) {
+            data.hardwareInfo = hardwareInfo;
+        }
+
         return data;
     }
 
@@ -148,23 +166,38 @@ public class SystemInfoPlugin extends Plugin {
     /**
      * Getting data
      */
-    public CpuInfo getCPUInfo() throws SigarException {
+    public CpuInfo getCPUInfo() {
+
+        CentralProcessor processor = systemInfo.getHardware().getProcessor();
+        Sensors sensors = systemInfo.getHardware().getSensors();
 
         CpuInfo info = new CpuInfo();
-        info.cpuUsage = Math.ceil(sigar.getCpuPerc().getCombined() * 100);
+
+        info.cpuUsage = Math.ceil(processor.getSystemCpuLoad() * 100);
+
+        try {
+            info.fanSpeed = sensors.getFanSpeeds();
+            info.temperature = sensors.getCpuTemperature();
+            info.voltage = sensors.getCpuVoltage();
+        } catch (Exception e) {
+            logger.error("Couldn't read sensors", e);
+        }
+
         return info;
     }
 
-    public RamInfo getRamInfo() throws SigarException {
+    public RamInfo getRamInfo() {
         RamInfo info = new RamInfo();
 
-        Mem mem = sigar.getMem();
 
-        info.maxRam = mem.getRam() * 1024 * 1024;
+        GlobalMemory memory = systemInfo.getHardware().getMemory();
 
-        info.availableRam = mem.getFree();
 
-        info.usedRam = mem.getUsed();
+        info.maxRam = memory.getTotal();
+
+        info.availableRam = memory.getAvailable();
+
+        info.usedRam = info.maxRam - info.availableRam;
 
         info.percentageUsed = Math.ceil((info.usedRam / info.maxRam) * 100);
 

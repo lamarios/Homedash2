@@ -1,3 +1,5 @@
+@orange: #e67e22;
+
 .systeminfo {
   background-color: rgb(16, 207, 189);
   color: white;
@@ -44,6 +46,40 @@
         color: white;
         font-size: 25px;
       }
+    }
+  }
+}
+
+.systeminfo.size-full-screen {
+  color: black;
+  background-color: white;
+
+  .graphs {
+    .text{
+      text-align: right;
+    }
+    .graph {
+      width: 100%;
+      height: 75px;
+      background-color: #EEEEEE;
+      svg {
+        width: 100%;
+        height: 100%;
+        g {
+          width: 100%;
+          path {
+            fill: @orange;
+          }
+        }
+      }
+    }
+  }
+
+  .infobox{
+    border-top: 3px solid @orange;
+
+    h2{
+      font-size: 25px;
     }
   }
 }

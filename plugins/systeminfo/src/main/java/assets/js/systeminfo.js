@@ -23,6 +23,33 @@ function systeminfo(moduleId) {
         this.processData(message);
     }
 
+    this.onMessage_fullScreen = function (command, message, extra) {
+        var root = rootElement(this.moduleId);
+
+        this.cpuHistory = message.cpuInfo;
+        this.ramHistory = message.ramInfo;
+
+        var cpu = this.cpuHistory[this.cpuHistory.length - 1].cpuUsage;
+        var ram = this.ramHistory[this.ramHistory.length - 1];
+        var temp = this.cpuHistory[this.cpuHistory.length - 1].temperature;
+        var hardware = message.hardwareInfo;
+
+        root.find('.ram .text').html(this.humanFileSize(ram.usedRam, ram.maxRam, false));
+        root.find('.cpu .text').html(cpu + '%');
+        root.find('.temp .text').html(temp + '&#8451');
+
+        root.find('.ram .graph svg path').attr('d', this.ramArrayToSVGGraph(this.ramHistory));
+        root.find('.cpu .graph svg path').attr('d', this.cpuArrayToSVGGraph(this.cpuHistory));
+        root.find('.temp .graph svg path').attr('d', this.tempArrayToSVGGraph(this.cpuHistory));
+
+
+        //System info
+
+        root.find('.cpu-info .name').html(hardware.name);
+        root.find('.cpu-info .logical-cores .value').html(hardware.logicalCores);
+        root.find('.cpu-info .physical-cores .value').html(hardware.physicalCores);
+    }
+
     this.processData = function (obj) {
 
         var root = rootElement(this.moduleId);
@@ -67,6 +94,21 @@ function systeminfo(moduleId) {
         $.each(array, function (index, cpuInfo) {
 
             html.push(' L', (index + 1) * step, ',', 100 - cpuInfo.cpuUsage);
+            lastIndex = index * step;
+        });
+        html.push(' L', 100, ',100 Z');
+        return html.join('');
+    }
+
+    this.tempArrayToSVGGraph = function (array) {
+        var html = [];
+        html.push('M0,100');
+        var lastIndex = 0;
+        var step = (100) / array.length;
+        html.push(' L0,', 100 - array[0].cpuUsage);
+        $.each(array, function (index, cpuInfo) {
+
+            html.push(' L', (index + 1) * step, ',', 100 - cpuInfo.temperature);
             lastIndex = index * step;
         });
         html.push(' L', 100, ',100 Z');
