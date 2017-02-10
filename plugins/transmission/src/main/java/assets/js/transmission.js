@@ -6,6 +6,8 @@ function transmission(moduleId) {
 
     this.torrents = [];
 
+    this.categoryToggles = new Map();
+
     this.onConnect = function () {
 
     };
@@ -22,6 +24,16 @@ function transmission(moduleId) {
         });
 
         if (size == "full-screen") {
+
+            this.categoryToggles.set('', false);
+
+            this.categoryToggles.set('Downloading', false);
+            this.categoryToggles.set('Seeding', true);
+            this.categoryToggles.set('Checking', true);
+            this.categoryToggles.set('Paused', true);
+            this.categoryToggles.set('Waiting', true);
+            this.categoryToggles.set('Done', true);
+
             rootElement(this.moduleId).on('click', '.pause-torrent', function () {
                 parent.pauseTorrent(parent.selectedTorrent);
                 $(".modal").modal('hide');
@@ -35,6 +47,19 @@ function transmission(moduleId) {
             rootElement(this.moduleId).on('click', '.torrent', function (e) {
                 $(".modal").modal('show');
                 parent.selectedTorrent = $(this).attr('data');
+            });
+
+            rootElement(this.moduleId).on('click', '.category-toggle', function (e) {
+                var status = $(this).attr('data-status');
+                var current = parent.categoryToggles.get(status);
+                parent.categoryToggles.set(status, !current);
+
+                $('.torrent-category[data-status="' + status + '"]').toggleClass('hidden');
+
+                var icon = $(this).find('.fa');
+
+                icon.toggleClass('fa-caret-right');
+                icon.toggleClass('fa-caret-down');
             });
         }
     }
@@ -122,7 +147,7 @@ function transmission(moduleId) {
             return bytes + ' B';
         }
         var units = si ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] : [
-            'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+                'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
         var u = -1;
         do {
             bytes /= thresh;
@@ -152,23 +177,46 @@ function transmission(moduleId) {
 
         });
 
-        this.printTorrentCategory('Downloading', sortedTorrents, div, json.rpcVersion);
-        this.printTorrentCategory('Seeding', sortedTorrents, div, json.rpcVersion);
-        this.printTorrentCategory('Checking', sortedTorrents, div, json.rpcVersion);
-        this.printTorrentCategory('Paused', sortedTorrents, div, json.rpcVersion);
-        this.printTorrentCategory('Waiting', sortedTorrents, div, json.rpcVersion);
-        this.printTorrentCategory('Done', sortedTorrents, div, json.rpcVersion);
+        this.printTorrentCategory('Downloading', sortedTorrents, div, json.rpcVersion,
+                                  this.categoryToggles.get('Downloading'));
+        this.printTorrentCategory('Seeding', sortedTorrents, div, json.rpcVersion,
+                                  this.categoryToggles.get('Seeding'));
+        this.printTorrentCategory('Checking', sortedTorrents, div, json.rpcVersion,
+                                  this.categoryToggles.get('Checking'));
+        this.printTorrentCategory('Paused', sortedTorrents, div, json.rpcVersion,
+                                  this.categoryToggles.get('Paused'));
+        this.printTorrentCategory('Waiting', sortedTorrents, div, json.rpcVersion,
+                                  this.categoryToggles.get('Waiting'));
+        this.printTorrentCategory('Done', sortedTorrents, div, json.rpcVersion,
+                                  this.categoryToggles.get('Done'));
 
     }
 
-    this.printTorrentCategory = function (name, torrents, element, rpcVersion) {
+    this.printTorrentCategory = function (name, torrents, element, rpcVersion, hidden) {
         if (torrents.has(name)) {
 
             var parent = this;
-            element.append('<h2>' + name + '</h2>');
+
+            var html = [];
+
+            html.push('<h2 class="category-toggle" data-status="', name, '">');
+
+            var hiddenClass = '';
+            if (hidden === true) {
+                hiddenClass = 'hidden';
+                html.push('<i class="fa fa-caret-right" aria-hidden="true"></i> ');
+            } else {
+                html.push('<i class="fa fa-caret-down" aria-hidden="true"></i> ');
+            }
+
+            html.push(name, '</h2>');
+            html.push('<div class="torrent-category ', hiddenClass, '" data-status="', name, '">');
             $.each(torrents.get(name), function (index, value) {
-                element.append(parent.torrentToHtml(value, rpcVersion));
+                html.push(parent.torrentToHtml(value, rpcVersion));
             });
+            html.push('</div>');
+
+            element.append(html.join(''));
         }
     }
 
@@ -176,7 +224,6 @@ function transmission(moduleId) {
         var html = [];
 
         var percent = Math.ceil(torrent.percentDone * 100);
-        console.log(torrent.name + ":" + percent);
 
         html.push('<div  id="torrent-', torrent.id, '">');
         html.push('<p style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">');
@@ -199,6 +246,7 @@ function transmission(moduleId) {
                   this.humanFileSize(torrent.totalSize, true));
         html.push('</span>');
         html.push('</p>');
+        html.push('</div>');
         html.push('<hr />');
 
         return html.join("");
