@@ -1,6 +1,52 @@
-.col-xs-3
-    | cpu
-.col-xs-3
-    | ram
-.col-xs-3
-    |
+.row.graphs
+    .col-xs-4
+        .cpu
+            h4 CPU
+            .graph
+                svg(viewBox="0 0 100 100", preserveAspectRatio="none", xmlns="http://www.w3.org/2000/svg",xmlns:xlink="http://www.w3.org/1999/xlink", version="1.1")
+                    g.surfaces
+                        path
+            .text
+    .col-xs-4
+        h4 RAM
+        .ram
+            .graph
+                svg(viewBox="0 0 100 100", preserveAspectRatio="none", xmlns="http://www.w3.org/2000/svg",xmlns:xlink="http://www.w3.org/1999/xlink", version="1.1")
+                    g.surfaces
+                        path
+            .text
+    .col-xs-4
+        h4 Temperature
+        .temp
+            .graph
+                svg(viewBox="0 0 100 100", preserveAspectRatio="none", xmlns="http://www.w3.org/2000/svg",xmlns:xlink="http://www.w3.org/1999/xlink", version="1.1")
+                    g.surfaces
+                        path
+            .text
+.row
+    .col-md-6.os-info.infobox
+        h2.os
+        p.uptime
+            b Uptime:&nbsp;
+            span.value
+    .col-md-6.cpu-info.infobox
+        h2.name
+        p
+            b Phyisical cores:&nbsp;
+            span.physical-cores
+            | &nbsp;
+            b Logical cores:&nbsp;
+            span.logical-cores
+
+.row
+    .col-md-12.infobox.processes
+        h2 Processes
+        .table-responsive
+            table.table.table-stripped.table-hover
+                thead
+                    tr
+                        th.sort(data-sort="PID") PID
+                        th.sort(data-sort="NAME") Name
+                        th.sort.selected(data-sort="CPU") CPU usage
+                        th.sort(data-sort="RAM") RAM
+                tbody

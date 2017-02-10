@@ -6,5 +6,6 @@ public class SystemInfoData {
     public List<CpuInfo> cpuInfo;
     public List<RamInfo> ramInfo;
     public HardwareInfo hardwareInfo;
+    public OsInfo osInfo;
 
 }

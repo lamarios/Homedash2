@@ -11,7 +11,17 @@ function systeminfo(moduleId) {
     }
 
     this.documentReady = function (size) {
+        if (size === 'full-screen') {
+            var root = rootElement(this.moduleId);
 
+            var self = this;
+
+            root.on('click', '.sort', function (event) {
+                root.find('.sort').removeClass('selected');
+                $(this).addClass('selected');
+                sendMessage(self.moduleId, 'sort', $(this).attr('data-sort'));
+            });
+        }
     }
 
     this.onMessage_2x1 = function (command, message, extra) {
@@ -33,6 +43,7 @@ function systeminfo(moduleId) {
         var ram = this.ramHistory[this.ramHistory.length - 1];
         var temp = this.cpuHistory[this.cpuHistory.length - 1].temperature;
         var hardware = message.hardwareInfo;
+        var os = message.osInfo;
 
         root.find('.ram .text').html(this.humanFileSize(ram.usedRam, ram.maxRam, false));
         root.find('.cpu .text').html(cpu + '%');
@@ -42,12 +53,17 @@ function systeminfo(moduleId) {
         root.find('.cpu .graph svg path').attr('d', this.cpuArrayToSVGGraph(this.cpuHistory));
         root.find('.temp .graph svg path').attr('d', this.tempArrayToSVGGraph(this.cpuHistory));
 
-
         //System info
 
         root.find('.cpu-info .name').html(hardware.name);
-        root.find('.cpu-info .logical-cores .value').html(hardware.logicalCores);
-        root.find('.cpu-info .physical-cores .value').html(hardware.physicalCores);
+        root.find('.cpu-info .logical-cores').html(hardware.logicalCores);
+        root.find('.cpu-info .physical-cores').html(hardware.physicalCores);
+
+        root.find('.os-info .os')
+            .html(os.manufacturer + ' ' + os.family + ' ' + os.version + ' build ' + os.build);
+
+        root.find('.os-info .uptime .value').html(this.uptimeToString(hardware.uptime));
+        root.find('.processes table tbody').html(this.buildProcessTableBody(os.processes));
     }
 
     this.processData = function (obj) {
@@ -84,6 +100,22 @@ function systeminfo(moduleId) {
         }
 
     };
+
+    this.buildProcessTableBody = function (processes) {
+        var html = [];
+
+        var self = this;
+
+        $.each(processes, function (index, process) {
+            html.push('<tr>');
+            html.push('<td>', process.pid, '</td>');
+            html.push('<td>', process.name, '</td>');
+            html.push('<td>', Math.ceil(process.cpuUsage), '%</td>');
+            html.push('<td>', self.humanFileSizeSingle(process.memory, true), '</td>');
+        });
+
+        return html.join('');
+    }
 
     this.cpuArrayToSVGGraph = function (array) {
         var html = [];
@@ -130,6 +162,23 @@ function systeminfo(moduleId) {
         return html.join('');
     }
 
+    this.humanFileSizeSingle = function (memory, si) {
+
+        var thresh = si ? 1000 : 1024;
+        if (memory < thresh) {
+            return memory + ' B';
+        }
+        var units = si ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] : ['KiB', 'MiB', 'GiB',
+                                                                             'TiB', 'PiB', 'EiB',
+                                                                             'ZiB', 'YiB'];
+        var u = -1;
+        do {
+            memory /= thresh;
+            ++u;
+        } while (memory >= thresh);
+        return memory.toFixed(1) + ' ' + units[u];
+    }
+
     this.humanFileSize = function (used, max, si) {
         var thresh = si ? 1000 : 1024;
         if (max < thresh) {
@@ -145,6 +194,37 @@ function systeminfo(moduleId) {
             ++u;
         } while (max >= thresh);
         return used.toFixed(1) + '/' + max.toFixed(1) + ' ' + units[u];
+    }
+
+    this.uptimeToString = function secondsToString(seconds) {
+        var numyears = Math.floor(seconds / 31536000);
+        var numdays = Math.floor((seconds % 31536000) / 86400);
+        var numhours = Math.floor(((seconds % 31536000) % 86400) / 3600);
+        var numminutes = Math.floor((((seconds % 31536000) % 86400) % 3600) / 60);
+        var numseconds = (((seconds % 31536000) % 86400) % 3600) % 60;
+
+        var str = [];
+        if (numyears > 0) {
+            str.push(numyears, ' years ');
+        }
+
+        if(numdays > 0) {
+            str.push(numdays, ' days ');
+        }
+
+        if(numhours > 0){
+            str.push(numhours, ' hours ');
+        }
+
+        if(numminutes > 0){
+            str.push(numminutes, ' minutes ');
+        }
+
+        if(numseconds > 0){
+            str.push(numseconds, ' seconds ');
+        }
+
+        return str.join('');
     }
 
 }
