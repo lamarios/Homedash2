@@ -197,7 +197,7 @@ public class SystemInfoPlugin extends Plugin {
             data.ramInfo = this.ramInfo;
         }
 
-        if (size == ModuleLayout.FULL_SCREEN) {
+        if (size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)) {
             data.hardwareInfo = hardwareInfo;
 
             data.osInfo = osInfo;
