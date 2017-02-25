@@ -12,10 +12,10 @@ import com.ftpix.homedash.plugins.models.RamInfo;
 import com.ftpix.homedash.plugins.models.SystemInfoData;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,8 +34,8 @@ import oshi.software.os.OperatingSystem;
 public class SystemInfoPlugin extends Plugin {
 
     private static final int PROCESS_LIST_SIZE = 50;
-    private List<CpuInfo> cpuInfo = new ArrayList<CpuInfo>();
-    private List<RamInfo> ramInfo = new ArrayList<RamInfo>();
+    private List<CpuInfo> cpuInfo = new LinkedList<>();
+    private List<RamInfo> ramInfo = new LinkedList<>();
     private HardwareInfo hardwareInfo = new HardwareInfo();
     private OsInfo osInfo = new OsInfo();
     private Map<Integer, Process> processes = new HashMap<>();

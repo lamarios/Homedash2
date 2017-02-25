@@ -5,5 +5,5 @@ package com.ftpix.homedash.plugins.networkmonitor.models;
  */
 public class NetworkInfo {
     public String name, ip, readableUp, readableDown, readableTotalUp, readableTotalDown;
-    public long up, down, totalUp, totalDown;
+    public long up, down, totalUp, totalDown, time;
 }

@@ -6,22 +6,25 @@ import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.plugins.networkmonitor.models.NetworkInfo;
 
-import org.hyperic.sigar.NetFlags;
-import org.hyperic.sigar.NetInterfaceConfig;
-import org.hyperic.sigar.NetInterfaceStat;
-import org.hyperic.sigar.Sigar;
-import org.hyperic.sigar.SigarException;
-
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import oshi.SystemInfo;
+import oshi.hardware.NetworkIF;
 
 /**
  * Created by gz on 01-Jul-16.
  */
 public class NetworkMonitorPlugin extends Plugin {
     private final String SETTING_INTERFACE = "network-interface";
-    private final Sigar sigar = new Sigar();
-    private long oldUp = 0, oldDown = 0, oldTime = 0;
+    private SystemInfo systemInfo = new SystemInfo();
+    private List<NetworkInfo> networkInfos = new LinkedList<>();
+    private final int MAX_SIZE = 25;
 
     @Override
     public String getId() {
@@ -45,7 +48,6 @@ public class NetworkMonitorPlugin extends Plugin {
 
     @Override
     protected void init() {
-
     }
 
     @Override
@@ -55,7 +57,7 @@ public class NetworkMonitorPlugin extends Plugin {
 
     @Override
     public int getBackgroundRefreshRate() {
-        return 0;
+        return ONE_SECOND * 2;
     }
 
     @Override
@@ -65,12 +67,15 @@ public class NetworkMonitorPlugin extends Plugin {
 
     @Override
     public void doInBackground() {
-
+        networkInfos.add(getNetworkInfo(settings.get(SETTING_INTERFACE)));
+        if(networkInfos.size() > MAX_SIZE){
+            networkInfos.remove(0);
+        }
     }
 
     @Override
     protected Object refresh(String size) throws Exception {
-        return getNetworkInfo(settings.get(SETTING_INTERFACE).trim());
+        return networkInfos;
     }
 
     @Override
@@ -82,15 +87,18 @@ public class NetworkMonitorPlugin extends Plugin {
     public Map<String, String> validateSettings(Map<String, String> settings) {
         Map<String, String> errors = new HashMap<String, String>();
 
+        NetworkIF[] interfaces = systemInfo.getHardware().getNetworkIFs();
+
         try {
-            NetInterfaceConfig ifConfig = sigar.getNetInterfaceConfig(settings.get(SETTING_INTERFACE).trim());
-            if (ifConfig == null) {
-                errors.put("Interface", "Interface " + settings.get(SETTING_INTERFACE).trim() + " doesn't exist. Existing interfaces: " + String.join(",", sigar.getNetInterfaceList()));
+            Optional<NetworkIF> ifConfigOpt = Stream.of(interfaces)
+                    .filter(iface -> iface.getName().equalsIgnoreCase(settings.get(SETTING_INTERFACE).trim())).findFirst();
+            if (!ifConfigOpt.isPresent()) {
+                errors.put("Interface", "Interface " + settings.get(SETTING_INTERFACE).trim() + " doesn't exist. Existing interfaces: " + Stream.of(interfaces).map(NetworkIF::getName).collect(Collectors.joining(",")));
 
             }
         } catch (Exception e) {
             try {
-                errors.put("Interface", "Interface " + settings.get(SETTING_INTERFACE).trim() + " doesn't exist. Existing interfaces: " + String.join(", ", sigar.getNetInterfaceList()));
+                errors.put("Interface", "Interface " + settings.get(SETTING_INTERFACE).trim() + " doesn't exist. Existing interfaces: " + Stream.of(interfaces).map(NetworkIF::getName).collect(Collectors.joining(",")));
             } catch (Exception e2) {
                 errors.put("System error", "Unable to get network interface, try to restart HomeDash or your system is incompatible with the network interface monitoring library.");
             }
@@ -114,49 +122,53 @@ public class NetworkMonitorPlugin extends Plugin {
 
 
     //////// plugin methods
-    public NetworkInfo getNetworkInfo(String netInterface) throws SigarException {
+    public NetworkInfo getNetworkInfo(String netInterface) {
 
+        Optional<NetworkIF> ifConfigOpt = Stream.of(systemInfo.getHardware().getNetworkIFs())
+                .filter(iface -> iface.getName().equalsIgnoreCase(netInterface)).findFirst();
         NetworkInfo networkInfo = new NetworkInfo();
-        NetInterfaceConfig ifConfig = sigar.getNetInterfaceConfig(netInterface);
+        if (ifConfigOpt.isPresent()) {
+            NetworkIF ifConfig = ifConfigOpt.get();
 
-        if (!NetFlags.NULL_HWADDR.equals(ifConfig.getHwaddr())) {
-            networkInfo.ip = ifConfig.getAddress();
+            networkInfo.ip = ifConfig.getIPv4addr()[0];
             networkInfo.name = ifConfig.getName();
+
+
+            long currentTime = System.currentTimeMillis();
+            long currentTotalUp = ifConfig.getBytesSent();
+            long currentTotalDown = ifConfig.getBytesRecv();
+
+
+            if (!networkInfos.isEmpty()) { // we have data let's proceed to calculation
+                NetworkInfo old = networkInfos.get(networkInfos.size() - 1);
+
+                logger.info("[Network info] We have history, lets calculate the speed since last refresh");
+                long transferredUp = currentTotalUp - old.totalUp;
+                long transferredDown = currentTotalDown - old.totalDown;
+                double duration = (currentTime - old.time) / 1000; // from
+                // millisecond
+                // to seconds
+                logger.info("[Network info] Uploaded [{}] Downloaded [{}] in [{}]s", transferredUp, transferredDown, duration);
+
+                networkInfo.down = (long) Math.ceil(transferredDown / duration);
+                networkInfo.up = (long) Math.ceil(transferredUp / duration);
+                networkInfo.time = currentTime;
+
+            }
+
+            networkInfo.totalDown = currentTotalDown;
+            networkInfo.totalUp = currentTotalUp;
+
+            networkInfo.readableTotalDown = ByteUtils.humanReadableByteCount(networkInfo.totalDown, true);
+            networkInfo.readableTotalUp = ByteUtils.humanReadableByteCount(networkInfo.totalUp, true);
+
+            networkInfo.readableDown = ByteUtils.humanReadableByteCount(networkInfo.down, true) + "/s";
+            networkInfo.readableUp = ByteUtils.humanReadableByteCount(networkInfo.up, true) + "/s";
+
+            return networkInfo;
+        } else {
+            return null;
         }
-
-        NetInterfaceStat netStat = sigar.getNetInterfaceStat(netInterface);
-
-        long currentTime = System.currentTimeMillis();
-        long currentTotalUp = netStat.getTxBytes();
-        long currentTotalDown = netStat.getRxBytes();
-        if (oldTime > 0) { // we have data let's proceed to calculation
-            logger.info("[Network info] We have history, lets calculate the speed since last refresh");
-            long transferredUp = currentTotalUp - oldUp;
-            long transferredDown = currentTotalDown - oldDown;
-            double duration = (currentTime - oldTime) / 1000; // from
-            // millisecond
-            // to seconds
-            logger.info("[Network info] Uploaded [{}] Downloaded [{}] in [{}]s", transferredUp, transferredDown, duration);
-
-            networkInfo.down = (long) Math.ceil(transferredDown / duration);
-            networkInfo.up = (long) Math.ceil(transferredUp / duration);
-
-        }
-
-        networkInfo.totalDown = currentTotalDown;
-        networkInfo.totalUp = currentTotalUp;
-
-        networkInfo.readableTotalDown = ByteUtils.humanReadableByteCount(networkInfo.totalDown, true);
-        networkInfo.readableTotalUp = ByteUtils.humanReadableByteCount(networkInfo.totalUp, true);
-
-        networkInfo.readableDown = ByteUtils.humanReadableByteCount(networkInfo.down, true) + "/s";
-        networkInfo.readableUp = ByteUtils.humanReadableByteCount(networkInfo.up, true) + "/s";
-
-        oldTime = currentTime;
-        oldUp = currentTotalUp;
-        oldDown = currentTotalDown;
-
-        return networkInfo;
     }
 
 }
