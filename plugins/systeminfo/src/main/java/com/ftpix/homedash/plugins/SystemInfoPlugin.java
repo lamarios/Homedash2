@@ -221,9 +221,13 @@ public class SystemInfoPlugin extends Plugin {
         return data;
     }
 
+    @Override
+    protected Map<String, Object> getSettingsModel() {
+        return null;
+    }
     // ////////////
     // Class method
-    // //////////
+    ////////////
 
     /**
      * Map from OSHI processes and calculate CPU time;

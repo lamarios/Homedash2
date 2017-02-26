@@ -236,6 +236,11 @@ public class DynamicDnsPlugin extends Plugin {
         return null;
     }
 
+
+    @Override
+    protected Map<String, Object> getSettingsModel() {
+        return null;
+    }
     /// plugin methods
 
 

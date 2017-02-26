@@ -86,4 +86,9 @@ public class DockerPlugin extends Plugin {
         return null;
     }
 
+    @Override
+    protected Map<String, Object> getSettingsModel() {
+        return null;
+    }
+
 }

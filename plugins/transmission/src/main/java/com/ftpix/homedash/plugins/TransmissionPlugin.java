@@ -166,6 +166,11 @@ public class TransmissionPlugin extends Plugin {
         return result;
     }
 
+    @Override
+    protected Map<String, Object> getSettingsModel() {
+        return null;
+    }
+
     //////////////////////////////////////////////////////
     ////// plugin methods
 

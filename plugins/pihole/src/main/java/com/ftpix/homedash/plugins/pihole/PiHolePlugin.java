@@ -142,7 +142,10 @@ public class PiHolePlugin extends Plugin {
         return settings;
     }
 
-
+    @Override
+    protected Map<String, Object> getSettingsModel() {
+        return null;
+    }
     // /////////////////////////////
     // //Plugin Methods
 

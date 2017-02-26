@@ -120,6 +120,10 @@ public class NetworkMonitorPlugin extends Plugin {
         return exposed;
     }
 
+    @Override
+    protected Map<String, Object> getSettingsModel() {
+       return Stream.of(systemInfo.getHardware().getNetworkIFs()).collect(Collectors.toMap(NetworkIF::getName, netIf-> String.join(", ", netIf.getIPv4addr())));
+    }
 
     //////// plugin methods
     public NetworkInfo getNetworkInfo(String netInterface) {

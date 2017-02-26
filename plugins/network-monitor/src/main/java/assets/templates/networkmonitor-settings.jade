@@ -1,6 +1,10 @@
 .form-group
-    label(for="network-interface") Network interface to monitor
-    if settings && settings.containsKey("network-interface")
-        input.form-control(type="text", id="network-interface", name="network-interface", placeholder="Interface", value='#{settings.get("network-interface")}')
-    else
-        input.form-control(type="text", id="network-interface", name ="network-interface", placeholder = "Interface")
+    p Select network interface
+    each val, index in model
+        .radio
+            label
+                if(settings && settings.containsKey("network-interface") && settings.get("network-interface").equalsIgnoreCase(index))
+                    input(type="radio", name="network-interface", value="#{index}", checked="true")
+                else
+                    input(type="radio", name="network-interface", value="#{index}")
+                | #{index} - #{val}

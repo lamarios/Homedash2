@@ -124,6 +124,7 @@ public abstract class Plugin {
 
     /**
      * Get refresh rate in seconds for main page display
+     *
      * @param size size of the module being refreshed
      */
     public abstract int getRefreshRate(String size);
@@ -237,6 +238,7 @@ public abstract class Plugin {
                 model.put("settings", settings);
             }
 
+            Optional.ofNullable(getSettingsModel()).ifPresent(pluginSettingsModel -> model.put("model", pluginSettingsModel));
 
             String templateFile = "templates/" + getId() + "-settings.jade";
             logger.info("Looking for template: [{}]", templateFile);
@@ -249,6 +251,8 @@ public abstract class Plugin {
             throw e;
         }
     }
+
+    protected abstract Map<String, Object> getSettingsModel();
 
     /**
      * Get the module settings as a map
@@ -335,7 +339,7 @@ public abstract class Plugin {
     /**
      * Sets data for a module
      */
-    protected final  void setData(String name, Object object) {
+    protected final void setData(String name, Object object) {
         logger.info("Saving data for module");
         ModuleData moduleData = new ModuleData();
         moduleData.setModule(module);

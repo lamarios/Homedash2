@@ -170,6 +170,10 @@ public class SonarrTvPlugin extends Plugin {
         return getCacheFolder() + IMAGE_PATH;
     }
 
+    @Override
+    protected Map<String, Object> getSettingsModel() {
+        return null;
+    }
     //////////////////////////
     /////plugin methods
 

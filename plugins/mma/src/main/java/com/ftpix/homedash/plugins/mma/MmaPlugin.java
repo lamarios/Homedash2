@@ -157,9 +157,9 @@ public class MmaPlugin extends Plugin {
 
     @Override
     public int getRefreshRate(String size) {
-        if(size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)){
+        if (size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)) {
             return ONE_SECOND * 3;
-        }else {
+        } else {
             return ONE_HOUR;
         }
     }
@@ -208,6 +208,10 @@ public class MmaPlugin extends Plugin {
         return settings;
     }
 
+    @Override
+    protected Map<String, Object> getSettingsModel() {
+        return null;
+    }
 
     private Organization search(Predicate<Event> filter) {
         Organization org = new Organization();

@@ -184,6 +184,11 @@ public class GooglePublicCalendarPlugin extends Plugin {
         }
     }
 
+    @Override
+    protected Map<String, Object> getSettingsModel() {
+        return null;
+    }
+
     /// plugin methods
     private GoogleCalendar getCalendar() throws JSONException, IOException, ParseException, UnirestException {
         Calendar today = Calendar.getInstance();

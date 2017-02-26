@@ -35,10 +35,6 @@
     g {
       polygon {
         fill: white;
-        animation: harddisk-fill @speed infinite ease-in-out;
-        -webkit-animation-direction: alternate; /* Chrome, Safari, Opera */
-        animation-direction: alternate;
-        transform-origin: center bottom;
       }
     }
   }
@@ -88,12 +84,3 @@
 
 }
 
-@keyframes harddisk-fill {
-  @scale-size: 0;
-  from {
-    opacity: 0.7;
-  }
-  to {
-    opacity: 1;
-  }
-}

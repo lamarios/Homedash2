@@ -216,6 +216,11 @@ public class CouchPotatoPlugin extends Plugin {
         return null;
     }
 
+    @Override
+    protected Map<String, Object> getSettingsModel() {
+        return null;
+    }
+
     ////////////
     /// Plugin methds
     ///

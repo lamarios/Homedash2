@@ -1,7 +1,10 @@
 .form-group
-    label(for="path") Path
-    if settings && settings.containsKey("path")
-        input.form-control(type="text", id="path", name="path", placeholder="Absolute Path", value='#{settings.get(
-                "path")}')
-    else
-        input.form-control(type="text", id="path", name ="path", placeholder = "Absolute Path")
+    p Select mount point
+    each val, index in model
+        .radio
+            label
+                if(settings && settings.containsKey("uuid") && settings.get("uuid").equalsIgnoreCase(val.getUuid()))
+                    input(type="radio", name="uuid", value="#{index}", checked="true")
+                else
+                    input(type="radio", name="uuid", value="#{index}")
+                | #{val.getMountPoint()}
