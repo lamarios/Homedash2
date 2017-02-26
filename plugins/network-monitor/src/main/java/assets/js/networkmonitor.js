@@ -76,7 +76,7 @@ function networkmonitor(moduleId) {
 
         var html = [];
         html.push(
-            '<svg preserveAspectRatio="none" class="graph" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 200" opacity="0.2">');
+            '<svg preserveAspectRatio="none" class="graph" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 200" opacity="0.1">');
         html.push('<g class="down">', downStr.join(''), '</g>');
 
         html.push('<g class="up">', upStr.join(''), '</g>');

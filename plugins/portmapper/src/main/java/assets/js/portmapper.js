@@ -20,7 +20,7 @@ function portmapper(moduleId) {
         //$('#' + this.moduleId + '-overlay').show();
         root.find('.modal').attr('data-module', this.moduleId);
         root.find('.add').click(function () {
-            parent.modal().appendTo("body").modal('show');
+            parent.modal().appendTo(".modal-dump").modal('show');
         });
 
         root.find('form').submit(function () {

@@ -1,25 +1,16 @@
 package com.ftpix.homedash.app;
 
-import static spark.Spark.*;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
+import com.google.common.io.Files;
 
 import com.ftpix.homedash.app.controllers.SettingsController;
+import com.ftpix.homedash.db.DB;
+import com.ftpix.homedash.jobs.BackgroundRefresh;
 import com.ftpix.homedash.models.Layout;
-import com.ftpix.homedash.models.Settings;
+import com.ftpix.homedash.models.Page;
 import com.ftpix.homedash.plugins.SystemInfoPlugin;
 import com.ftpix.homedash.websocket.FullScreenWebSocket;
-import com.google.common.io.Files;
+import com.ftpix.homedash.websocket.MainWebSocket;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.DateBuilder;
@@ -33,11 +24,21 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
 
-import com.ftpix.homedash.db.DB;
-import com.ftpix.homedash.jobs.BackgroundRefresh;
-import com.ftpix.homedash.models.Page;
-import com.ftpix.homedash.websocket.MainWebSocket;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
+import static spark.Spark.before;
+import static spark.Spark.port;
+import static spark.Spark.staticFileLocation;
+import static spark.Spark.webSocket;
 import static spark.debug.DebugScreen.enableDebugScreen;
 
 /**
@@ -45,6 +46,7 @@ import static spark.debug.DebugScreen.enableDebugScreen;
  */
 public class App {
     private static Logger logger = LogManager.getLogger();
+    private final static String NATIVE_LIBS_FOLDER_NAME = "native-libs";
 
     public static void main(String[] args) {
         try {
@@ -91,8 +93,6 @@ public class App {
 
     /**
      * Load all the native libs from other modules
-     *
-     * @throws URISyntaxException
      */
     private static void loadNativeLibs() throws Exception {
         logger.info("Loading native libs if any");
@@ -105,7 +105,7 @@ public class App {
             dir = Files.createTempDir();
             logger.info("Created tmp directory [{}]", dir.getAbsolutePath());
             dir.mkdir();
-            final String path = "native-libs";
+            final String path = NATIVE_LIBS_FOLDER_NAME;
 
             final JarFile jar = new JarFile(jarFile);
             final Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
@@ -138,27 +138,27 @@ public class App {
             }
             jar.close();
 
-            dir = new File(dir.getAbsolutePath() + File.separator + "native-libs");
+            dir = new File(dir.getAbsolutePath() + File.separator + NATIVE_LIBS_FOLDER_NAME);
             logger.info("Set lib path [{}]", dir.getAbsolutePath());
 
         } else {// run in IDE
 
-            URL url = SystemInfoPlugin.class.getClassLoader().getResource("native-libs");
-            dir = new File(url.toURI());
+            URL url = SystemInfoPlugin.class.getClassLoader().getResource(NATIVE_LIBS_FOLDER_NAME);
+            if (url != null) {
+                dir = new File(url.toURI());
+            }
 
         }
-        for (String file : dir.list()) {
-            logger.info(file);
+
+        if (dir != null) {
+            logger.info("Setting [{}] as library path", dir.getAbsolutePath());
+            props.setProperty("java.library.path", dir.getAbsolutePath());
         }
-        logger.info("Setting [{}] as library path", dir.getAbsolutePath());
-        props.setProperty("java.library.path", dir.getAbsolutePath());
 
     }
 
     /**
      * Create default data like layouts and the main page
-     *
-     * @throws SQLException
      */
     public static void createDefaultData() throws SQLException {
         logger.info("Creating first page if it doesn't exist");
@@ -194,8 +194,6 @@ public class App {
 
     /**
      * Create the scheduling jobs for refreshing the modules in the background
-     *
-     * @throws SchedulerException
      */
     private static void prepareJobs() throws SchedulerException {
         SchedulerFactory sf = new StdSchedulerFactory();

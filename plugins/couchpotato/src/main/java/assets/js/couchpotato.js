@@ -9,7 +9,7 @@ function couchpotato(moduleId) {
         root.find('.modal').attr('data-module', this.moduleId);
 
         root.find(".show-search").click(function () {
-            self.modal().appendTo("body").modal('show');
+            self.modal().appendTo(".modal-dump").modal('show');
         });
 
         this.modal().find(".search-submit").click(function (event) {

@@ -17,7 +17,7 @@ function mma(moduleId) {
         var root = rootElement(this.moduleId);
         var self = this;
         root.find('.modal').attr('data-module', this.moduleId);
-        this.modal().appendTo("body");
+        this.modal().appendTo(".modal-dump");
 
         root.on('click', '.org-events tbody tr', function () {
             sendMessage(self.moduleId, 'getEvent', $(this).attr('data-url'));

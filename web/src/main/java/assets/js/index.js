@@ -18,7 +18,6 @@ $(document).ready(function () {
 
     getLayout();
 
-
     // ///////////////////////////////////////////////
     // ///////////EVENT LISTENERS
 
@@ -39,13 +38,11 @@ $(document).ready(function () {
         }
     });
 
-
     /**
      * show the available sizes for a module
      */
     $(document).on('click', '.gridster .module .module-settings-icon', function () {
         var element = $(this);
-
 
         var id = $(this).attr('data-id');
         $('#module-modal').find('a.edit').attr('href', '/module/' + id + '/settings');
@@ -65,7 +62,6 @@ $(document).ready(function () {
         changeSize(element.attr('data-id'), $(this).attr('data-size'));
     });
 
-
     /**
      * delete a module
      */
@@ -74,15 +70,12 @@ $(document).ready(function () {
         deleteModule($('#module-modal').attr('data-id'));
     });
 
-
     /**
      * Enables layout edit mode
      */
     $('#edit-layout, #layout-edit-mode .close-editing').click(function () {
         toggleLayoutEditMode();
     });
-
-
 
     /**
      * Selects an item in layout editting mode
@@ -94,7 +87,6 @@ $(document).ready(function () {
         $(this).addClass('drag-box');
     });
 
-
     $('#add-module').click(function () {
         window.location.href = '/add-module/on-page/' + PAGE
     });
@@ -105,7 +97,6 @@ $(document).ready(function () {
     $('#settings-button').click(function () {
         $('.global-settings').toggleClass('showing');
     });
-    
 
 });
 
@@ -119,7 +110,6 @@ function getSizes() {
 
     var moduleId = $('#module-modal').attr('data-id');
     var sizes = $('#module-modal').find('.module-sizes');
-
 
     console.log('Getting available sizes for module ' + moduleId);
 
@@ -147,7 +137,6 @@ function changeSize(moduleId, size) {
 
     var gridsterElem = $('.gridster .gridster-item[data-module="' + moduleId + '"]');
 
-
     var moduleElem = gridsterElem.find('.module');
 
     console.log(size);
@@ -160,17 +149,6 @@ function changeSize(moduleId, size) {
         savePositions();
         getModuleContent(moduleElem.attr('data-module'), moduleElem.attr('data-size'));
         $('#module-modal').modal('hide');
-    });
-}
-
-
-/**
- * Get html of the modules
- */
-function getModulesContent() {
-    $('#layout .module').each(function () {
-        var module = $(this);
-        getModuleContent(module.attr('data-module'), module.attr('data-size'))
     });
 }
 
@@ -227,16 +205,16 @@ function savePositions(event, ui) {
  */
 function initGridster() {
     gridster = $(".gridster").gridster({
-        widget_selector: '.gridster-item',
-        widget_margins: [1, 1],
-        widget_base_dimensions: [100, 100],
-        min_cols: LAYOUT.maxGridWidth,
-        max_cols: LAYOUT.maxGridWidth,
-        draggable: {
-            stop: savePositions,
-            handle: '.settings-overlay.drag-box'
-        }
-    }).data('gridster');
+                                           widget_selector: '.gridster-item',
+                                           widget_margins: [1, 1],
+                                           widget_base_dimensions: [100, 100],
+                                           min_cols: LAYOUT.maxGridWidth,
+                                           max_cols: LAYOUT.maxGridWidth,
+                                           draggable: {
+                                               stop: savePositions,
+                                               handle: '.settings-overlay.drag-box'
+                                           }
+                                       }).data('gridster');
     gridster.recalculate_faux_grid();
 }
 
@@ -246,16 +224,15 @@ function initGridster() {
 function deleteModule(moduleId) {
     if (confirm('Delete this module ?')) {
         $.ajax({
-            url: '/module/' + moduleId,
-            type: 'DELETE',
-            success: function (result) {
-                getLayout();
-                $('#module-modal').modal('hide');
-            }
-        });
+                   url: '/module/' + moduleId,
+                   type: 'DELETE',
+                   success: function (result) {
+                       getLayout();
+                       $('#module-modal').modal('hide');
+                   }
+               });
     }
 }
-
 
 function toggleLayoutEditMode() {
     $('#layout, #layout-edit-mode').toggleClass('layout-edit');
@@ -273,20 +250,21 @@ function getLayout() {
     $('#layout-wrapper .loading').fadeIn('fast');
     WIDTH = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
 
+    $('.modal-dump').html('');
+
     // getting th layout for the page and view port
     $.getJSON('/modules-layout/' + PAGE + '/' + WIDTH, function (json) {
-            $('#layout').html(json.html);
-            updateLayoutInfo(json.layout);
+                  $('#layout').html(json.html);
+                  updateLayoutInfo(json.layout);
 
-            $('.gridster-item').each(function (index, module) {
-                var module = MODULES[$(this).attr('data-module')];
-                if (module != undefined && module.documentReady != undefined) {
-                    module.documentReady();
-                }
-            });
+                  $('.gridster-item').each(function (index, module) {
+                      var module = MODULES[$(this).attr('data-module')];
+                      if (module != undefined && module.documentReady != undefined) {
+                          module.documentReady();
+                      }
+                  });
 
-
-        }
+              }
     ).fail(function () {
         PAGE = 1;
 

@@ -51,7 +51,7 @@ function dynamicdns(moduleId) {
         var root = this.root();
         if (root.find('.modal') != undefined) {
             root.find('.modal').attr('data-module', this.moduleId);
-            root.find('.modal').appendTo("body");
+            root.find('.modal').appendTo(".modal-dump");
         }
 
         return $(document).find('.modal[data-module="' + this.moduleId + '"]');

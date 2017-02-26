@@ -68,7 +68,7 @@ public class NetworkMonitorPlugin extends Plugin {
     @Override
     public void doInBackground() {
         networkInfos.add(getNetworkInfo(settings.get(SETTING_INTERFACE)));
-        if(networkInfos.size() > MAX_SIZE){
+        if (networkInfos.size() > MAX_SIZE) {
             networkInfos.remove(0);
         }
     }
@@ -123,6 +123,7 @@ public class NetworkMonitorPlugin extends Plugin {
 
     //////// plugin methods
     public NetworkInfo getNetworkInfo(String netInterface) {
+
 
         Optional<NetworkIF> ifConfigOpt = Stream.of(systemInfo.getHardware().getNetworkIFs())
                 .filter(iface -> iface.getName().equalsIgnoreCase(netInterface)).findFirst();
