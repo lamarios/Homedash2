@@ -11,7 +11,7 @@
                 <Pattern>%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Pattern>
             </PatternLayout>
             <Policies>
-                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <TimeBasedTriggeringPolicy interval="1"/>
             </Policies>
         </RollingFile>
 
@@ -20,7 +20,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="com.mycuteblog" level="info" additivity="false">
+        <Logger name="com.ftpix.homedash" level="info" additivity="false">
             <appender-ref ref="file-log" level="info"/>
         </Logger>
         <Root level="info" additivity="false">
