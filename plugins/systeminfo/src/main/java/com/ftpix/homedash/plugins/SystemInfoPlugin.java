@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
 import oshi.SystemInfo;
@@ -300,6 +301,8 @@ public class SystemInfoPlugin extends Plugin {
 
         info.cpuUsage = Math.ceil(processor.getSystemCpuLoad() * 100);
 
+
+       info.coreUsage =  DoubleStream.of(processor.getProcessorCpuLoadBetweenTicks()).map(d ->  Math.ceil(d * 100)).toArray();
 
         hardwareInfo.uptime = processor.getSystemUptime();
 

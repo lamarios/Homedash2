@@ -55,7 +55,24 @@
   background-color: white;
 
   .graphs {
-    .text{
+    .cores {
+      .graph {
+        margin-bottom: 10px;
+      }
+      .core-number {
+        position: absolute;
+        top: -20px;
+        left: 20px;
+        font-size: 30px;
+        color: rgba(0, 0, 0, 0.5);
+      }
+
+      .graph-container{
+        //padding: 0 5px;
+      }
+
+    }
+    .text {
       text-align: right;
     }
     .graph {
@@ -75,23 +92,23 @@
     }
   }
 
-  .processes{
-    width:100%;
+  .processes {
+    width: 100%;
 
-    .sort{
+    .sort {
       cursor: pointer;
-      user-select:none;
+      user-select: none;
     }
-    .sort.selected{
+    .sort.selected {
       background-color: #EEEEEE;
     }
 
   }
 
-  .infobox{
+  .infobox {
     border-top: 3px solid @orange;
 
-    h2{
+    h2 {
       font-size: 25px;
     }
   }

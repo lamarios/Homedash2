@@ -50,9 +50,9 @@ function systeminfo(moduleId) {
         root.find('.temp .text').html(temp + '&#8451');
 
         root.find('.ram .graph svg path').attr('d', this.ramArrayToSVGGraph(this.ramHistory));
-        root.find('.cpu .graph svg path').attr('d', this.cpuArrayToSVGGraph(this.cpuHistory));
+        //root.find('.cpu .graph svg path').attr('d', this.cpuArrayToSVGGraph(this.cpuHistory));
         root.find('.temp .graph svg path').attr('d', this.tempArrayToSVGGraph(this.cpuHistory));
-
+        root.find('.cores').html(this.buildCoreHtml(this.cpuHistory));
         //System info
 
         root.find('.cpu-info .name').html(hardware.name);
@@ -80,8 +80,6 @@ function systeminfo(moduleId) {
 
             var cpuText = root.find('.cpu-txt');
             var ramText = root.find('.ram-txt');
-
-            console.log(root.html());
 
             cpuText.html(cpu);
 
@@ -162,6 +160,21 @@ function systeminfo(moduleId) {
         return html.join('');
     }
 
+    this.coreGraph = function (array, coreIndex) {
+        var html = [];
+        html.push('M0,100');
+        var lastIndex = 0;
+        var step = (100) / array.length;
+        html.push(' L0,', 100 - array[0].coreUsage[coreIndex]);
+        $.each(array, function (index, cpuInfo) {
+
+            html.push(' L', (index + 1) * step, ',', 100 - cpuInfo.coreUsage[coreIndex]);
+            lastIndex = index * step;
+        });
+        html.push(' L', 100, ',100 Z');
+        return html.join('');
+    }
+
     this.humanFileSizeSingle = function (memory, si) {
 
         var thresh = si ? 1000 : 1024;
@@ -208,23 +221,46 @@ function systeminfo(moduleId) {
             str.push(numyears, ' years ');
         }
 
-        if(numdays > 0) {
+        if (numdays > 0) {
             str.push(numdays, ' days ');
         }
 
-        if(numhours > 0){
+        if (numhours > 0) {
             str.push(numhours, ' hours ');
         }
 
-        if(numminutes > 0){
+        if (numminutes > 0) {
             str.push(numminutes, ' minutes ');
         }
 
-        if(numseconds > 0){
+        if (numseconds > 0) {
             str.push(numseconds, ' seconds ');
         }
 
         return str.join('');
+    }
+
+    /**
+     * Build the core graphs and encompassing html
+     * @param cores
+     */
+    this.buildCoreHtml = function (array) {
+        var svgBase = '<svg viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"><g class="surfaces">';
+        var svgEnd = '</g></svg>';
+        var html = [];
+        if (array.length > 0) {
+            var coreCount = array[0].coreUsage.length;
+
+            console.log("Corecount", coreCount);
+            for (var i = 0; i < coreCount; i++) {
+                html.push('<div class="col-xs-4 col-sm-3 graph-container"><h3 class="core-number">',i+1,'</h3><div class="graph">', svgBase);
+
+                html.push('<path d="', this.coreGraph(array, i), '" />');
+                html.push(svgEnd, '</div></div>');
+            }
+
+        }
+        return html.join('');
     }
 
 }

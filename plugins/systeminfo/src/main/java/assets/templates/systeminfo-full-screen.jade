@@ -1,28 +1,25 @@
-.row.graphs
-    .col-xs-4
-        .cpu
+.graphs
+    .row
+        .col-xs-12
             h4 CPU
-            .graph
-                svg(viewBox="0 0 100 100", preserveAspectRatio="none", xmlns="http://www.w3.org/2000/svg",xmlns:xlink="http://www.w3.org/1999/xlink", version="1.1")
-                    g.surfaces
-                        path
-            .text
-    .col-xs-4
-        h4 RAM
-        .ram
-            .graph
-                svg(viewBox="0 0 100 100", preserveAspectRatio="none", xmlns="http://www.w3.org/2000/svg",xmlns:xlink="http://www.w3.org/1999/xlink", version="1.1")
-                    g.surfaces
-                        path
-            .text
-    .col-xs-4
-        h4 Temperature
-        .temp
-            .graph
-                svg(viewBox="0 0 100 100", preserveAspectRatio="none", xmlns="http://www.w3.org/2000/svg",xmlns:xlink="http://www.w3.org/1999/xlink", version="1.1")
-                    g.surfaces
-                        path
-            .text
+            .row.cores
+    .row
+        .col-xs-6
+            h4 RAM
+            .ram
+                .graph
+                    svg(viewBox="0 0 100 100", preserveAspectRatio="none", xmlns="http://www.w3.org/2000/svg",xmlns:xlink="http://www.w3.org/1999/xlink", version="1.1")
+                        g.surfaces
+                            path
+                .text
+        .col-xs-6
+            h4 Temperature
+            .temp
+                .graph
+                    svg(viewBox="0 0 100 100", preserveAspectRatio="none", xmlns="http://www.w3.org/2000/svg",xmlns:xlink="http://www.w3.org/1999/xlink", version="1.1")
+                        g.surfaces
+                            path
+                .text
 .row
     .col-md-6.os-info.infobox
         h2.os
