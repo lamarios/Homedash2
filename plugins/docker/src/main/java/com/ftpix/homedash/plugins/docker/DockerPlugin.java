@@ -172,12 +172,23 @@ public class DockerPlugin extends Plugin {
 
     @Override
     public ModuleExposedData exposeData() {
+
+        try {
+            ModuleExposedData data = new ModuleExposedData();
+            data.addText(client.listContainers().size() + " containers running.");
+            return data;
+        } catch (DockerException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 
     @Override
     public Map<String, String> exposeSettings() {
-        return null;
+        return settings;
     }
 
     @Override
@@ -187,6 +198,8 @@ public class DockerPlugin extends Plugin {
 
             Map<String, Object> model = new HashMap<>();
             model.put(ENV_DOCKER_HOST, dockerHost);
+
+            logger.info("Docker environment variable found {} = {}", ENV_DOCKER_HOST, dockerHost);
 
             return model;
         } else {
