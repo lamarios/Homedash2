@@ -7,7 +7,8 @@
     <parent>
         <groupId>com.ftpix.homedash.plugins</groupId>
         <artifactId>plugins</artifactId>
-        <version>1.0</version>     </parent>
+        <version>1.0</version>
+    </parent>
 
     <artifactId>docker</artifactId>
     <name>docker</name>
@@ -26,6 +27,11 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.spotify</groupId>
+            <artifactId>docker-client</artifactId>
+            <version>8.1.2</version>
+        </dependency>
 
     </dependencies>
 
@@ -40,7 +46,6 @@
                 <groupId>net.tqh.plugins</groupId>
                 <artifactId>uglifyjs-maven-plugin</artifactId>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>

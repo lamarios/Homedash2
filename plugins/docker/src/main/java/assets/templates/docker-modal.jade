@@ -1,0 +1,17 @@
+.modal.fade(tabindex="-1", role="dialog")
+    .modal-dialog(role="document")
+        .modal-content
+            .modal-header
+                button.close(type="button", data-dismiss="modal", aria-label="Close")
+                    span(aria=hidden="true") &times;
+                h4.modal-title
+            .modal-body
+                button.btn.btn-success.action.not-running(data-action="start") Start
+                button.btn.btn-success.action.running(data-action="restart") Restart
+                button.btn.btn-warning.action.running(data-action="stop") Stop
+                button.btn.btn-danger.action.running(data-action="kill") Kill
+                button.btn.btn-danger.action.not-running(data-action="remove") Remove
+
+                hr/
+                .container-info
+

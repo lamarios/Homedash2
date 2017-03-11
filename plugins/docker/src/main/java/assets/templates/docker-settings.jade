@@ -1,0 +1,9 @@
+.form-group
+    label(for="url") Docker API URL
+    if settings && settings.containsKey("url")
+        input.form-control(type="text", id="url", name="url", placeholder="URL", value='#{settings.get("url")}')
+    else
+        if(model.containsKey("DOCKER_HOST"))
+            input.form-control(type="text", id="url", name ="url", placeholder = "URL", value='#{model.get("DOCKER_HOST")}')
+        else
+            input.form-control(type="text", id="url", name ="url", placeholder = "URL")

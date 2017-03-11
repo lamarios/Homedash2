@@ -253,10 +253,12 @@ function systeminfo(moduleId) {
 
             console.log("Corecount", coreCount);
             for (var i = 0; i < coreCount; i++) {
-                html.push('<div class="col-xs-4 col-sm-3 graph-container"><h3 class="core-number">',i+1,'</h3><div class="graph">', svgBase);
+                html.push('<div class="col-xs-4 col-sm-3 graph-container"><h3 class="core-number">',
+                          i + 1, '</h3><div class="graph">', svgBase);
 
                 html.push('<path d="', this.coreGraph(array, i), '" />');
-                html.push(svgEnd, '</div><div class="text">',array[array.length-1].coreUsage[i],'%</div></div>');
+                html.push(svgEnd, '</div><div class="text">', array[array.length - 1].coreUsage[i],
+                          '%</div></div>');
             }
 
         }
