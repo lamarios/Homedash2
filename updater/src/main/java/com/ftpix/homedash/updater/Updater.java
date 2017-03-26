@@ -63,7 +63,6 @@ public class Updater {
 
     private String getAssetToDownload(GHRelease release) throws IOException {
         return release.getAssets().stream().filter(ghAsset -> ghAsset.getName().endsWith("assembly.zip")).map(GHAsset::getBrowserDownloadUrl).findFirst().orElse(null);
-
     }
 
     private GHRelease getLatestVersion() throws IOException {
