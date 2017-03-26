@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>1.0</version>
+        <version>LATEST</version>
     </parent>
 
 
@@ -25,6 +25,11 @@
         <project.build.scriptSourceDirectory>startup-scripts</project.build.scriptSourceDirectory>
     </properties>
 
+    <scm>
+        <url>https://github.com/lamarios/Homedash2</url>
+        <connection>scm:git:https://github.com/lamarios/Homedash2.git</connection>
+        <developerConnection>scm:git:git@github.com:lamarios/Homedash2.git</developerConnection>
+    </scm>
 
     <dependencies>
         <dependency>
@@ -284,7 +289,28 @@
                     </execution>
                 </executions>
             </plugin>
-
+            <plugin>
+                <groupId>de.jutzig</groupId>
+                <artifactId>github-release-plugin</artifactId>
+                <version>1.1.1</version>
+                <configuration>
+                    <description>Homedash first release</description>
+                    <releaseName>${project.version}</releaseName>
+                    <tag>${project.version}</tag>
+                    <serverId>github</serverId>
+                    <!-- If your project has additional artifacts, such as ones produced by
+                         the maven-assembly-plugin, you can define the following
+                         (requires version 1.1.1 of the plugin or higher): -->
+                    <fileSets>
+                        <fileSet>
+                            <directory>${project.build.directory}</directory>
+                            <includes>
+                                <include>web*-assembly.zip</include>
+                            </includes>
+                        </fileSet>
+                    </fileSets>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

@@ -106,7 +106,6 @@ public class App {
             logger.info("Created tmp directory [{}]", dir.getAbsolutePath());
             dir.mkdir();
             final String path = NATIVE_LIBS_FOLDER_NAME;
-
             final JarFile jar = new JarFile(jarFile);
             final Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
             while (entries.hasMoreElements()) {

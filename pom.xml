@@ -1,58 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.ftpix.homedash</groupId>
-	<artifactId>homedash</artifactId>
-	<version>1.0</version>
-	<name>Archetype - homedash</name>
-	<url>http://maven.apache.org</url>
-	<packaging>pom</packaging>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.ftpix.homedash</groupId>
+    <artifactId>homedash</artifactId>
+    <version>1.0.1</version>
+    <name>Archetype - homedash</name>
+    <url>http://maven.apache.org</url>
+    <packaging>pom</packaging>
 
 
-	<properties>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-	</properties>
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
 
-	<modules>
-		<module>models</module>
-		<module>web</module>
+    <modules>
+        <module>models</module>
+        <module>web</module>
 
-		<!-- plugins -->
-		<module>plugins</module>
-		<module>notifications</module>
-	</modules>
+        <!-- plugins -->
+        <module>plugins</module>
+        <module>notifications</module>
+        <module>updater</module>
+    </modules>
+    <scm>
+        <url>https://github.com/lamarios/Homedash2</url>
+        <connection>scm:git:git://github.com/lamarios/Homedash2.git</connection>
+        <developerConnection>scm:git:git@github.com:lamarios/Homedash2.git</developerConnection>
+    </scm>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>uglifyjs-maven-plugin</id>
+            <url>https://raw.github.com/tqh/uglifyjs-maven-plugin/master/repo</url>
+        </pluginRepository>
 
-	<pluginRepositories>
-		<pluginRepository>
-			<id>uglifyjs-maven-plugin</id>
-			<url>https://raw.github.com/tqh/uglifyjs-maven-plugin/master/repo</url>
-		</pluginRepository>
+    </pluginRepositories>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>1.2.1</version>
+                    <executions>
+                        <execution>
 
-	</pluginRepositories>
-	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>exec-maven-plugin</artifactId>
-					<version>1.2.1</version>
-					<executions>
-						<execution>
+                            <goals>
+                                <goal>java</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <mainClass>${main.class}</mainClass>
+                    </configuration>
+                </plugin>
 
-							<goals>
-								<goal>java</goal>
-							</goals>
-						</execution>
-					</executions>
-					<configuration>
-						<mainClass>${main.class}</mainClass>
-					</configuration>
-				</plugin>
-
-			</plugins>
-		</pluginManagement>
-	</build>
+            </plugins>
+        </pluginManagement>
+    </build>
 
 </project>
