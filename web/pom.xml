@@ -300,7 +300,7 @@
                 <artifactId>github-release-plugin</artifactId>
                 <version>1.1.1</version>
                 <configuration>
-                    <description>Functioning auto-updater</description>
+                    <description>Updated docker client libray</description>
                     <releaseName>${project.version}</releaseName>
                     <tag>${project.version}</tag>
                     <serverId>github</serverId>
