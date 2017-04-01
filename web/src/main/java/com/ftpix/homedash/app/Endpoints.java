@@ -40,8 +40,10 @@ public class Endpoints {
         ModuleSettingsController.getInstance().defineEndpoints();
         RemoteController.getInstance().defineEndpoints();
         APIController.getInstance().defineEndpoints();
+        UpdateController.getInstance().defineEndpoints();
 
-		/*
+
+        /*
          * Main Page
 		 */
         get("/", (req, res) -> {
@@ -121,7 +123,7 @@ public class Endpoints {
                 InputStream is = classLoader.getResourceAsStream(fullPath);
 
 
-               res.raw().setContentType(Files.probeContentType(p));
+                res.raw().setContentType(Files.probeContentType(p));
                 res.raw().setHeader("Content-Disposition", "inline; filename=" + p.getFileName());
 
                 byte[] buffer = new byte[1024];

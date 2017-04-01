@@ -5,6 +5,22 @@ block content
     h1
         | Settings
         a(href="/layout-settings") Layout Settings
+
+    .setting-box
+        h2 About Homedash
+        p
+            | Version:&nbsp;
+            span#version #{about.get("current")}
+        p
+            | Latest:&nbsp;
+            span#latest-version #{about.get("latest")}
+        if about.get("canUpdate")
+            p
+                a#update Update !
+        else
+            p #{about.get("message")}
+
+
     form(method="post", action="/settings")
         .settings-box
             h2 Authentication

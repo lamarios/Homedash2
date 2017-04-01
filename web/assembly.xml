@@ -1,4 +1,3 @@
-
 <assembly>
     <id>assembly</id>
     <!-- Generates a zip package containing the needed files -->
@@ -35,6 +34,13 @@
     <fileSets>
         <!-- Adds startup scripts to the root directory of zip package. The startup
             scripts are located to src/main/scripts directory as stated by Maven conventions. -->
+        <fileSet>
+            <directory>../updater/target</directory>
+            <outputDirectory>bin</outputDirectory>
+            <includes>
+                <include>*with-dependencies.jar</include>
+            </includes>
+        </fileSet>
         <fileSet>
             <directory>${project.build.scriptSourceDirectory}</directory>
             <outputDirectory></outputDirectory>

@@ -85,7 +85,7 @@ public class App {
             prepareJobs();
 
         } catch (Exception e) {
-            logger.error("Error during startupm, we better stop everything", e);
+            logger.error("Error during startup, we better stop everything", e);
             System.exit(1);
         }
     }

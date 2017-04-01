@@ -19,6 +19,12 @@ $(document).ready(function () {
         generateKey();
     }
 
+    $('#update').click(function () {
+        $.getJSON('/updater/auto-update', function(result){
+            alert('Homedash is updating, it will restart on its own whenever the update is ready');
+        });
+    });
+
     function updateCheckboxDependant(checkbox) {
         //alert(checkbox.prop('checked'));
         if (checkbox.prop('checked')) {

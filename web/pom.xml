@@ -108,6 +108,12 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.ftpix.homedash</groupId>
+            <artifactId>updater</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- plugins -->
         <dependency>
             <groupId>com.ftpix.homedash.plugins</groupId>
@@ -294,7 +300,7 @@
                 <artifactId>github-release-plugin</artifactId>
                 <version>1.1.1</version>
                 <configuration>
-                    <description>Homedash first release</description>
+                    <description>Functioning auto-updater</description>
                     <releaseName>${project.version}</releaseName>
                     <tag>${project.version}</tag>
                     <serverId>github</serverId>
@@ -304,6 +310,9 @@
                     <fileSets>
                         <fileSet>
                             <directory>${project.build.directory}</directory>
+                            <excludes>
+                                <exclude>web-${project.version}-jar</exclude>
+                            </excludes>
                             <includes>
                                 <include>web*-assembly.zip</include>
                             </includes>
