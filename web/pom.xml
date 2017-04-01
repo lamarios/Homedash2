@@ -311,7 +311,7 @@
                         <fileSet>
                             <directory>${project.build.directory}</directory>
                             <excludes>
-                                <exclude>web-${project.version}-jar</exclude>
+                                <exclude>web-${project.version}.jar</exclude>
                             </excludes>
                             <includes>
                                 <include>web*-assembly.zip</include>
