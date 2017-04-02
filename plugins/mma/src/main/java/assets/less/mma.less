@@ -93,3 +93,115 @@
 
   }
 }
+
+///////// SLIDESHOW
+@transition-speed: 0.5s;
+.mma.size-3x2 {
+  background-color: #222;
+
+  .event-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    .event {
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      position: absolute;
+
+      background-repeat: no-repeat;
+      background-position: center 30%;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+      background-color: grey;
+      color: white;
+
+      -webkit-transition: all @transition-speed;
+      transition: all @transition-speed;
+      opacity: 0;
+
+      @scale: 0.8;
+      -ms-transform: scale(@scale); /* IE 9 */
+      -webkit-transform: scale(@scale); /* Safari */
+      transform: scale(@scale);
+
+      .event-info {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50px;
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 5px;
+
+        .event-title {
+          font-weight: bold;
+          margin: 0;
+        }
+
+        .event-date {
+          font-size: smaller;
+        }
+
+        .event-link {
+          position: absolute;
+          right: 10px;
+          top: 10px;
+
+          color: white;
+          font-size: 24px;
+          cursor: pointer;
+        }
+      }
+
+    }
+
+    .event.active {
+      opacity: 1;
+
+      @scale: 1;
+      -ms-transform: scale(@scale); /* IE 9 */
+      -webkit-transform: scale(@scale); /* Safari */
+      transform: scale(@scale);
+    }
+
+    .event-fighter {
+      position: absolute;
+    }
+
+    .event-fighter-1 {
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 50%
+    }
+
+    .event-fighter-2 {
+      top: 0;
+      left: 50%;
+      right: 0;
+      bottom: 0;
+    }
+
+  }
+
+  .buttons {
+    position: absolute;
+    top: 5px;
+    a {
+      color: white;
+
+      cursor: pointer;
+      text-shadow: 0px 0px 5px #222;
+      z-index: 5;
+      font-size: 20px;
+      margin: 0 10px;
+    }
+  }
+}

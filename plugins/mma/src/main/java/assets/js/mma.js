@@ -4,7 +4,8 @@ function mma(moduleId) {
     this.history = [];
 
     this.size;
-    this.timer = null
+    this.timer = null;
+
 
     this.onConnect = function () {
 
@@ -19,7 +20,7 @@ function mma(moduleId) {
         root.find('.modal').attr('data-module', this.moduleId);
         this.modal().appendTo(".modal-dump");
 
-        root.on('click', '.org-events tbody tr', function () {
+        root.on('click', '.event-link', function () {
             sendMessage(self.moduleId, 'getEvent', $(this).attr('data-url'));
             self.modal().modal('show');
             self.modal().find('.modal-title').html('...');
@@ -30,15 +31,6 @@ function mma(moduleId) {
             self.history.push({command: 'getEvent', url: $(this).attr('data-url')});
         });
 
-        root.on('keyup', '.search', function () {
-            var query = $(this).val();
-            if (self.timer !== null) {
-                clearTimeout(self.timer);
-            }
-            self.timer = setTimeout(function () {
-                sendMessage(self.moduleId, 'search', query);
-            }, 500);
-        });
 
         this.modal().on('click', '.mma-link', function () {
             var source = $(this);
@@ -56,13 +48,29 @@ function mma(moduleId) {
         });
 
         if (this.size == 'full-screen') {
+
+            root.on('keyup', '.search', function () {
+                var query = $(this).val();
+                if (self.timer !== null) {
+                    clearTimeout(self.timer);
+                }
+                self.timer = setTimeout(function () {
+                    sendMessage(self.moduleId, 'search', query);
+                }, 500);
+            });
+
             sendMessage(self.moduleId, 'search', '');
+        }
+
+        if (this.size == '3x2') {
+            this.slideshowEvents();
         }
     };
 
     this.modal = function () {
         return $(document).find('.modal[data-module="' + this.moduleId + '"]');
     }
+
 
     this.onMessage_3x4 = function (command, message, extra) {
         this.onMessage_4x4(command, message, extra);
@@ -75,7 +83,7 @@ function mma(moduleId) {
     this.onMessage_4x4 = function (command, message, extra) {
         switch (command) {
             case 'getEvent':
-                this.showEvent(message);
+                this.showEventDialog(message);
                 this.verifyHistory();
                 break;
             case 'getFighter':
@@ -93,7 +101,7 @@ function mma(moduleId) {
         var root = rootElement(this.moduleId);
 
         root.find('.org-name').html(org.name);
-        root.find('.org-events tbody').html(this.eventListHtml(org.events));
+        root.find('.org-events tbody').html(this.eventListHtml(org.homeDashEvents));
     };
 
     this.eventListHtml = function (events) {
@@ -102,9 +110,9 @@ function mma(moduleId) {
         }
         var html = [];
         $.each(events, function (index, value) {
-            html.push('<tr data-url="', value.sherdogUrl, '">');
+            html.push('<tr class="event-link" data-url="', value.sherdogUrl, '">');
             html.push('<td>', value.date.dateTime.date.year, '-', value.date.dateTime.date.month,
-                      '-', value.date.dateTime.date.day, '</td>');
+                '-', value.date.dateTime.date.day, '</td>');
             html.push('<td>', value.name, '</td>');
             html.push('</tr>')
         });
@@ -114,14 +122,14 @@ function mma(moduleId) {
         return html.join('');
     }
 
-    this.showEvent = function (event) {
+    this.showEventDialog = function (event) {
 
         var modal = this.modal();
 
         modal.find('.modal-title')
             .html(event.name + '<br /><em><small>' + event.date.dateTime.date.year + '-' +
-                  event.date.dateTime.date.month +
-                  '-' + event.date.dateTime.date.day + '</small></em>');
+                event.date.dateTime.date.month +
+                '-' + event.date.dateTime.date.day + '</small></em>');
         var body = [];
         body.push(
             '<div class="table-responsive"><table class="event table table-condensed"><tbody>');
@@ -129,11 +137,11 @@ function mma(moduleId) {
         $.each(event.fights, function (index, value) {
             body.push('<tr class=" ', value.result, '">');
             body.push('<td><a class="mma-link" data-method="getFighter" data-url="',
-                      value.fighter1.sherdogUrl,
-                      '">', value.fighter1.name,
-                      '</a></td><td>vs.</td><td> <a class="mma-link" data-method="getFighter" data-url="',
-                      value.fighter2.sherdogUrl,
-                      '">', value.fighter2.name, '</a></td>');
+                value.fighter1.sherdogUrl,
+                '">', value.fighter1.name,
+                '</a></td><td>vs.</td><td> <a class="mma-link" data-method="getFighter" data-url="',
+                value.fighter2.sherdogUrl,
+                '">', value.fighter2.name, '</a></td>');
 
             if (value.result != "NOT_HAPPENED") {
                 body.push('<td>', value.winMethod, '</td>')
@@ -156,10 +164,10 @@ function mma(moduleId) {
         modal.find('.modal-title').html(fighter.name);
         var body = [];
         body.push('<h3>', fighter.wins, '-', fighter.losses, '-', fighter.draws, '-', fighter.nc,
-                  '</h3>');
+            '</h3>');
 
         body.push('<div class="fighter-picture" style="background-image: url(\'', fighter.picture,
-                  '\')"></div>');
+            '\')"></div>');
         body.push("<p>Weight: ", fighter.weight, '</p>');
         body.push("<p>Height: ", fighter.height, '</p>');
         body.push("<p>Birth date: ", fighter.birthday, '</p>');
@@ -175,11 +183,11 @@ function mma(moduleId) {
 
             body.push('<tr class="', value.result, '">');
             body.push('<td><a class="mma-link" data-method="getFighter" data-url="',
-                      value.fighter2.sherdogUrl,
-                      '">', value.fighter2.name, '</a></td>');
+                value.fighter2.sherdogUrl,
+                '">', value.fighter2.name, '</a></td>');
             body.push('<td><a class="mma-link" data-method="getEvent" data-url="',
-                      value.event.sherdogUrl,
-                      '">', value.event.name, '</a></td>');
+                value.event.sherdogUrl,
+                '">', value.event.name, '</a></td>');
             body.push('<td>', value.winMethod, '</td>')
             body.push('<td>', value.winRound, '</td>')
             body.push('<td>', value.winTime, '</td>')
@@ -209,5 +217,164 @@ function mma(moduleId) {
         else {
             this.modal().find('.mma-back').remove();
         }
+    }
+
+    ////////////////////////
+    //// slideshow related Stuff
+    /////////////////////////////////
+
+
+    this.events = [];
+    this.interval;
+    this.timeout;
+    this.currentIndex = 0;
+
+    this.slideshowEvents = function () {
+        var parent = this;
+
+        var root = rootElement(this.moduleId);
+        root.on('click', 'a.previous', function () {
+            parent.showPreviousEvent();
+            clearInterval(parent.interval);
+            clearTimeout(parent.timeout);
+            parent.timeout = setTimeout(function () {
+                parent.playSlideShow()
+            }, 10000);
+        });
+
+        root.on('click', 'a.next', function () {
+            parent.showNextEvent();
+            clearInterval(parent.interval);
+            clearTimeout(parent.timeout);
+            parent.timeout = setTimeout(function () {
+                parent.playSlideShow()
+            }, 10000);
+        });
+    }
+
+    this.onMessage_3x2 = function (command, message, extra) {
+        if(command === 'refresh') {
+            clearInterval(this.interval);
+            clearTimeout(this.timeout);
+
+            this.events = message.homeDashEvents;
+            this.currentIndex = 0;
+            var body = rootElement(this.moduleId).find('.event-container');
+            for (i = 0; i < this.events.length; i++) {
+                body.append(this.eventToHtml(this.events[i], i));
+            }
+
+            this.showEvent();
+            this.playSlideShow();
+        }else{
+            this.onMessage_4x4(command, message, extra);
+        }
+    }
+
+
+    /**
+     * Display all the shows
+     */
+    this.showEvent = function () {
+
+        var root = rootElement(this.moduleId);
+
+        var links = root.find('.next, .previous');
+        links.attr('disabled', true);
+
+        var oldShow = root.find('.event-container .active');
+
+        if (this.currentIndex >= this.events.length) {
+            this.currentIndex = 0;
+        }
+
+        if (this.currentIndex < 0) {
+            this.currentIndex = this.events.length - 1;
+        }
+
+        var newShow = root.find('.event-container .event[data-event=' + this.currentIndex + ']');
+
+        newShow.addClass('active');
+
+        oldShow.removeClass('active');
+
+        setTimeout(function () {
+            links.removeAttr('disabled');
+        }, 600);
+    }
+
+    /**
+     * Show data to html
+     * @param show
+     * @param index
+     * @returns {string}
+     */
+    this.eventToHtml = function (event, index) {
+        var html = [];
+        html.push('<div class="event" data-event="', index, '">');
+        html.push('<div class="event-fighter event-fighter-1" style="background-image: url(\'', event.mainEventPhoto1, '\')"></div>');
+        html.push('<div class="event-fighter event-fighter-2" style="background-image: url(\'', event.mainEventPhoto2, '\')"></div>');
+        html.push('<div class="event-info">');
+        html.push('<a class="event-link" data-url="', event.sherdogUrl,'"><i class="fa fa-info-circle" aria-hidden="true"></i></a>');
+        html.push('<p class="event-title">', event.name, '</p>');
+        html.push('<p class="event-date">', event.date.dateTime.date.year, '-', event.date.dateTime.date.month,
+            '-', event.date.dateTime.date.day, '</p>');
+        html.push('</p>');
+        html.push('</div>');
+        html.push('</div>');
+
+        return html.join('');
+    }
+
+    /**
+     * Compares if the list of shows is identical
+     * @param a
+     * @param b
+     * @returns {boolean}
+     */
+    this.compareEvents = function (a, b) {
+        if (a === b) {
+            return true;
+        }
+        if (a == null || b == null) {
+            return false;
+        }
+        if (a.length != b.length) {
+            return false;
+        }
+
+        // If you don't care about the order of the elements inside
+        // the array, you should sort both arrays here.
+
+        for (var i = 0; i < a.length; ++i) {
+            if (a[i].sherdogUrl !== b[i].sherdogUrl) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Controls
+     * @param event
+     */
+    this.showPreviousEvent = function (event) {
+        this.currentIndex = this.currentIndex - 1;
+        this.showEvent();
+    }
+
+    this.showNextEvent = function (event) {
+        this.currentIndex = this.currentIndex + 1;
+        this.showEvent();
+    }
+
+    /**
+     * Automated slideshow
+     */
+    this.playSlideShow = function () {
+        var parent = this;
+        this.interval = setInterval(function () {
+            parent.showNextEvent();
+        }, 7000);
     }
 }

@@ -5,8 +5,11 @@ import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.notifications.Notifications;
 import com.ftpix.homedash.plugins.Plugin;
+import com.ftpix.homedash.plugins.mma.model.HomeDashEvent;
+import com.ftpix.homedash.plugins.mma.model.HomeDashOrganization;
 import com.ftpix.sherdogparser.Sherdog;
 import com.ftpix.sherdogparser.models.Event;
+import com.ftpix.sherdogparser.models.Fight;
 import com.ftpix.sherdogparser.models.Fighter;
 import com.ftpix.sherdogparser.models.Organization;
 
@@ -18,6 +21,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -25,7 +30,7 @@ import java.util.stream.Collectors;
  * Created by gz on 21-Aug-16.
  */
 public class MmaPlugin extends Plugin {
-    private Organization organization;
+    private HomeDashOrganization organization;
 
     private final String ORGANIZATION_URL = "url", NOTIFICATION_SETTING = "notifications";
     private final String COMMAND_GET_EVENT = "getEvent", COMMAND_GET_FIGHTER = "getFighter", COMMAND_SEARCH = "search";
@@ -65,12 +70,12 @@ public class MmaPlugin extends Plugin {
 
     @Override
     public String[] getSizes() {
-        return new String[]{"3x4", "4x4", ModuleLayout.FULL_SCREEN};
+        return new String[]{"3x2", "3x4", "4x4", ModuleLayout.FULL_SCREEN};
     }
 
     @Override
     public int getBackgroundRefreshRate() {
-        return ONE_HOUR;
+        return ONE_HOUR * 24;
     }
 
     @Override
@@ -104,7 +109,9 @@ public class MmaPlugin extends Plugin {
     public void doInBackground() {
         logger.info("Getting organization...");
         try {
-            organization = sherdog.getOrganization(organizationUrl);
+            Organization org = sherdog.getOrganization(organizationUrl);
+            organization = new HomeDashOrganization(org);
+
 
             logger.info("Found {} with [{}] events", organization.getName(), organization.getEvents().size());
 
@@ -137,7 +144,33 @@ public class MmaPlugin extends Plugin {
 
                             Notifications.send(title, sb.toString());
                         });
+
+
             }
+
+            ZonedDateTime today = ZonedDateTime.now().minus(1, ChronoUnit.DAYS);
+
+            organization.setHomeDashEvents(org.getEvents().parallelStream().map(
+                    event -> {
+                        if (event.getDate().isAfter(today)) {
+                            try {
+                                Event fullEvent = sherdog.getEvent(event.getSherdogUrl());
+                                HomeDashEvent hdEvent = new HomeDashEvent(event);
+                                if (fullEvent.getFights().size() > 0) {
+                                    Fight fight = fullEvent.getFights().get(0);
+                                    hdEvent.setMainEventPhoto1("/" + sherdog.getFighter(fight.getFighter1().getSherdogUrl()).getPicture());
+                                    hdEvent.setMainEventPhoto2("/" + sherdog.getFighter(fight.getFighter2().getSherdogUrl()).getPicture());
+                                    logger.info("Main event pictures {}, {}", hdEvent.getMainEventPhoto1(), hdEvent.getMainEventPhoto2());
+                                }
+                                return hdEvent;
+                            } catch (Exception e) {
+                                logger.error("Couldn't retrieve fighter picture", e);
+
+                            }
+                        }
+
+                        return new HomeDashEvent(event);
+                    }).collect(Collectors.toList()));
         } catch (Exception e) {
             logger.error("Error while trying to get the organization");
         }
@@ -146,8 +179,7 @@ public class MmaPlugin extends Plugin {
     @Override
     protected Object refresh(String size) throws Exception {
         if (size != ModuleLayout.FULL_SCREEN) {
-            ZonedDateTime today = ZonedDateTime.now();
-            today.minus(1, ChronoUnit.DAYS);
+            ZonedDateTime today = ZonedDateTime.now().minus(1, ChronoUnit.DAYS);
 
             return search(e -> today.isBefore(e.getDate()));
         } else {
@@ -214,10 +246,10 @@ public class MmaPlugin extends Plugin {
     }
 
     private Organization search(Predicate<Event> filter) {
-        Organization org = new Organization();
-        org.setName(organization.getName());
-        org.setSherdogUrl(organization.getSherdogUrl());
-        org.setEvents(organization.getEvents().stream().filter(filter).collect(Collectors.toList()));
+        HomeDashOrganization org = new HomeDashOrganization(organization);
+        org.setHomeDashEvents((organization.getHomeDashEvents()).stream()
+                .filter(filter)
+                .collect(Collectors.toList()));
         return org;
     }
 }

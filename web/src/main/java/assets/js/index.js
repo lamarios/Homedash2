@@ -260,7 +260,7 @@ function getLayout() {
                   $('.gridster-item').each(function (index, module) {
                       var module = MODULES[$(this).attr('data-module')];
                       if (module != undefined && module.documentReady != undefined) {
-                          module.documentReady();
+                          module.documentReady($(this).find('.module').attr('data-size'));
                       }
                   });
 

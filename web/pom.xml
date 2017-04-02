@@ -300,7 +300,7 @@
                 <artifactId>github-release-plugin</artifactId>
                 <version>1.1.1</version>
                 <configuration>
-                    <description>Updated docker client libray</description>
+                    <description>Added smaller view for the MMA plugin. Now will show a slideshow of the main events when on size 3x2</description>
                     <releaseName>${project.version}</releaseName>
                     <tag>${project.version}</tag>
                     <serverId>github</serverId>
