@@ -2,7 +2,7 @@ function dynamicdns(moduleId) {
     this.moduleId = moduleId;
 
     this.onConnect = function () {
-    }
+    };
 
     this.documentReady = function (size) {
         var parent = this;
@@ -37,11 +37,11 @@ function dynamicdns(moduleId) {
         root.on('click', '.refresh', function () {
             sendMessage(parent.moduleId, 'forceRefresh', '');
         });
-    }
+    };
 
     this.root = function () {
         return rootElement(this.moduleId);
-    }
+    };
 
     /**
      * Help function to get the modal of the html
@@ -55,19 +55,19 @@ function dynamicdns(moduleId) {
         }
 
         return $(document).find('.modal[data-module="' + this.moduleId + '"]');
-    }
+    };
 
     this.onMessage_2x1 = function (command, message, extra) {
         this.processMessage(command, message, extra);
-    }
+    };
 
     this.onMessage_4x3 = function (command, message, extra) {
         this.processMessage(command, message, extra);
-    }
+    };
 
     this.onMessage_fullScreen = function (command, message, extra) {
         this.processMessage(command, message, extra);
-    }
+    };
 
     this.processMessage = function (command, message, extra) {
         switch (command) {
@@ -108,7 +108,7 @@ function dynamicdns(moduleId) {
         } else {
             body.append('<tr><td colspan="3">No providers available.</td></tr>');
         }
-    }
+    };
 
     /**
      * Generates the HTML for each field of the provider
@@ -155,7 +155,7 @@ function dynamicdns(moduleId) {
                   input.name, '" name="', input.name, '">');
         html.push('</div>');
         return html.join('');
-    }
+    };
 
     this.getFields = function (provider) {
         if (provider != -1) {
@@ -170,7 +170,7 @@ function dynamicdns(moduleId) {
         sendMessage(this.moduleId, 'addProvider', data);
         this.modal().modal('hide');
         return false;
-    }
+    };
 
     this.provider2html = function (provider) {
         var html = [];

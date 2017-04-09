@@ -15,7 +15,7 @@ function networkmonitor(moduleId) {
     this.onMessage_2x1 = function (command, message, extra) {
         this.width = 2;
         this.processData(message);
-    }
+    };
 
     this.onMessage_3x2 = function (command, message, extra) {
         this.width = 3;
@@ -24,7 +24,7 @@ function networkmonitor(moduleId) {
 
     this.root = function () {
         return rootElement(this.moduleId);
-    }
+    };
 
     this.processData = function (data) {
 

@@ -11,7 +11,7 @@
 
     <artifactId>portmapper</artifactId>
     <name>portmapper</name>
-
+    <version>1.0.6</version>
     <url>http://maven.apache.org</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

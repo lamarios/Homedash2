@@ -162,7 +162,7 @@ public class TransmissionClient {
      * @throws IOException           on problem communicating
      * @throws TransmissionException on Transmission problem when performing the command
      */
-    public JSONObject sendCommand(String name, JSONObject args) throws IOException, TransmissionException, JSONException {
+    public JSONObject sendCommand(String name, JSONObject args) throws IOException, JSONException {
         HttpURLConnection hconn = (HttpURLConnection) url.openConnection();
         hconn.setRequestMethod("POST");
         hconn.setDoOutput(true);
@@ -280,7 +280,7 @@ public class TransmissionClient {
     }
 
     public List<TorrentStatus> getAllTorrents() throws IOException, JSONException {
-        return getTorrents(new int[]{}, new TorrentField[]{});
+        return getTorrents(new int[]{});
     }
 
     /**

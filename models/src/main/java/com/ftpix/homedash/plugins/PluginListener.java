@@ -7,6 +7,6 @@ import com.ftpix.homedash.models.ModuleData;
  * Created by gz on 12-Jun-16.
  */
 public interface PluginListener {
-    public void saveModuleData(ModuleData data);
-    public void removeModuleData(ModuleData data);
+    void saveModuleData(ModuleData data);
+    void removeModuleData(ModuleData data);
 }

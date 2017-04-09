@@ -7,11 +7,9 @@ import java.util.Date;
 
 public class TorrentStatus extends JSONAccessor {
 
-    public static enum StatusField {
+    public enum StatusField {
         stopped, finished, seeding, seedWait, downloading, downloadWait, checking, checkWait
     }
-
-    ;
 
     public static StatusField parseStatus(int value, int rpcVersion) throws JSONException {
         if (rpcVersion < 14) {

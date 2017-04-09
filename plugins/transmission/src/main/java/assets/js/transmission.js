@@ -62,7 +62,7 @@ function transmission(moduleId) {
                 icon.toggleClass('fa-caret-down');
             });
         }
-    }
+    };
 
     this.onMessage_3x2 = function (command, message, extra) {
         if (command == 'refresh') {
@@ -87,7 +87,7 @@ function transmission(moduleId) {
             this.processData(message);
             this.displayTorrents(message);
         }
-    }
+    };
 
     this.processData = function (json) {
         var root = rootElement(this.moduleId);
@@ -100,7 +100,7 @@ function transmission(moduleId) {
                 .html(this.humanFileSize(json.status.obj.map.downloadSpeed, true) + '/s');
             root.find('.ul').html(this.humanFileSize(json.status.obj.map.uploadSpeed, true) + '/s');
 
-            var button = root.find('.alt')
+            var button = root.find('.alt');
             if (json.alternateSpeeds) {
                 button.addClass("btn-primary");
                 button.html('<i class="fa fa-sort-amount-desc" aria-hidden="true"></i>');
@@ -111,7 +111,7 @@ function transmission(moduleId) {
 
             root.find('.module-overlay').hide();
         }
-    }
+    };
 
     this.addTorrent = function (event) {
         var url = prompt("Margnet link", '');
@@ -122,7 +122,7 @@ function transmission(moduleId) {
                 showErrorMessage("Empty URL, can't add torrent");
             }
         }
-    }
+    };
 
     this.setAltSpeed = function () {
 
@@ -139,7 +139,7 @@ function transmission(moduleId) {
         }
 
         sendMessage(this.moduleId, 'altSpeed', setAltSpeed);
-    }
+    };
 
     this.humanFileSize = function (bytes, si) {
         var thresh = si ? 1000 : 1024;
@@ -154,7 +154,7 @@ function transmission(moduleId) {
             ++u;
         } while (bytes >= thresh);
         return bytes.toFixed(1) + ' ' + units[u];
-    }
+    };
 
 //Full screen specific methods
 
@@ -190,7 +190,7 @@ function transmission(moduleId) {
         this.printTorrentCategory('Done', sortedTorrents, div, json.rpcVersion,
                                   this.categoryToggles.get('Done'));
 
-    }
+    };
 
     this.printTorrentCategory = function (name, torrents, element, rpcVersion, hidden) {
         if (torrents.has(name)) {
@@ -218,7 +218,7 @@ function transmission(moduleId) {
 
             element.append(html.join(''));
         }
-    }
+    };
 
     this.torrentToHtml = function (torrent, rpcVersion) {
         var html = [];
@@ -250,7 +250,7 @@ function transmission(moduleId) {
         html.push('<hr />');
 
         return html.join("");
-    }
+    };
 
     this.getStatusIcon = function (value, rpcVersion) {
         if (rpcVersion < 14) {
@@ -289,7 +289,7 @@ function transmission(moduleId) {
             }
         }
 
-    }
+    };
 
     this.getStatusName = function (value, rpcVersion) {
         if (rpcVersion < 14) {
@@ -328,11 +328,11 @@ function transmission(moduleId) {
             }
         }
 
-    }
+    };
 
     this.removeTorrent = function (id) {
         sendMessage(this.moduleId, 'removeTorrent', id);
-    }
+    };
 
     this.pauseTorrent = function (id) {
         sendMessage(this.moduleId, 'pauseTorrent', id);

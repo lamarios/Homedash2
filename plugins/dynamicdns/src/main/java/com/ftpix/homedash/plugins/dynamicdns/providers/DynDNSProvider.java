@@ -9,22 +9,22 @@ import io.gsonfire.annotations.ExposeMethodResult;
 
 
 public interface DynDNSProvider {
-    public boolean updateIP(String ip);
+    boolean updateIP(String ip);
 
-    public List<FormInput> getForm();
+    List<FormInput> getForm();
 
 
-    public void setData(Map<String, String> data);
+    void setData(Map<String, String> data);
 
     @ExposeMethodResult("data")
-    public Map<String, String> getData();
+    Map<String, String> getData();
 
     @ExposeMethodResult("name")
-    public String getName();
+    String getName();
 
     @ExposeMethodResult("id")
-    public String getId();
+    String getId();
 
     @ExposeMethodResult("hostname")
-    public String getHostname();
+    String getHostname();
 }

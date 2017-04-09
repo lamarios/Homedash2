@@ -12,6 +12,7 @@
     <packaging>jar</packaging>
 
     <name>notifications</name>
+    <version>1.0.6</version>
     <url>http://maven.apache.org</url>
 
     <properties>

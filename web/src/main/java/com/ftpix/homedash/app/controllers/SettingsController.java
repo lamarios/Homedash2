@@ -241,7 +241,7 @@ public class SettingsController implements Controller<Settings, String> {
                 if (req.cookies().containsKey(AUTH_KEY)) {
                     return checkPassword(req.cookie(AUTH_KEY));
                 } else if (req.session().attribute(AUTH_KEY) != null) {
-                    return checkPassword((String) req.session().attribute(AUTH_KEY));
+                    return checkPassword(req.session().attribute(AUTH_KEY));
                 } else {
                     res.removeCookie(AUTH_KEY);
                     req.session().removeAttribute(AUTH_KEY);

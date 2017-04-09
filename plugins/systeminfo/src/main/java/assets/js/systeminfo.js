@@ -8,7 +8,7 @@ function systeminfo(moduleId) {
 
     this.onConnect = function () {
 
-    }
+    };
 
     this.documentReady = function (size) {
         if (size === 'full-screen') {
@@ -22,16 +22,16 @@ function systeminfo(moduleId) {
                 sendMessage(self.moduleId, 'sort', $(this).attr('data-sort'));
             });
         }
-    }
+    };
 
     this.onMessage_2x1 = function (command, message, extra) {
         this.width = 2;
         this.processData(message);
-    }
+    };
     this.onMessage_1x1 = function (command, message, extra) {
         this.width = 1;
         this.processData(message);
-    }
+    };
 
     this.onMessage_fullScreen = function (command, message, extra) {
         var root = rootElement(this.moduleId);
@@ -64,7 +64,7 @@ function systeminfo(moduleId) {
 
         root.find('.os-info .uptime .value').html(this.uptimeToString(hardware.uptime));
         root.find('.processes table tbody').html(this.buildProcessTableBody(os.processes));
-    }
+    };
 
     this.processData = function (obj) {
 
@@ -113,7 +113,7 @@ function systeminfo(moduleId) {
         });
 
         return html.join('');
-    }
+    };
 
     this.cpuArrayToSVGGraph = function (array) {
         var html = [];
@@ -128,7 +128,7 @@ function systeminfo(moduleId) {
         });
         html.push(' L', 100, ',100 Z');
         return html.join('');
-    }
+    };
 
     this.tempArrayToSVGGraph = function (array) {
         var html = [];
@@ -143,7 +143,7 @@ function systeminfo(moduleId) {
         });
         html.push(' L', 100, ',100 Z');
         return html.join('');
-    }
+    };
 
     this.ramArrayToSVGGraph = function (array) {
         var html = [];
@@ -158,7 +158,7 @@ function systeminfo(moduleId) {
         });
         html.push(' L', 100, ',100 Z');
         return html.join('');
-    }
+    };
 
     this.coreGraph = function (array, coreIndex) {
         var html = [];
@@ -173,7 +173,7 @@ function systeminfo(moduleId) {
         });
         html.push(' L', 100, ',100 Z');
         return html.join('');
-    }
+    };
 
     this.humanFileSizeSingle = function (memory, si) {
 
@@ -190,7 +190,7 @@ function systeminfo(moduleId) {
             ++u;
         } while (memory >= thresh);
         return memory.toFixed(1) + ' ' + units[u];
-    }
+    };
 
     this.humanFileSize = function (used, max, si) {
         var thresh = si ? 1000 : 1024;
@@ -207,7 +207,7 @@ function systeminfo(moduleId) {
             ++u;
         } while (max >= thresh);
         return used.toFixed(1) + '/' + max.toFixed(1) + ' ' + units[u];
-    }
+    };
 
     this.uptimeToString = function secondsToString(seconds) {
         var numyears = Math.floor(seconds / 31536000);
@@ -238,7 +238,7 @@ function systeminfo(moduleId) {
         }
 
         return str.join('');
-    }
+    };
 
     /**
      * Build the core graphs and encompassing html

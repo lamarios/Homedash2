@@ -7,11 +7,9 @@ import java.util.Map;
 
 public class TorrentParameters {
 
-    public static enum Priority {
+    public enum Priority {
         Low, Normal, High
     }
-
-    ;
 
     private static Map<Priority, Integer> prioNumByPriority = new HashMap<Priority, Integer>();
 

@@ -21,8 +21,7 @@ public class Constants {
 		ResourceBundle rs = ResourceBundle.getBundle("homedash");
 
 		String path = rs.getString("cache_path");
-		;
-		if (!path.endsWith("/")) {
+        if (!path.endsWith("/")) {
 			path += "/";
 		}
 

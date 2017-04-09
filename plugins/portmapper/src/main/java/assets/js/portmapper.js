@@ -10,7 +10,7 @@ function portmapper(moduleId) {
 
     this.modal = function () {
         return $(document).find('.modal[data-module="' + this.moduleId + '"]');
-    }
+    };
 
     this.documentReady = function (size) {
 
@@ -88,7 +88,7 @@ function portmapper(moduleId) {
         if (getMappings) {
             sendMessage(this.moduleId, 'getMappings', '');
         }
-    }
+    };
 
     this.getMappings = function (mappings) {
         var root = rootElement(this.moduleId);
@@ -105,7 +105,7 @@ function portmapper(moduleId) {
                 root.find('.port-count').html(mappings.length);
             }
         }
-    }
+    };
 
     this.port2Html = function (mapping) {
         var html = [];
@@ -136,7 +136,7 @@ function portmapper(moduleId) {
         html.push('</tr>');
 
         return html.join('');
-    }
+    };
 
     this.addPort = function () {
         var root = rootElement(this.moduleId);
@@ -160,13 +160,13 @@ function portmapper(moduleId) {
 
         this.modal().modal('hide');
 
-    }
+    };
 
     this.removePort = function (data) {
         if (confirm('Delete this port ?')) {
             sendMessage(this.moduleId, 'removePort', data);
         }
-    }
+    };
 
     this.savePort = function (data) {
         sendMessage(this.moduleId, 'savePort', data);

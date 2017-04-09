@@ -93,7 +93,7 @@ public class PluginModuleMaintainer implements PluginListener{
      * @throws Exception
      * @throws SQLException
      */
-    public  List<Plugin> getAllPluginInstances() throws SQLException, Exception {
+    public  List<Plugin> getAllPluginInstances() throws Exception {
         List<Plugin> plugins = new ArrayList<>();
         ModuleController.getInstance().getAll().forEach((module) -> {
             try {

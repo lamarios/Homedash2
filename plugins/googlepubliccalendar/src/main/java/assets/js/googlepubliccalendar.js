@@ -24,11 +24,11 @@ function googlepubliccalendar(moduleId) {
 
             modal.modal('show');
         });
-    }
+    };
 
     this.root = function () {
         return rootElement(this.moduleId);
-    }
+    };
 
     /**
      * Help function to get the modal of the html
@@ -42,7 +42,7 @@ function googlepubliccalendar(moduleId) {
         }
 
         return $(document).find('.modal[data-module="' + this.moduleId + '"]');
-    }
+    };
 
     this.onMessage_3x1 = function (command, message, extra) {
         var root = this.root();
@@ -61,19 +61,19 @@ function googlepubliccalendar(moduleId) {
             root.find('.event-title').html(event.summary);
             root.find('.date').html(event.startTime);
         }
-    }
+    };
 
     this.onMessage_fullScreen = function (command, message, extra) {
         this.processMessage(command, message, extra);
-    }
+    };
 
     this.onMessage_3x4 = function (command, message, extra) {
         this.processMessage(command, message, extra);
-    }
+    };
 
     this.onMessage_4x4 = function (command, message, extra) {
         this.processMessage(command, message, extra);
-    }
+    };
 
     this.processMessage = function (command, message, extra) {
         switch (command) {

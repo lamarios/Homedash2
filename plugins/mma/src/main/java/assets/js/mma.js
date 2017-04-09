@@ -69,16 +69,16 @@ function mma(moduleId) {
 
     this.modal = function () {
         return $(document).find('.modal[data-module="' + this.moduleId + '"]');
-    }
+    };
 
 
     this.onMessage_3x4 = function (command, message, extra) {
         this.onMessage_4x4(command, message, extra);
-    }
+    };
 
     this.onMessage_fullScreen = function (command, message, extra) {
         this.onMessage_4x4(command, message, extra);
-    }
+    };
 
     this.onMessage_4x4 = function (command, message, extra) {
         switch (command) {
@@ -120,7 +120,7 @@ function mma(moduleId) {
         console.log(html.join(''));
 
         return html.join('');
-    }
+    };
 
     this.showEventDialog = function (event) {
 
@@ -144,8 +144,8 @@ function mma(moduleId) {
                 '">', value.fighter2.name, '</a></td>');
 
             if (value.result != "NOT_HAPPENED") {
-                body.push('<td>', value.winMethod, '</td>')
-                body.push('<td>', value.winRound, '</td>')
+                body.push('<td>', value.winMethod, '</td>');
+                body.push('<td>', value.winRound, '</td>');
                 body.push('<td>', value.winTime, '</td>')
             }
             body.push('</tr>');
@@ -156,7 +156,7 @@ function mma(moduleId) {
 
         modal.find('.modal-body').html(body.join(''));
 
-    }
+    };
 
     this.showFighter = function (fighter) {
         var modal = this.modal();
@@ -188,22 +188,22 @@ function mma(moduleId) {
             body.push('<td><a class="mma-link" data-method="getEvent" data-url="',
                 value.event.sherdogUrl,
                 '">', value.event.name, '</a></td>');
-            body.push('<td>', value.winMethod, '</td>')
-            body.push('<td>', value.winRound, '</td>')
-            body.push('<td>', value.winTime, '</td>')
+            body.push('<td>', value.winMethod, '</td>');
+            body.push('<td>', value.winRound, '</td>');
+            body.push('<td>', value.winTime, '</td>');
 
             body.push('</tr>');
         });
         body.push('</tbody></table</div>');
         modal.find('.modal-body').html(body.join(''));
-    }
+    };
 
     this.goBack = function () {
         this.history.pop();
         var last = this.history[this.history.length - 1];
         sendMessage(this.moduleId, last.command, last.url);
 
-    }
+    };
 
     this.verifyHistory = function () {
         var toShow = this.history.length > 1;
@@ -217,7 +217,7 @@ function mma(moduleId) {
         else {
             this.modal().find('.mma-back').remove();
         }
-    }
+    };
 
     ////////////////////////
     //// slideshow related Stuff
@@ -250,7 +250,7 @@ function mma(moduleId) {
                 parent.playSlideShow()
             }, 10000);
         });
-    }
+    };
 
     this.onMessage_3x2 = function (command, message, extra) {
         if(command === 'refresh') {
@@ -269,7 +269,7 @@ function mma(moduleId) {
         }else{
             this.onMessage_4x4(command, message, extra);
         }
-    }
+    };
 
 
     /**
@@ -301,7 +301,7 @@ function mma(moduleId) {
         setTimeout(function () {
             links.removeAttr('disabled');
         }, 600);
-    }
+    };
 
     /**
      * Show data to html
@@ -324,7 +324,7 @@ function mma(moduleId) {
         html.push('</div>');
 
         return html.join('');
-    }
+    };
 
     /**
      * Compares if the list of shows is identical
@@ -352,7 +352,7 @@ function mma(moduleId) {
             }
         }
         return true;
-    }
+    };
 
     /**
      * Controls
@@ -361,12 +361,12 @@ function mma(moduleId) {
     this.showPreviousEvent = function (event) {
         this.currentIndex = this.currentIndex - 1;
         this.showEvent();
-    }
+    };
 
     this.showNextEvent = function (event) {
         this.currentIndex = this.currentIndex + 1;
         this.showEvent();
-    }
+    };
 
     /**
      * Automated slideshow

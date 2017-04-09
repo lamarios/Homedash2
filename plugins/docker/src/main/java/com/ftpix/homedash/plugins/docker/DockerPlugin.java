@@ -57,10 +57,20 @@ public class DockerPlugin extends Plugin {
     protected void init() {
 
         String url = settings.get(DOCKER_URL);
+
+        System.out.println(url);
         if (url.startsWith("unix://")) {
             client = new DefaultDockerClient(url);
         } else {
             client = DefaultDockerClient.builder().uri(url).build();
+        }
+
+        try {
+            System.out.println(client.listImages().size());
+        } catch (DockerException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
     }
@@ -127,9 +137,19 @@ public class DockerPlugin extends Plugin {
         return response;
     }
 
-
+    public static void main(String[] args) {
+        DockerClient d = DefaultDockerClient.builder().uri("http://localhost:4243").build();
+        try {
+            System.out.println(d.listImages().size());
+        } catch (DockerException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
     @Override
     public Object refresh(String size) throws Exception {
+        System.out.print(client);
         if (!size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)) {
             return client.listContainers().size();
         } else {

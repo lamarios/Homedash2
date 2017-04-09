@@ -29,23 +29,23 @@ function sonarrtv(moduleId) {
             }, 10000);
         });
 
-    }
+    };
 
     this.onMessage_2x2 = function (command, message, extra) {
         this.processData(message);
-    }
+    };
 
     this.onMessage_3x3 = function (command, message, extra) {
         this.processData(message);
-    }
+    };
 
     this.onMessage_4x4 = function (command, message, extra) {
         this.processData(message);
-    }
+    };
 
     this.onMessage_3x1 = function (command, message, extra) {
         this.processData(message);
-    }
+    };
 
     this.processData = function (message) {
         clearInterval(this.interval);
@@ -60,7 +60,7 @@ function sonarrtv(moduleId) {
 
         this.showShow();
         this.playSlideShow();
-    }
+    };
 
     /**
      * Display all the shows
@@ -91,7 +91,7 @@ function sonarrtv(moduleId) {
         setTimeout(function () {
             links.removeAttr('disabled');
         }, 600);
-    }
+    };
 
     /**
      * Show data to html
@@ -112,7 +112,7 @@ function sonarrtv(moduleId) {
         html.push('</div>');
 
         return html.join('');
-    }
+    };
 
     /**
      * Compares if the list of shows is identical
@@ -140,7 +140,7 @@ function sonarrtv(moduleId) {
             }
         }
         return true;
-    }
+    };
 
     /**
      * Controls
@@ -149,12 +149,12 @@ function sonarrtv(moduleId) {
     this.showPreviousShow = function (event) {
         this.currentIndex = this.currentIndex - 1;
         this.showShow();
-    }
+    };
 
     this.showNextShow = function (event) {
         this.currentIndex = this.currentIndex + 1;
         this.showShow();
-    }
+    };
 
     /**
      * Automated slideshow

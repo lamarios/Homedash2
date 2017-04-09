@@ -10,5 +10,5 @@ package com.ftpix.homedash.models;
  * @author User
  */
 public enum ModuleLocation {
-    REMOTE, LOCAL;
+    REMOTE, LOCAL
 }

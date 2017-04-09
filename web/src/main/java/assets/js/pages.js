@@ -102,7 +102,7 @@ function moveModule(moduleId) {
 
     //Getting the list of pages
     $.getJSON('/pages', function (pages) {
-        p
+        p;
         var html = [];
         $.each(pages, function (index, page) {
             if (page.id != PAGE) {

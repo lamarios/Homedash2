@@ -4,4 +4,4 @@ $(document).ready(function(){
 
 function rootElement(moduleId) {
     return $('.content.size-full-screen');
-};
+}

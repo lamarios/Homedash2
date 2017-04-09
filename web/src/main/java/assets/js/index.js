@@ -241,8 +241,7 @@ function toggleLayoutEditMode() {
 
 function rootElement(moduleId) {
     return $('#layout .module[data-module="' + moduleId + '"] .content');
-};
-
+}
 /**
  * Gets the current layout
  */

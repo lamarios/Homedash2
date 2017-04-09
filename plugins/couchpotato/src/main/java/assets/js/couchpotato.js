@@ -23,40 +23,40 @@ function couchpotato(moduleId) {
             self.addMovie(movieName, imdb);
 
         });
-    }
+    };
 
     this.modal = function () {
         return $(document).find('.modal[data-module="' + this.moduleId + '"]');
-    }
+    };
 
     this.root = function () {
         return rootElement(this.moduleId);
-    }
+    };
 
     this.onMessage_1x1 = function (command, message, extra) {
         this.processData(command, message, extra);
-    }
+    };
 
     this.onMessage_1x3 = function (command, message, extra) {
         this.processData(command, message, extra);
-    }
+    };
 
     this.onMessage_2x1 = function (command, message, extra) {
         this.processData(command, message, extra);
-    }
+    };
     this.onMessage_2x2 = function (command, message, extra) {
         this.processData(command, message, extra);
-    }
+    };
 
     this.onMessage_2x3 = function (command, message, extra) {
         this.processData(command, message, extra);
-    }
+    };
     this.onMessage_3x3 = function (command, message, extra) {
         this.processData(command, message, extra);
-    }
+    };
     this.onMessage_3x2 = function (command, message, extra) {
         this.processData(command, message, extra);
-    }
+    };
 
     this.processData = function (command, message, extra) {
         if (command == 'refresh') {
@@ -66,14 +66,14 @@ function couchpotato(moduleId) {
         } else if (command == 'error') {
             this.modal().modal('hide');
         }
-    }
+    };
 
     this.searchMovie = function () {
 
         this.modal().find('.couchpotato-movie-list').html('<div class="loader"></div>');
         //$("#cp"+this.moduleId+"-modal").appendTo("body").modal('show');
         sendMessage(this.moduleId, 'searchMovie', this.modal().find('.search-query').val());
-    }
+    };
 
     this.refresh = function (message) {
         if (!message) {
@@ -83,13 +83,13 @@ function couchpotato(moduleId) {
             this.root().css('background-image', 'url(' + message + ')');
         }
 
-    }
+    };
 
     this.addMovie = function (movieName, imdb) {
 
         sendMessage(this.moduleId, 'addMovie', movieName + '___' + imdb);
         this.modal().modal('hide');
-    }
+    };
 
     this.populateMovieList = function (message) {
         var parent = this;
@@ -105,7 +105,7 @@ function couchpotato(moduleId) {
             movieList.html('<p>No results</p>');
         }
 
-    }
+    };
 
     this.movieToHtml = function (movie) {
         var html = [];
@@ -125,7 +125,7 @@ function couchpotato(moduleId) {
 
         html.push(' - <span class="cp-movie-year">', movie.year, '</span></p>');
 
-        html.push('</div>')
+        html.push('</div>');
         return html.join('');
 
     }

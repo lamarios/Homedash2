@@ -24,7 +24,7 @@ function initWebsocket() {
             }
             sendMessage(-1, "changePage", PAGE);
             sendMessage(-1, "changeLayout", LAYOUT.id);
-        }
+        };
 
         ws.onerror = function (error) {
             console.error('There was an un-identified Web Socket error');
@@ -47,7 +47,7 @@ function initFullScreenWebsocket() {
             MODULE.documentReady('full-screen');
             sendMessage(MODULE.moduleId, "setModule", "");
 
-        }
+        };
 
         ws.onerror = function (error) {
             console.error('There was an un-identified Web Socket error');
@@ -174,7 +174,7 @@ function showNotification(type, message) {
         notification.removeClass();
         notification.find('.message').html(message);
         notification.addClass(type + ' showing');
-        clearTimeout(notificationTimeout)
+        clearTimeout(notificationTimeout);
         notificationTimeout = setTimeout(function () {
             notification.removeClass('showing');
         }, 4000);

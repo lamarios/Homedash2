@@ -13,7 +13,7 @@
     <groupId>com.ftpix.homedash.plugins</groupId>
     <artifactId>plugins</artifactId>
     <packaging>pom</packaging>
-
+    <version>1.0.6</version>
     <modules>
         <module>systeminfo</module>
         <module>docker</module>
@@ -33,13 +33,13 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.6</version>
         </dependency>
 
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>notifications</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.6</version>
         </dependency>
 
     </dependencies>

@@ -36,17 +36,17 @@ function docker(moduleId) {
             });
 
         }
-    }
+    };
 
     this.onConnect = function () {
 
-    }
+    };
 
     this.onMessage_1x1 = function (command, message, extra) {
         var root = rootElement(this.moduleId);
 
         root.find('.count').html(message);
-    }
+    };
 
     this.onMessage_fullScreen = function (command, message, extra) {
         if (command === 'refresh') {
@@ -56,7 +56,7 @@ function docker(moduleId) {
         } else if (command === 'details') {
             this.showContainerDetails(message);
         }
-    }
+    };
 
     this.showContainerDetails = function (data) {
         var root = rootElement(this.moduleId);
@@ -127,7 +127,7 @@ function docker(moduleId) {
         html.push(this.infoPanel("Mounts", mounts.join('')));
 
         root.find('.modal .container-info').html(html.join(''));
-    }
+    };
 
     this.infoPanel = function (title, content) {
         var html = [];
@@ -141,7 +141,7 @@ function docker(moduleId) {
         html.push('</div>');
 
         return html.join('');
-    }
+    };
 
     this.refreshContainers = function (message) {
 

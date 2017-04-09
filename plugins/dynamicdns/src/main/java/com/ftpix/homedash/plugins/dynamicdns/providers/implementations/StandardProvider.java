@@ -88,11 +88,7 @@ public abstract class StandardProvider implements DynDNSProvider {
             String responseStr = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
             logger.info("Status[{}], Response: [{}]", response.getStatusLine().getStatusCode(), responseStr.trim());
 
-            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK && (responseStr.contains("nochg") || responseStr.contains("good"))) {
-                return true;
-            } else {
-                return false;
-            }
+            return response.getStatusLine().getStatusCode() == HttpStatus.SC_OK && (responseStr.contains("nochg") || responseStr.contains("good"));
         } catch (Exception e) {
             logger.error("Error while updating IP to [{}]", ip);
             return false;

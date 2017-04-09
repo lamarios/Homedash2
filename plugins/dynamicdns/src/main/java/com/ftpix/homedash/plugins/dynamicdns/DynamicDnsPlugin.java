@@ -1,5 +1,6 @@
 package com.ftpix.homedash.plugins.dynamicdns;
 
+import com.ftpix.homedash.plugins.dynamicdns.models.IpFromWeb;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
@@ -15,6 +16,9 @@ import com.ftpix.homedash.plugins.dynamicdns.providers.implementations.DynDNS;
 import com.ftpix.homedash.plugins.dynamicdns.providers.implementations.NoIP;
 import com.ftpix.homedash.plugins.dynamicdns.providers.implementations.OVH;
 
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import org.bitlet.weupnp.GatewayDevice;
 import org.bitlet.weupnp.GatewayDiscover;
 
@@ -42,6 +46,9 @@ public class DynamicDnsPlugin extends Plugin {
     private final String SETTING_NOTIFICATIONS = "notifications", DATA_IP = "ip", DATA_PROVIDERS = "providers", DATA_LAST_DATE = "lastDate";
     private Ip ip = null;
     private List<DynDNSProvider> providers = new ArrayList<>();
+
+    private final static String IP_URL = "https://api.ipify.org/?format=json";
+
 
     private boolean sendNotifications = false;
 
@@ -247,25 +254,51 @@ public class DynamicDnsPlugin extends Plugin {
     /**
      * Gets current ip
      */
-    private Ip getIP() throws IllegalStateException, IOException, Exception {
-        // Get ip via router first if possible
-        GatewayDevice router = null;
-        Ip result = new Ip();
+    private Ip getIP() throws Exception {
 
-        logger.info("[DynDNS] Trying to get external IP via router (more reliable)");
-        GatewayDiscover gatewayDiscover = new GatewayDiscover();
-        Map<InetAddress, GatewayDevice> gateways = gatewayDiscover.discover();
-        router = gatewayDiscover.getValidGateway();
+        try {
+            // Get ip via router first if possible
+            GatewayDevice router = null;
+            Ip result = new Ip();
 
-        if (router != null) {
-            String ip = router.getExternalIPAddress();
-            logger.info("[DynDNS] IP Found via router UPnP {}", ip);
-            result.setMethod("router - UPnP");
-            result.setAddress(ip);
+            logger.info("[DynDNS] Trying to get external IP via router (more reliable)");
+            GatewayDiscover gatewayDiscover = new GatewayDiscover();
+            Map<InetAddress, GatewayDevice> gateways = gatewayDiscover.discover();
+            router = gatewayDiscover.getValidGateway();
+
+            if (router != null) {
+                String ip = router.getExternalIPAddress();
+                logger.info("[DynDNS] IP Found via router UPnP {}", ip);
+                result.setMethod("router - UPnP");
+                result.setAddress(ip);
+            }else{
+                return getIpFromWeb();
+            }
+
+            return result;
+        } catch (Exception e) {
+            return getIpFromWeb();
         }
 
-        return result;
 
+    }
+
+    /**
+     * Get ip from the web
+     *
+     * @return
+     */
+    private Ip getIpFromWeb() throws UnirestException {
+        HttpResponse<String> response = Unirest.get("https://api.ipify.org/?format=json")
+                .asString();
+        IpFromWeb ipFromWeb = gson.fromJson(response.getBody(), IpFromWeb.class);
+        logger.info("Getting Ip from web:{}", ipFromWeb.getIp());
+
+        Ip ip = new Ip();
+        ip.setAddress(ipFromWeb.getIp());
+        ip.setDate(new Date());
+        ip.setMethod("ipify.com");
+        return ip;
     }
 
 
