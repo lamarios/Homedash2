@@ -1,45 +1,47 @@
 package com.ftpix.homedash.app;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
-
 public class Constants {
-	public final static String CACHE_FOLDER;
-	public final static String DB_PATH;
-	public final static int PORT;
-	public final static String SALT;
-	private static Logger logger = LogManager.getLogger();
+    public final static String CACHE_FOLDER;
+    public final static String DB_PATH;
+    public final static int PORT;
+    public final static String SALT;
+    private static Logger logger = LogManager.getLogger();
 
-	static {
-		
-		logger.info("Loading conf file");
-		ResourceBundle rs = ResourceBundle.getBundle("homedash");
+    static {
 
-		String path = rs.getString("cache_path");
+        logger.info("Loading conf file");
+        ResourceBundle rs = ResourceBundle.getBundle("homedash");
+
+        String path = rs.getString("cache_path");
         if (!path.endsWith("/")) {
-			path += "/";
-		}
+            path += "/";
+        }
 
-		CACHE_FOLDER = path;
+        CACHE_FOLDER = path;
 
-		DB_PATH = rs.getString("db_path");
+        DB_PATH = rs.getString("db_path");
 
-		PORT = Integer.parseInt(rs.getString("port"));
+        PORT = Integer.parseInt(rs.getString("port"));
 
-		File f = new File(CACHE_FOLDER);
-		if (!f.exists()) {
-			f.mkdirs();
-		}
+        File f = new File(CACHE_FOLDER);
+        if (!f.exists()) {
+            f.mkdirs();
+        }
 
-		SALT = rs.getString("salt");
-		
-		logger.info("DB_PATH:{}", DB_PATH);
-		logger.info("Cache folder:{}", CACHE_FOLDER);
-		logger.info("Port", PORT);
-	}
+        SALT = rs.getString("salt");
+
+        logger.info("DB_PATH:{}", DB_PATH);
+        logger.info("Cache folder:{}", CACHE_FOLDER);
+        logger.info("Port", PORT);
+    }
 }

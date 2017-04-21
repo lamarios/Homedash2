@@ -13,7 +13,7 @@
 
     <artifactId>web</artifactId>
     <name>web</name>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -112,6 +112,20 @@
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>updater</artifactId>
             <version>LATEST</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jackson-annotations</artifactId>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jackson-core</artifactId>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jackson-databind</artifactId>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- plugins -->

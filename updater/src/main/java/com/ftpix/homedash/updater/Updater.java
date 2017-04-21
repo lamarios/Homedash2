@@ -90,7 +90,6 @@ public class Updater {
 
     }
 
-
     /**
      * This method will stop homedash and trigger the update
      *
@@ -98,32 +97,38 @@ public class Updater {
      * @throws IOException
      */
     public void stopHomedashAndTriggerUpdate(Path downloadPath) throws IOException {
-        if(isFolderStructureOkForAutoUpdate()) {
+        if (isFolderStructureOkForAutoUpdate()) {
             Path pidFile = Paths.get("homedash.pid").toAbsolutePath();
-            Path autoUpdaterJar = downloadPath.resolve("bin/updater-"+getLatestVersion().getName()+"-jar-with-dependencies.jar").toAbsolutePath();
+            Path binFolder = downloadPath.resolve("bin").toAbsolutePath();
             //Path autoUpdaterJar = Paths.get("/tmp/homedash-update5156811059531871535/web-1.0.3/bin/updater-" + getLatestVersion().getName() + "-jar-with-dependencies.jar");
+            Files.list(binFolder).filter(p -> p.getFileName().toString().startsWith("updater-")).findFirst().map(Path::toAbsolutePath).ifPresent(autoUpdaterJar -> {
 
-            logger.info("PID file :[{}]", pidFile.toString());
-            logger.info("Update jar [{}]", autoUpdaterJar.toString());
+                try {
+                    logger.info("PID file :[{}]", pidFile.toString());
+                    logger.info("Update jar [{}]", autoUpdaterJar.toString());
 
-            //we need to delete the pid file, start the auto updater and exit
-            if (Files.notExists(pidFile))
-                throw new FileNotFoundException("File " + pidFile.toAbsolutePath().toString() + " not found");
+                    //we need to delete the pid file, start the auto updater and exit
+                    if (Files.notExists(pidFile))
+                        throw new FileNotFoundException("File " + pidFile.toAbsolutePath().toString() + " not found");
 
-            if (Files.notExists(autoUpdaterJar))
-                throw new FileNotFoundException("File " + autoUpdaterJar.toAbsolutePath().toString() + " not found");
-
-
-            Files.deleteIfExists(pidFile);
+                    if (Files.notExists(autoUpdaterJar))
+                        throw new FileNotFoundException("File " + autoUpdaterJar.toAbsolutePath().toString() + " not found");
 
 
-            //Building the jar command with all the necessary parameters
-            ProcessBuilder pb = new ProcessBuilder("java", "-jar", autoUpdaterJar.toString(), downloadPath.toString(), Paths.get(".").toAbsolutePath().toString());
-            pb.directory(downloadPath.toAbsolutePath().toFile());
-            pb.start();
+                    Files.deleteIfExists(pidFile);
 
-            //when the process is starting, we need to exist as the updater is going to start homedash again
-            System.exit(0);
+
+                    //Building the jar command with all the necessary parameters
+                    ProcessBuilder pb = new ProcessBuilder("java", "-jar", autoUpdaterJar.toString(), downloadPath.toString(), Paths.get(".").toAbsolutePath().toString());
+                    pb.directory(downloadPath.toAbsolutePath().toFile());
+                    pb.start();
+
+                    //when the process is starting, we need to exist as the updater is going to start homedash again
+                    System.exit(0);
+                } catch (Exception e) {
+                    logger.error("Error while updating ", e);
+                }
+            });
         }
     }
 
