@@ -247,9 +247,13 @@ public class DockerPlugin extends Plugin {
         }).collect(Collectors.toList());
 
         ExecutorService exec = Executors.newFixedThreadPool(containers.size());
-        logger.info("Getting all stats");
-        exec.invokeAll(statsTasks);
-        logger.info("All stats finish");
+        try {
+            logger.info("Getting all stats");
+            exec.invokeAll(statsTasks);
+            logger.info("All stats finish");
+        }finally{
+            exec.shutdown();
+        }
         return containers;
     }
 
