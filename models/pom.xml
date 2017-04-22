@@ -6,13 +6,12 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>LATEST</version>
+        <version>1.0.11</version>
     </parent>
 
     <artifactId>models</artifactId>
 
     <name>models</name>
-    <version>1.0.6</version>
     <url>http://maven.apache.org</url>
 
     <properties>

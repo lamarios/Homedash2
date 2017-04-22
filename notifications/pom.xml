@@ -4,7 +4,7 @@
     <parent>
         <artifactId>homedash</artifactId>
         <groupId>com.ftpix.homedash</groupId>
-        <version>LATEST</version>
+        <version>1.0.11</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -12,7 +12,6 @@
     <packaging>jar</packaging>
 
     <name>notifications</name>
-    <version>1.0.6</version>
     <url>http://maven.apache.org</url>
 
     <properties>

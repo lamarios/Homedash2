@@ -296,7 +296,6 @@ public class DynamicDnsPlugin extends Plugin {
 
         Ip ip = new Ip();
         ip.setAddress(ipFromWeb.getIp());
-        ip.setDate(new Date());
         ip.setMethod("ipify.com");
         return ip;
     }

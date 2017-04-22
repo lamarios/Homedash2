@@ -71,27 +71,27 @@ function docker(moduleId) {
             html.push(this.infoPanel('Restart policy', data.hostConfig.restartPolicy.name));
         }
 
-        if(data.networkSettings.networks !== undefined){
+        if (data.networkSettings.networks !== undefined) {
             var network = [];
-            $.each(data.networkSettings.networks, function(index, value){
-                network.push('<h4>', index,'</h4>');
+            $.each(data.networkSettings.networks, function (index, value) {
+                network.push('<h4>', index, '</h4>');
 
-                if(value.aliases !== undefined){
-                    network.push('<p><strong>Aliases: </strong>',value.aliases.join(', '),'</p>');
+                if (value.aliases !== undefined) {
+                    network.push('<p><strong>Aliases: </strong>', value.aliases.join(', '), '</p>');
                 }
 
-                if(value.gateway.length > 0){
-                    network.push('<p><strong>Gateway: </strong>',value.gateway,'</p>');
+                if (value.gateway.length > 0) {
+                    network.push('<p><strong>Gateway: </strong>', value.gateway, '</p>');
                 }
 
-                if(value.ipAddress.length > 0){
-                    network.push('<p><strong>IP Address: </strong>',value.ipAddress,'</p>');
+                if (value.ipAddress.length > 0) {
+                    network.push('<p><strong>IP Address: </strong>', value.ipAddress, '</p>');
                 }
 
-                if(value.macAddress.length > 0){
-                    network.push('<p><strong>MAC Adress: </strong>',value.macAddress,'</p>');
+                if (value.macAddress.length > 0) {
+                    network.push('<p><strong>MAC Adress: </strong>', value.macAddress, '</p>');
                 }
-                network.push('<p>','</p>');
+                network.push('<p>', '</p>');
                 network.push('<hr />')
             });
 
@@ -105,12 +105,12 @@ function docker(moduleId) {
                     console.log('Port:', value);
                     network.push('<p>');
                     network.push(value[0].hostPort,
-                                 ' <i class="fa fa-arrow-right" aria-hidden="true"></i> ', index);
+                        ' <i class="fa fa-arrow-right" aria-hidden="true"></i> ', index);
                     network.push('</p>');
                 }
             });
 
-            if(network.length>0) {
+            if (network.length > 0) {
                 html.push(this.infoPanel('Ports', network.join('')));
             }
         }
@@ -120,11 +120,22 @@ function docker(moduleId) {
         $.each(data.mounts, function (index, value) {
             mounts.push('<p>');
             mounts.push(value.source, ' <i class="fa fa-arrow-right" aria-hidden="true"></i> ',
-                        value.destination, ':', value.mode);
+                value.destination, ':', value.mode);
             mounts.push('</p>');
         });
 
         html.push(this.infoPanel("Mounts", mounts.join('')));
+
+        console.log('ENV', data.config.env)
+        if (data.config.env !== undefined && data.config.env.length > 0) {
+            var env = [];
+            $.each(data.config.env, function (index, value) {
+                var split = value.split('\u003d');
+                env.push('<p><strong>', split[0], ': </strong>', split[1], '</p>');
+            });
+
+            html.push(this.infoPanel('Environment variables', env.join('')));
+        }
 
         root.find('.modal .container-info').html(html.join(''));
     };
@@ -156,9 +167,9 @@ function docker(moduleId) {
             html.push('<td class="status">', container.status, '</td>');
             html.push('<td>', container.memoryUsagePretty, '</td>');
             html.push('<td class="container-modal" data-id="', container.id, '", data-name="',
-                      container.names.join(','), '">',
-                      '<i class="fa fa-ellipsis-v" aria-hidden="true"></i>',
-                      '</td>');
+                container.names.join(','), '">',
+                '<i class="fa fa-ellipsis-v" aria-hidden="true"></i>',
+                '</td>');
 
             html.push('</tr>');
         });

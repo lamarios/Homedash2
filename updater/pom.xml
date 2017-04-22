@@ -5,12 +5,11 @@
     <parent>
         <artifactId>homedash</artifactId>
         <groupId>com.ftpix.homedash</groupId>
-        <version>LATEST</version>
+        <version>1.0.11</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>updater</artifactId>
-    <version>1.0.9</version>
     <dependencies>
 
         <dependency>
