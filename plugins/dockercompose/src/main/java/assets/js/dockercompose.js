@@ -21,10 +21,24 @@ function dockercompose(moduleId) {
             });
 
 
-            root.on('click', '.actions .cmd', function(){
+            root.on('click', '.actions .cmd', function () {
                 var cmd = $(this).attr('data-cmd');
                 sendMessage(self.moduleId, 'cmd', cmd);
+                $('.modal .modal-body').html('Loading...');
+                $('.modal .modal-title').html('docker-compose ' + cmd);
+                $('.modal').modal('show');
+
             });
+
+            root.on('click', '.actions .custom', function () {
+                var cmd = prompt('Enter command to run.\nNo need to prepend by docker-compose.\nAvoid command that hog the output (i.e. \'up\', prefer \'up -d\'');
+                sendMessage(self.moduleId, 'cmd', cmd);
+                $('.modal .modal-body').html('Loading...');
+                $('.modal .modal-title').html('docker-compose ' + cmd);
+                $('.modal').modal('show');
+
+            });
+
         }
     };
 
@@ -38,6 +52,9 @@ function dockercompose(moduleId) {
         root.find('.count').html(message.count);
         root.find('.folder').html(message.folder);
     };
+    this.onMessage_2x1 = function (command, message, extra) {
+        this.onMessage_1x1(command, message, extra);
+    }
 
     this.onMessage_fullScreen = function (command, message, extra) {
         var root = rootElement(this.moduleId);
@@ -47,6 +64,12 @@ function dockercompose(moduleId) {
             root.find('.compose').html(message);
         } else if (command === 'success') {
             sendMessage(this.moduleId, 'compose-file', '');
+        } else if (command === 'cmd') {
+            if (message.output.length > 0) {
+                $('.modal .modal-body').html(message.output.join('<br />'));
+            } else {
+                $('.modal .modal-body').html(message.errorOutput.join('<br />'));
+            }
         }
 
 

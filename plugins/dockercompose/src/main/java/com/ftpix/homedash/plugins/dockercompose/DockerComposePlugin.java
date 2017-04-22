@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -55,7 +56,7 @@ public class DockerComposePlugin extends Plugin {
 
     @Override
     public String[] getSizes() {
-        return new String[]{ModuleLayout.SIZE_1x1, ModuleLayout.FULL_SCREEN};
+        return new String[]{ModuleLayout.SIZE_1x1, ModuleLayout.SIZE_2x1, ModuleLayout.FULL_SCREEN};
     }
 
     @Override
@@ -108,7 +109,7 @@ public class DockerComposePlugin extends Plugin {
 
     @Override
     protected Object refresh(String size) throws Exception {
-        if (size.equals(ModuleLayout.SIZE_1x1)) {
+        if (size.equals(ModuleLayout.SIZE_1x1) || size.equals(ModuleLayout.SIZE_2x1)) {
             Map<String, String> result = new HashMap<>();
             result.put("count", Long.toString(countContainers()));
             result.put("folder", dockerComposeFolder.toString());
@@ -122,7 +123,11 @@ public class DockerComposePlugin extends Plugin {
 
     @Override
     public int getRefreshRate(String size) {
-        return ONE_MINUTE * 5;
+        if (size.equals(ModuleLayout.SIZE_1x1)) {
+            return ONE_MINUTE * 5;
+        } else {//full screen
+            return ONE_SECOND * 10;
+        }
     }
 
     @Override
@@ -243,6 +248,7 @@ public class DockerComposePlugin extends Plugin {
 
         return output;
     }
+
     /**
      * This plugin will use a lot of process commands so it simplifies out life instead of redoing it all the time.
      *
@@ -283,12 +289,15 @@ public class DockerComposePlugin extends Plugin {
             }
         }
 
+
+
         output.setErrorOutput(errorOutput);
         output.setOutput(outputStr);
-        process.waitFor();
+
+        process.waitFor(5, TimeUnit.MINUTES);//timeout after 5 minutes
+
         output.setReturnCode(process.exitValue());
-        System.out.println(output.getErrorOutput().size());
-        output.getErrorOutput().forEach(System.out::println);
+
         logger.info("Command finished with code [{}]", output.getReturnCode());
         return output;
     }

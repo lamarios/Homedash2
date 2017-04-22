@@ -199,7 +199,7 @@
             <artifactId>models</artifactId>
             <version>1.0.12</version>
         </dependency>
-        
+
         <dependency>
             <groupId>com.ftpix.homedash.plugins</groupId>
             <artifactId>dockercompose</artifactId>
@@ -325,10 +325,7 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        - Fix docker plugin icon
-                        - Fix version mess usin versions-maven-plugin
-                        - Add environment variable to docker container details
-                        - Fix DynDNS IP refresh date that was showing last check instead of last update
+                        Add simple docker compose plugin
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>

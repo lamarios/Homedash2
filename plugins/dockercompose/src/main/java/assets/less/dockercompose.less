@@ -1,6 +1,29 @@
-.dockercompose {
-  background-color: #3949AB;
+.dockercompose.size-1x1, .dockercompose.size-2x1 {
   color: white;
+  background: #3949AB url("../files/images/docker.svg") center;
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  .title {
+    font-size: 10px;
+    margin-bottom: 5px;
+  }
+
+  .count {
+    font-size: 30px;
+    text-align: center;
+    margin-bottom: 0;
+  }
+
+  .containers {
+    font-size: 12px;
+    text-align: center;
+    margin-bottom: 1px;
+  }
+
+  .folder {
+    font-zie: 12px;
+  }
 }
 
 .dockercompose.size-full-screen {
@@ -11,7 +34,7 @@
     width: 100%;
   }
 
-  .editable{
+  .editable {
     display: none;
   }
   .editable.active {
