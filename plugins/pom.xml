@@ -6,7 +6,7 @@
     <parent>
         <artifactId>homedash</artifactId>
         <groupId>com.ftpix.homedash</groupId>
-        <version>1.0.11</version>
+        <version>1.0.12</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -26,6 +26,7 @@
         <module>dynamicdns</module>
         <module>googlepubliccalendar</module>
         <module>mma</module>
+        <module>dockercompose</module>
     </modules>
 
     <dependencies>

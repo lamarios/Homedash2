@@ -1,0 +1,34 @@
+h2 Actions
+.actions
+    button.btn.cmd(data-cmd="up -d") up -d
+    button.btn.cmd(data-cmd="down") down
+    button.btn.cmd(data-cmd="rm") rm
+    button.btn.cmd(data-cmd="build") build
+    button.btn.custom Custom command
+h2 Containers
+.containers
+    .table-responsive
+        table.table
+            thead
+                tr
+                th Name
+                th Command
+                th State
+                th Ports
+            tbody
+h2 Docker compose file
+.compose-actions
+    btn.btn.btn-primary.refresh
+        i.fa.fa-refresh
+        | &nbsp;Refresh
+    btn.btn.btn.edit
+        i.fa.fa-pencil
+        | &nbsp;Edit
+pre.compose.editable.active
+    code
+textarea.compose.editable
+btn.btn.btn-primary.editable.save
+    i.fa.fa-floppy-o
+    | &nbsp;Save
+
+include ./dockercompose-modal

@@ -1,0 +1,7 @@
+p This plugins only works for linux at the moment and the docker-compose executable has to be in your PATH
+.form-group
+    label(for="path") docker-compose.yml folder location
+    if settings && settings.containsKey("path")
+        input.form-control(type="text", id="path", name="path", placeholder="Path", value='#{settings.get("path")}')
+    else
+        input.form-control(type="text", id="path", name ="path", placeholder = "Path")
