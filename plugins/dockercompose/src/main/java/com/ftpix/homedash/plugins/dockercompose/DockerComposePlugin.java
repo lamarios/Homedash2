@@ -123,7 +123,7 @@ public class DockerComposePlugin extends Plugin {
 
     @Override
     public int getRefreshRate(String size) {
-        if (size.equals(ModuleLayout.SIZE_1x1)) {
+        if (size.equals(ModuleLayout.SIZE_1x1) || size.equals(ModuleLayout.SIZE_2x1)) {
             return ONE_MINUTE * 5;
         } else {//full screen
             return ONE_SECOND * 10;
