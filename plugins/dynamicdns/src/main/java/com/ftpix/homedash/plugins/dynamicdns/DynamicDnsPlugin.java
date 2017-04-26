@@ -180,6 +180,7 @@ public class DynamicDnsPlugin extends Plugin {
             Ip ip = getIP();
             if (ip.getAddress() != null) {
                 if ((this.ip == null || this.ip.getAddress() == null || (pattern.matcher(ip.getAddress()).matches() && !this.ip.getAddress().equalsIgnoreCase(ip.getAddress())))) {
+                    ip.setDate(new Date());
                     this.ip = ip;
                     logger.info("[DynDNS] New IP [{}] updating providers", ip.getAddress());
                     setData(DATA_IP, this.ip);
