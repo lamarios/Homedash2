@@ -27,7 +27,7 @@ public class TransmissionPlugin extends Plugin {
 
 
     public static final String URL = "url", PORT = "port", USERNAME = "username", PASSWORD = "password";
-    public static final String METHOD_ADDTORRENT = "addTorrent", METHOD_ALTSPEED = "altSpeed", METHOD_REMOVETORRENT = "removeTorrent", METHOD_PAUSETORRENT = "pauseTorrent";
+    public static final String METHOD_ADDTORRENT = "addTorrent", METHOD_ALTSPEED = "altSpeed", METHOD_REMOVETORRENT = "removeTorrent", METHOD_REMOVETORRENT_DELETE = "removeTorrentDelete", METHOD_PAUSETORRENT = "pauseTorrent";
 
     private final String VOICE_THROTTLE = "torrent throttle", VOICE_FULL_SPEED = "torrent full speed";
 
@@ -83,9 +83,11 @@ public class TransmissionPlugin extends Plugin {
         } else if (command.equalsIgnoreCase(METHOD_ALTSPEED)) {
             response = altSpeed(message.equalsIgnoreCase("true"));
         } else if (command.equalsIgnoreCase(METHOD_PAUSETORRENT)) {
-            response = pauseTorrent(Integer.parseInt(message));
+            response = pauseTorrent(message);
         } else if (command.equalsIgnoreCase(METHOD_REMOVETORRENT)) {
-            response = removeTorrent(Integer.parseInt(message));
+            response = removeTorrent(message, false);
+        } else if (command.equalsIgnoreCase(METHOD_REMOVETORRENT_DELETE)) {
+            response = removeTorrent(message, true);
         } else {
             response.setCommand(WebSocketMessage.COMMAND_ERROR);
             response.setMessage("No matching method.");
@@ -247,18 +249,23 @@ public class TransmissionPlugin extends Plugin {
 
     }
 
-    private WebSocketMessage pauseTorrent(int id) {
+    private WebSocketMessage pauseTorrent(String idArray) {
         WebSocketMessage response = new WebSocketMessage();
         try {
-            int[] ids = {id};
-            TorrentStatus torrent = client.getTorrents(ids, TorrentStatus.TorrentField.status).get(0);
+            int[] ids = gson.fromJson(idArray, int[].class);
+            if(ids.length == 1) {
 
-            if (torrent.getStatus() == TorrentStatus.StatusField.stopped) {
-                client.startTorrents(id);
-                response.setMessage("Torrent resumed successfully !");
-            } else {
-                client.stopTorrents(id);
-                response.setMessage("Torrent paused successfully !");
+                TorrentStatus torrent = client.getTorrents(ids, TorrentStatus.TorrentField.status).get(0);
+
+                if (torrent.getStatus() == TorrentStatus.StatusField.stopped) {
+                    client.startTorrents(ids[0]);
+                    response.setMessage("Torrent resumed successfully !");
+                } else {
+                    client.stopTorrents(ids[0]);
+                    response.setMessage("Torrent paused successfully !");
+                }
+            }else{
+                client.stopTorrents(ids);
             }
 
             response.setCommand(WebSocketMessage.COMMAND_SUCCESS);
@@ -270,13 +277,12 @@ public class TransmissionPlugin extends Plugin {
         return response;
     }
 
-    private WebSocketMessage removeTorrent(int id) {
+    private WebSocketMessage removeTorrent(String idArray, boolean delete) {
 
         WebSocketMessage response = new WebSocketMessage();
         try {
-
-            Object[] ids = {id};
-            client.removeTorrents(ids, false);
+            Object[] ids = gson.fromJson(idArray, Object[].class);
+            client.removeTorrents(ids, delete);
             response.setCommand(WebSocketMessage.COMMAND_SUCCESS);
             response.setMessage("Torrent removed successfully !");
 

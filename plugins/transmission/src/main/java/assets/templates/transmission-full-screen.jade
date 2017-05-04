@@ -1,12 +1,15 @@
 .module-overlay Transmission is not available at the moment
 
 p
-    button.btn.add
+    button.btn.btn-success.add
         i.fa.fa-plus
-        | Add torrent
+        | &nbsp;Add torrent
     button.btn.alt
         i.fa.fa-sort-amount-asc
-        | Alternate Speeds
+        | &nbsp;Alternate Speeds
+    button.btn.multiple-select-btn
+        i.fa.fa-list
+        | &nbsp;Select multiple
 
 .torrent-list
 
@@ -18,6 +21,16 @@ h5 Global
         span.ul
 
 
+.selection
+    p
+        span.torrent-count 0
+        | &nbsp;torrent(s)
+        button.btn.btn-primary.pause-torrent-multiple
+            i.fa.fa-pause
+            | &nbsp;Pause
+        button.btn.btn-danger.remove-torrent-multiple
+            i.fa.fa-times
+            | &nbsp;Remove
 //modal
 .modal.fade(tabindex="-1", id="modal", rolw="dialog")
     .modal-dialog
@@ -30,7 +43,7 @@ h5 Global
                 p
                     button.btn.btn-primary.pause-torrent
                         i.fa.fa-pause
-                        | Pause/Resume torrent
+                        | &nbsp;Pause/Resume torrent
                     button.btn.btn-danger.remove-torrent
                         i.fa.fa-times
-                        | Remove torrent
+                        | &nbsp;Remove torrent

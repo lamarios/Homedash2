@@ -8,11 +8,14 @@ function transmission(moduleId) {
 
     this.categoryToggles = new Map();
 
+    this.selection = [];
+
     this.onConnect = function () {
 
     };
 
     this.documentReady = function (size) {
+
 
         var parent = this;
 
@@ -34,22 +37,37 @@ function transmission(moduleId) {
             this.categoryToggles.set('Waiting', true);
             this.categoryToggles.set('Done', true);
 
-            rootElement(this.moduleId).on('click', '.pause-torrent', function () {
-                parent.pauseTorrent(parent.selectedTorrent);
+
+            var root = rootElement(this.moduleId);
+
+
+            root.on('click', '.pause-torrent', function () {
+                parent.pauseTorrent([parent.selectedTorrent]);
                 $(".modal").modal('hide');
             });
 
-            rootElement(this.moduleId).on('click', '.remove-torrent', function () {
-                parent.removeTorrent(parent.selectedTorrent);
+            root.on('click', '.remove-torrent', function () {
+                parent.removeTorrent([parent.selectedTorrent]);
                 $(".modal").modal('hide');
             });
 
-            rootElement(this.moduleId).on('click', '.torrent', function (e) {
+            root.on('click', '.selection .pause-torrent-multiple', function () {
+                parent.pauseTorrent(parent.selection);
+                $(".modal").modal('hide');
+            });
+
+            root.on('click', '.selection .remove-torrent-multiple', function () {
+                parent.removeTorrent(parent.selection);
+                $(".modal").modal('hide');
+                parent.selection = [];
+                parent.updateSelection();
+            });
+            root.on('click', '.torrent', function (e) {
                 $(".modal").modal('show');
                 parent.selectedTorrent = $(this).attr('data');
             });
 
-            rootElement(this.moduleId).on('click', '.category-toggle', function (e) {
+            root.on('click', '.category-toggle', function (e) {
                 var status = $(this).attr('data-status');
                 var current = parent.categoryToggles.get(status);
                 parent.categoryToggles.set(status, !current);
@@ -60,6 +78,37 @@ function transmission(moduleId) {
 
                 icon.toggleClass('fa-caret-right');
                 icon.toggleClass('fa-caret-down');
+            });
+
+            root.on('click', '.multiple-select-btn', function (event) {
+                $(this).toggleClass('active');
+                $('.torrent-list .torrent-row').toggleClass('multiple-select');
+
+                parent.updateSelection();
+
+            });
+
+            root.on('click', '.torrent-row.multiple-select', function () {
+                var source = $(this);
+                var id = parseInt(source.attr('data-id'));
+
+                var index = parent.selection.indexOf(id);
+                if (index !== -1) {
+                    parent.selection[index] = undefined;
+
+                    //cleaning the array
+                    parent.selection = $.grep(parent.selection, function (n) {
+                        return n == 0 || n
+                    });
+
+                } else {
+                    parent.selection.push(id);
+                }
+                console.log('Selection', parent.selection);
+                source.find('.torrent-checkbox .fa').toggleClass('fa-square-o');
+                source.find('.torrent-checkbox .fa').toggleClass('fa-check-square-o');
+
+                parent.updateSelection();
             });
         }
     };
@@ -113,6 +162,20 @@ function transmission(moduleId) {
         }
     };
 
+    this.isMultiSelectOn = function () {
+        return $('.multiple-select-btn').hasClass('active');
+    }
+
+    this.updateSelection = function () {
+        $('.selection .torrent-count').html(this.selection.length);
+
+        if (this.selection.length === 0 || !this.isMultiSelectOn()) {
+            $('.selection').removeClass('active');
+        } else {
+            $('.selection').addClass('active');
+        }
+    }
+
     this.addTorrent = function (event) {
         var url = prompt("Margnet link", '');
         if (url != undefined) {
@@ -147,7 +210,7 @@ function transmission(moduleId) {
             return bytes + ' B';
         }
         var units = si ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] : [
-                'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+            'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
         var u = -1;
         do {
             bytes /= thresh;
@@ -178,17 +241,17 @@ function transmission(moduleId) {
         });
 
         this.printTorrentCategory('Downloading', sortedTorrents, div, json.rpcVersion,
-                                  this.categoryToggles.get('Downloading'));
+            this.categoryToggles.get('Downloading'));
         this.printTorrentCategory('Seeding', sortedTorrents, div, json.rpcVersion,
-                                  this.categoryToggles.get('Seeding'));
+            this.categoryToggles.get('Seeding'));
         this.printTorrentCategory('Checking', sortedTorrents, div, json.rpcVersion,
-                                  this.categoryToggles.get('Checking'));
+            this.categoryToggles.get('Checking'));
         this.printTorrentCategory('Paused', sortedTorrents, div, json.rpcVersion,
-                                  this.categoryToggles.get('Paused'));
+            this.categoryToggles.get('Paused'));
         this.printTorrentCategory('Waiting', sortedTorrents, div, json.rpcVersion,
-                                  this.categoryToggles.get('Waiting'));
+            this.categoryToggles.get('Waiting'));
         this.printTorrentCategory('Done', sortedTorrents, div, json.rpcVersion,
-                                  this.categoryToggles.get('Done'));
+            this.categoryToggles.get('Done'));
 
     };
 
@@ -223,30 +286,43 @@ function transmission(moduleId) {
     this.torrentToHtml = function (torrent, rpcVersion) {
         var html = [];
 
+        var multipleSelect = this.isMultiSelectOn() ? 'multiple-select' : '';
         var percent = Math.ceil(torrent.percentDone * 100);
 
-        html.push('<div  id="torrent-', torrent.id, '">');
+        var selected = this.selection.indexOf(torrent.id) !== -1;
+
+        html.push('<div class="torrent-row ', multipleSelect, '" data-id="', torrent.id, '" >');
+        html.push('<div class="torrent-checkbox">');
+        if (selected) {
+            html.push('<p><i class="fa fa-check-square-o"></i></p>');
+        } else {
+            html.push('<p><i class="fa fa-square-o"></i></p>');
+        }
+        html.push('</div>')//.torrent-checkbox
+        html.push('<div  class="torrent-details" id="torrent-', torrent.id, '">');
         html.push('<p style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">');
         html.push('<button  data="', torrent.id,
-                  '" class="torrent btn btn-primary btn-xs" style="float: right"><i class="fa fa-pencil"></i></button>');
+            '" class="torrent btn btn-primary btn-xs" style="float: right"><i class="fa fa-pencil"></i></button>');
         html.push(this.getStatusIcon(torrent.status, rpcVersion), ' ');
         html.push('<strong>', torrent.name, '</strong>');
         html.push('</p>');
         html.push('<div class="progress small-progress-bar">');
         html.push('<div class="progress-bar" role="progressbar" aria-valuenow="', percent,
-                  '" aria-valuemin="0" aria-valuemax="100" style="width: ', percent, '%;">');
+            '" aria-valuemin="0" aria-valuemax="100" style="width: ', percent, '%;">');
         //html.push('<span class="sr-only">', percent, '% Complete</span>');
         html.push('</div>');
         html.push('</div>');
         html.push('<p>');
         html.push('DL: ', this.humanFileSize(torrent.downloadSpeed, true), '/s | Ul: ',
-                  this.humanFileSize(torrent.uploadSpeed, true), '/s');
+            this.humanFileSize(torrent.uploadSpeed, true), '/s');
         html.push('<span style="float:right">');
         html.push(this.humanFileSize(torrent.downloaded, true), '/',
-                  this.humanFileSize(torrent.totalSize, true));
+            this.humanFileSize(torrent.totalSize, true));
         html.push('</span>');
         html.push('</p>');
-        html.push('</div>');
+        html.push('</div>'); //.torrent
+
+        html.push('</div>') //.row
         html.push('<hr />');
 
         return html.join("");
@@ -330,12 +406,18 @@ function transmission(moduleId) {
 
     };
 
-    this.removeTorrent = function (id) {
-        sendMessage(this.moduleId, 'removeTorrent', id);
+    this.removeTorrent = function (ids) {
+        if (confirm("Remove torrent ?")) {
+            if(confirm("Delete downloaded data as well ?")) {
+                sendMessage(this.moduleId, 'removeTorrentDelete', ids);
+            }else {
+                sendMessage(this.moduleId, 'removeTorrent', ids);
+            }
+        }
     };
 
-    this.pauseTorrent = function (id) {
-        sendMessage(this.moduleId, 'pauseTorrent', id);
+    this.pauseTorrent = function (ids) {
+        sendMessage(this.moduleId, 'pauseTorrent', ids);
     }
 
 }

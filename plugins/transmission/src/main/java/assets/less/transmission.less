@@ -167,16 +167,16 @@
     }
   }
 
-  .category-toggle{
+  .category-toggle {
     cursor: pointer;
     user-select: none;
   }
 
-  .torrent-category{
-    display:block;
+  .torrent-category {
+    display: block;
   }
 
-  .torrent-category.hidden{
+  .torrent-category.hidden {
     display: none;
   }
   h2 {
@@ -191,10 +191,91 @@
       margin: 0 5px;
     }
   }
+  .torrent-list {
+    @transitionSpeed: 0.25s;
+
+    .torrent-checkbox {
+      display: inline-block;
+      width: 0;
+      opacity: 0;
+
+      -webkit-transition: all @transitionSpeed;
+      -moz-transition: all @transitionSpeed;
+      -ms-transition: all @transitionSpeed;
+      -o-transition: all @transitionSpeed;
+      transition: all @transitionSpeed;
+
+      height: 120px;
+      vertical-align: top;
+      padding-top: 42px;
+      font-size: 15px;
+      text-align: center;
+
+    }
+
+    .torrent-details {
+      display: inline-block;
+      width: 100%;
+
+      height: 120px;
+
+      -webkit-transition: all @transitionSpeed;
+      -moz-transition: all @transitionSpeed;
+      -ms-transition: all @transitionSpeed;
+      -o-transition: all @transitionSpeed;
+      transition: all @transitionSpeed;
+    }
+
+    .torrent-row.multiple-select {
+      .torrent-checkbox {
+        width: 5%;
+        opacity: 1;
+        cursor: pointer;
+      }
+
+      .torrent-details {
+        width: 95%;
+      }
+    }
+  }
 
   .module-overlay {
 
     background-color: #fff;
 
+  }
+
+  .selection {
+    @height: 60px;
+
+    position: fixed;
+    bottom: -@height;
+    left: 0;
+    right: 0;
+    opacity: 0;
+    height: @height;
+
+    @backgroundColor: #e67e22;
+    background-color: darken(@backgroundColor, 20%);
+    color: white;
+
+    @showSpeed: 0.25s;
+    -webkit-transition: all @showSpeed;
+    -moz-transition: all @showSpeed;
+    -ms-transition: all @showSpeed;
+    -o-transition: all @showSpeed;
+    transition: all @showSpeed;
+
+    text-align: center;
+    font-size: 20px;
+
+    p{
+      margin: 6px;
+    }
+  }
+
+  .selection.active {
+    opacity: 1;
+    bottom: 0;
   }
 }
