@@ -3,8 +3,8 @@
     each val, index in model
         .radio
             label
-                if(settings && settings.containsKey("uuid") && settings.get("uuid").equalsIgnoreCase(val.getUuid()))
-                    input(type="radio", name="uuid", value="#{index}", checked="true")
+                if(settings && settings.containsKey("mount") && settings.get("mount").equalsIgnoreCase(index))
+                    input(type="radio", name="mount", value="#{index}", checked="true")
                 else
-                    input(type="radio", name="uuid", value="#{index}")
-                | #{val.getMountPoint()}
+                    input(type="radio", name="mount", value="#{index}")
+                | #{index}

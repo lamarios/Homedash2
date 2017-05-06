@@ -1,6 +1,6 @@
 @background: rgb(10, 127, 116);
 @speed: 3s;
-.harddisk {
+.harddisk.size-2x1, .harddisk.size-1x1 {
   background-color: @background;
   color: white;
   background-image: url("../files/images/disk.svg");
@@ -82,5 +82,13 @@
     bottom: 5px;
   }
 
+}
+
+
+.harddisk.size-full-screen{
+
+  .files tr.folder{
+    cursor: pointer;
+  }
 }
 
