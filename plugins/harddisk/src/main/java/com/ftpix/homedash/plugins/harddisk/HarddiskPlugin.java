@@ -72,6 +72,7 @@ public class HarddiskPlugin extends Plugin {
     public WebSocketMessage processCommand(String command, String message, Object extra) {
         WebSocketMessage webSocketMessage = new WebSocketMessage();
         webSocketMessage.setCommand(command);
+        logger.info("Message: {}", message);
         try {
             switch (command) {
                 case COMMAND_BROWSE:
@@ -93,12 +94,13 @@ public class HarddiskPlugin extends Plugin {
                     webSocketMessage.setMessage("File moved successfully");
                     break;
                 case COMMAND_RENAME:
-                    move(gson.fromJson(message, FileOperation.class));
+                    rename(gson.fromJson(message, FileOperation.class));
                     webSocketMessage.setCommand(WebSocketMessage.COMMAND_SUCCESS);
                     webSocketMessage.setMessage("File renamed successfully");
                     break;
             }
         } catch (Exception e) {
+            logger.error("Error while processing message", e);
             webSocketMessage.setCommand(WebSocketMessage.COMMAND_ERROR);
             webSocketMessage.setMessage(e.getMessage());
         }
@@ -168,7 +170,10 @@ public class HarddiskPlugin extends Plugin {
     @Override
     protected Map<String, Object> getSettingsModel() {
 
-        return Stream.of(systemInfo.getOperatingSystem().getFileSystem().getFileStores()).collect(Collectors.toMap(OSFileStore::getMount, Function.identity(), (o, o2) -> o));
+        return Stream.of(systemInfo.getOperatingSystem().getFileSystem().getFileStores()).filter(fs -> {
+            File f = new File(fs.getMount());
+            return f.exists() && f.canRead();
+        }).collect(Collectors.toMap(OSFileStore::getMount, Function.identity(), (o, o2) -> o));
     }
 
 
@@ -179,7 +184,7 @@ public class HarddiskPlugin extends Plugin {
      * @return the list of file we want to see
      * @throws IOException If there is any issue trying to get the list of files.
      */
-    private List<DiskFile> browse(String message) throws IOException {
+    private List<DiskFile> browse(String message) throws IOException, OperationException {
         return browse(message, (diskFile, diskFile2) -> {
             if (diskFile.folder == diskFile2.folder) {
                 return diskFile.name.compareTo(diskFile2.name);
@@ -197,9 +202,12 @@ public class HarddiskPlugin extends Plugin {
      * @return the list of file we want to see
      * @throws IOException If there is any issue trying to get the list of files.
      */
-    private List<DiskFile> browse(String message, Comparator<DiskFile> order) throws IOException {
+    private List<DiskFile> browse(String message, Comparator<DiskFile> order) throws IOException, OperationException {
         Path p = mountPoint.resolve(message);
 
+        if (message.contains("..")) {
+            throw new OperationException("\"..\" not authorized in file path");
+        }
         return Files.list(p).map(path -> {
             DiskFile file = new DiskFile();
             file.name = path.getFileName().toString();
@@ -215,7 +223,66 @@ public class HarddiskPlugin extends Plugin {
      *
      * @param fileOperation the file operation containing source and destination
      */
-    private void move(FileOperation fileOperation) {
+    private void rename(FileOperation fileOperation) throws IOException, OperationException {
+        Path source = mountPoint.resolve(fileOperation.getSource());
+        Path destination = mountPoint.resolve(fileOperation.getDestination());
+
+        if (source.toString().contains("..") || destination.toString().contains("..")) {
+            throw new OperationException("\"..\" not authorized in file path");
+        }
+
+        if (Files.exists(destination)) {
+            throw new OperationException(destination.toString() + " already exists");
+        }
+
+        logger.info("Attempting to rename {} to {}", source.toString(), destination.toString());
+
+        //if it is a folder, Files.copy will only create an empty folder so we need to copy the files inside as well.
+        if (Files.isDirectory(source)) {
+            moveFolder(source, destination);
+        }
+        Files.move(source, destination);
+    }
+
+    /**
+     * Move a file.
+     *
+     * @param fileOperation the file operation containing source and destination
+     */
+    private void move(FileOperation fileOperation) throws IOException, OperationException {
+        Path source = mountPoint.resolve(fileOperation.getSource());
+        Path destination = mountPoint.resolve(fileOperation.getDestination());
+
+        if (source.toString().contains("..") || destination.toString().contains("..")) {
+            throw new OperationException("\"..\" not authorized in file path");
+        }
+        //checking if we can do the operation
+        if (Files.isSameFile(source, destination)) {
+            throw new OperationException("Source and destination are the same");
+        }
+
+        if (!Files.isDirectory(destination)) {
+            throw new OperationException(destination.toString() + " is not a folder");
+        }
+
+        if (!Files.isWritable(destination)) {
+            throw new OperationException(destination.toString() + " is not writable");
+        }
+
+
+        destination = destination.resolve(source.getFileName());
+
+        if (Files.exists(destination)) {
+            throw new OperationException(destination.toString() + " already exists");
+        }
+
+        logger.info("Attempting to move {} to {}", source.toString(), destination.toString());
+
+        //if it is a folder, Files.copy will only create an empty folder so we need to copy the files inside as well.
+        if (Files.isDirectory(source)) {
+            moveFolder(source, destination);
+        }
+        Files.move(source, destination);
     }
 
     /**
@@ -228,16 +295,16 @@ public class HarddiskPlugin extends Plugin {
         Path source = mountPoint.resolve(fileName);
 
 
-
-        if (!Files.isWritable(source)) {
-            throw new OperationException(source.toString() + " is not writable");
+        if (source.toString().contains("..")) {
+            throw new OperationException("\"..\" not authorized in file path");
         }
 
-        if(Files.isDirectory(source)){
+        if (Files.isDirectory(source)) {
             clearFolder(source);
+        } else {
+            Files.delete(source);
         }
 
-        Files.delete(source);
     }
 
 
@@ -247,15 +314,20 @@ public class HarddiskPlugin extends Plugin {
      * @param fileOperation the file operation containing source and destination
      */
     private void copy(FileOperation fileOperation) throws OperationException, IOException {
-        Path source = mountPoint.resolve(fileOperation.source);
-        Path destination = mountPoint.resolve(fileOperation.destination);
+
+        Path source = mountPoint.resolve(fileOperation.getSource());
+        Path destination = mountPoint.resolve(fileOperation.getDestination());
+
+        if (source.toString().contains("..") || destination.toString().contains("..")) {
+            throw new OperationException("\"..\" not authorized in file path");
+        }
 
         //checking if we can do the operation
         if (Files.isSameFile(source, destination)) {
             throw new OperationException("Source and destination are the same");
         }
 
-        if (!Files.isDirectory(source)) {
+        if (!Files.isDirectory(destination)) {
             throw new OperationException(destination.toString() + " is not a folder");
         }
 
@@ -264,6 +336,13 @@ public class HarddiskPlugin extends Plugin {
         }
 
 
+        destination = destination.resolve(source.getFileName());
+
+        if (Files.exists(destination)) {
+            throw new OperationException(destination.toString() + " already exists");
+        }
+
+        logger.info("Attempting to copy {} to {}", source.toString(), destination.toString());
         Files.copy(source, destination);
 
         //if it is a folder, Files.copy will only create an empty folder so we need to copy the files inside as well.
@@ -295,6 +374,28 @@ public class HarddiskPlugin extends Plugin {
         });
     }
 
+    /**
+     * Moves a folder to a specified path
+     *
+     * @param source      the folder to move
+     * @param destination where to copy it
+     * @throws IOException
+     */
+    private void moveFolder(Path source, Path destination) throws IOException {
+        Files.list(source).forEach(path -> {
+            try {
+                logger.info("Copying [" + path.toString() + "] to [" + destination.resolve(path.getFileName()).toString() + "]");
+
+                if (Files.isDirectory(path)) {
+                    moveFolder(path, destination.resolve(path.getFileName()));
+                }
+                Files.copy(path, destination.resolve(path.getFileName()));
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+        });
+    }
 
     /**
      * Delete a folder and its content

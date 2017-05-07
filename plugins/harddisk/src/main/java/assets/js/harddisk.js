@@ -27,6 +27,52 @@ function harddisk(moduleId) {
 
                 sendMessage(self.moduleId, 'browse', self.path.join('/'));
             });
+
+
+            $('.files').on('click', '.add-clipboard', function () {
+                var path = self.path.join('/') + '/' + $(this).attr('data-name');
+                self.clipBoardHtml(path);
+            });
+
+
+            $('.files').on('click', '.delete', function () {
+                var path = self.path.join('/') + '/' + $(this).attr('data-name');
+                if (confirm('Delete ' + path + '?')) {
+                    sendMessage(self.moduleId, 'delete', path);
+                }
+            });
+
+            $('.files').on('click', '.rename', function () {
+                var newName = prompt('File new name');
+                if (newName !== undefined && $.trim(newName) !== '') {
+                    var data = {
+                        source: self.path.join('/') + '/' + $(this).attr('data-name'),
+                        destination: self.path.join('/') + '/' + newName
+                    }
+
+                    sendMessage(self.moduleId, 'rename', JSON.stringify(data));
+                }
+            });
+
+            $('body').on('click', '.action-copy', function () {
+                var data = {
+                    'source': $(this).attr('data-path'),
+                    'destination': self.path.join('/')
+                };
+
+                sendMessage(self.moduleId, 'copy', JSON.stringify(data));
+                $('.clipboard').html('<p>Operation in progress...</p>');
+            });
+
+            $('body').on('click', '.action-move', function () {
+                var data = {
+                    'source': $(this).attr('data-path'),
+                    'destination': self.path.join('/')
+                };
+
+                sendMessage(self.moduleId, 'move', JSON.stringify(data));
+                $('.clipboard').html('<p>Operation in progress...</p>');
+            });
         }
     };
 
@@ -53,6 +99,10 @@ function harddisk(moduleId) {
         } else if (command === 'browse') {
             $('.current-path').html(this.path.join('/'));
             $('.files tbody').html(this.files2html(message));
+        } else if (command === 'success' || command === 'error') {
+            sendMessage(this.moduleId, 'browse', this.path.join('/'));
+            $('.clipboard').html('');
+            this.showClipboard();
         }
 
     }
@@ -73,6 +123,28 @@ function harddisk(moduleId) {
 
         root.find('.hdd-container').html(this.generateSVG(percentage, diskSpace.usage));
     };
+
+    this.clipBoardHtml = function (filePath) {
+
+        var html = [];
+
+        html.push('<p>');
+        html.push(filePath);
+        html.push('<button  data-path="', filePath, '"class="btn btn-primary action-copy" >Copy here</button>');
+        html.push('<button  data-path="', filePath, '"class="btn btn-primary action-move" >Move here</button>');
+        html.push('</p>');
+
+        $('.clipboard').html(html.join(''));
+        this.showClipboard();
+    }
+
+    this.showClipboard = function () {
+        if ($('.clipboard p').length > 0) {
+            $('.clipboard').addClass('active');
+        } else {
+            $('.clipboard').removeClass('active');
+        }
+    }
 
     this.generateSVG = function (percentage, usePercentage) {
         console.log('percentage', usePercentage);
@@ -135,10 +207,10 @@ function harddisk(moduleId) {
             html.push('<button class="btn btn-primary btn-sm" id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">');
             html.push('<i class="fa fa-ellipsis-v" aria-hidden="true"></i>');
             html.push('</button>');
-            html.push('<ul class="dropdown-menu" aria-labelledby="dLabel">');
-            html.push('<li><a data-name="',value.name,'" class="add-clipboard">Add to clipboard</a></li>');
-            html.push('<li><a data-name="',value.name,'" class="rename">Rename</a></li>');
-            html.push('<li><a data-name="',value.name,'" class="delete">Delete</a></li>');
+            html.push('<ul class="dropdown-menu pull-right" aria-labelledby="dLabel">');
+            html.push('<li><a data-name="', value.name, '" class="add-clipboard">Add to clipboard</a></li>');
+            html.push('<li><a data-name="', value.name, '" class="rename">Rename</a></li>');
+            html.push('<li><a data-name="', value.name, '" class="delete">Delete</a></li>');
             html.push('</ul>');
             html.push('</div></td>')
             html.push('</tr>');

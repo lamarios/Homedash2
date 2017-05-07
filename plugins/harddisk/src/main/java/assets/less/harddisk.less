@@ -9,9 +9,13 @@
   background-size: auto 150%;
 
   h4 {
-    margin-left: 5px;
-    margin-top: 10px;
-    margin-bottom: 20px;
+    position: absolute;
+    left:0;
+    bottom:0;
+    right:0;
+    text-align: center;
+    font-size: 15px;
+    margin-bottom: 2px;
   }
 
   p {
@@ -25,6 +29,7 @@
     left: 20px;
     width: 60px;
     bottom: 5px;
+    top:20px;
 
     polygon {
       fill: #57CCC1;
@@ -65,14 +70,16 @@
 
 .harddisk.size-2x1 {
   h4 {
-    margin-left: 5px;
-    margin-top: 10px;
-    margin-bottom: 25px;
+    text-align: left;
+    left:5px;
   }
 
   p {
     text-align: right;
     font-size: 15px;
+    position: absolute;
+    right: 2px;
+    top: 45px;
   }
 
   svg.hdd-svg {
@@ -84,11 +91,59 @@
 
 }
 
+.harddisk.size-full-screen {
 
-.harddisk.size-full-screen{
-
-  .files tr.folder{
+  .files tr.folder {
     cursor: pointer;
+  }
+
+  .files tr td:nth-of-type(2){
+    width: 60px;
+  }
+
+  .dropdown {
+    .delete {
+      color: red;
+    }
+
+    a{
+      cursor: pointer;
+    }
+  }
+
+  .clipboard {
+
+    @backgroundColor: #e67e22;
+    background-color: darken(@backgroundColor, 20%);
+
+    opacity: 0;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: -60px;
+    margin: 0;
+    height: 60px;
+    text-align: center;
+
+    @transitionSpeed: 0.25s;
+
+    -webkit-transition: all @transitionSpeed;
+    -moz-transition: all @transitionSpeed;
+    -ms-transition: all @transitionSpeed;
+    -o-transition: all @transitionSpeed;
+    transition: all @transitionSpeed;
+
+    p {
+      margin: 0;
+      color: white;
+      font-size: 20px;
+      padding-top: 8px;
+    }
+  }
+
+  .clipboard.active {
+    opacity: 1;
+    bottom: 0;
   }
 }
 
