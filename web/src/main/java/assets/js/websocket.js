@@ -92,6 +92,16 @@ function onMessage(event) {
     
     var size = $('.gridster .module[data-module="' + json.id + '"]').attr('data-size');
     MODULES[json.id]['onMessage_' + size](json.command, json.message, json.extra);
+
+    //removing the loading overlay if it exists
+    var loadingOverlay = $('.gridster-item[data-module="'+json.id+'"] .module-loading');
+
+    if(loadingOverlay.length === 1){
+        loadingOverlay.addClass('fade');
+        setTimeout(function(){
+            loadingOverlay.remove();
+        }, 250);
+    }
 }
 
 

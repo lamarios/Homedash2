@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash.plugins</groupId>
         <artifactId>plugins</artifactId>
-        <version>1.0.17</version>     </parent>
+        <version>1.0.18</version>     </parent>
 
     <artifactId>pihole</artifactId>
     <name>pihole</name>
