@@ -325,7 +325,7 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        Add file browser and basic file operation on hard disk plugin
+                        Adding animations and ajusting some text file size to avoid line breaks on some modules
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>
