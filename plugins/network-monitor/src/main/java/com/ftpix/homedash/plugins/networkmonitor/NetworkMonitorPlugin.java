@@ -122,7 +122,7 @@ public class NetworkMonitorPlugin extends Plugin {
 
     @Override
     protected Map<String, Object> getSettingsModel() {
-       return Stream.of(systemInfo.getHardware().getNetworkIFs()).collect(Collectors.toMap(NetworkIF::getName, netIf-> String.join(", ", netIf.getIPv4addr())));
+        return Stream.of(systemInfo.getHardware().getNetworkIFs()).collect(Collectors.toMap(NetworkIF::getName, netIf -> String.join(", ", netIf.getIPv4addr())));
     }
 
     //////// plugin methods
@@ -147,19 +147,25 @@ public class NetworkMonitorPlugin extends Plugin {
             if (!networkInfos.isEmpty()) { // we have data let's proceed to calculation
                 NetworkInfo old = networkInfos.get(networkInfos.size() - 1);
 
-                logger.info("[Network info] We have history, lets calculate the speed since last refresh");
-                long transferredUp = currentTotalUp - old.totalUp;
-                long transferredDown = currentTotalDown - old.totalDown;
-                double duration = (currentTime - old.time) / 1000; // from
-                // millisecond
-                // to seconds
-                logger.info("[Network info] Uploaded [{}] Downloaded [{}] in [{}]s", transferredUp, transferredDown, duration);
+                if (old.totalDown > 0 && old.totalUp > 0) {
+                    logger.info("[Network info] We have history, lets calculate the speed since last refresh");
+                    long transferredUp = currentTotalUp - old.totalUp;
+                    long transferredDown = currentTotalDown - old.totalDown;
+                    double duration = (currentTime - old.time) / 1000; // from
+                    // millisecond
+                    // to seconds
+                    logger.info("[Network info] Uploaded [{}] Downloaded [{}] in [{}]s", transferredUp, transferredDown, duration);
 
-                networkInfo.down = (long) Math.ceil(transferredDown / duration);
-                networkInfo.up = (long) Math.ceil(transferredUp / duration);
-                networkInfo.time = currentTime;
+                    networkInfo.down = (long) Math.ceil(transferredDown / duration);
+                    networkInfo.up = (long) Math.ceil(transferredUp / duration);
+
+                    networkInfo.readableDown = ByteUtils.humanReadableByteCount(networkInfo.down, true) + "/s";
+                    networkInfo.readableUp = ByteUtils.humanReadableByteCount(networkInfo.up, true) + "/s";
+                }
+
 
             }
+            networkInfo.time = currentTime;
 
             networkInfo.totalDown = currentTotalDown;
             networkInfo.totalUp = currentTotalUp;
@@ -167,8 +173,6 @@ public class NetworkMonitorPlugin extends Plugin {
             networkInfo.readableTotalDown = ByteUtils.humanReadableByteCount(networkInfo.totalDown, true);
             networkInfo.readableTotalUp = ByteUtils.humanReadableByteCount(networkInfo.totalUp, true);
 
-            networkInfo.readableDown = ByteUtils.humanReadableByteCount(networkInfo.down, true) + "/s";
-            networkInfo.readableUp = ByteUtils.humanReadableByteCount(networkInfo.up, true) + "/s";
 
             return networkInfo;
         } else {
