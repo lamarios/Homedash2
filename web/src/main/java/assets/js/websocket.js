@@ -3,12 +3,11 @@
  */
 var ws;
 
-$(document).ready(function(){
-    $('#overlay .reload-page').click(function(){
+$(document).ready(function () {
+    $('#overlay .reload-page').click(function () {
         location.reload();
     });
 });
-
 
 
 function initWebsocket() {
@@ -89,16 +88,16 @@ function onMessage(event) {
             break;
 
     }
-    
+
     var size = $('.gridster .module[data-module="' + json.id + '"]').attr('data-size');
     MODULES[json.id]['onMessage_' + size](json.command, json.message, json.extra);
 
     //removing the loading overlay if it exists
-    var loadingOverlay = $('.gridster-item[data-module="'+json.id+'"] .module-loading');
+    var loadingOverlay = $('.gridster-item[data-module="' + json.id + '"] .module-loading');
 
-    if(loadingOverlay.length === 1){
+    if (loadingOverlay.length === 1) {
         loadingOverlay.addClass('fade');
-        setTimeout(function(){
+        setTimeout(function () {
             loadingOverlay.remove();
         }, 250);
     }
@@ -143,9 +142,9 @@ var notificationTimeout;
 
 
 /*
-Display the overlay when the connection is off
+ Display the overlay when the connection is off
  */
-function showOfflineOverlay(){
+function showOfflineOverlay() {
     $('#overlay').addClass('showing');
 }
 /**

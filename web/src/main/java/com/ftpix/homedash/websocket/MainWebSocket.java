@@ -257,7 +257,7 @@ public class MainWebSocket {
     /**
      * Start refreshing the modules
      */
-    private void startRefresh() {
+    private void startRefresh() throws Exception {
         //we will start refresh only if at least one of the clients has a page
         stopRefresh();
 
@@ -271,7 +271,7 @@ public class MainWebSocket {
             logger.info("Start refresh of modules");
             refresh = true;
 
-            exec = Executors.newFixedThreadPool(THREADS_COUNT);
+            exec = Executors.newFixedThreadPool(PluginModuleMaintainer.getInstance().getAllPluginInstances().size() + 1);
 
             exec.execute(new Runnable() {
 

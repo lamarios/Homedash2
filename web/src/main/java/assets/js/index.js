@@ -205,16 +205,16 @@ function savePositions(event, ui) {
  */
 function initGridster() {
     gridster = $(".gridster").gridster({
-                                           widget_selector: '.gridster-item',
-                                           widget_margins: [1, 1],
-                                           widget_base_dimensions: [100, 100],
-                                           min_cols: LAYOUT.maxGridWidth,
-                                           max_cols: LAYOUT.maxGridWidth,
-                                           draggable: {
-                                               stop: savePositions,
-                                               handle: '.settings-overlay.drag-box'
-                                           }
-                                       }).data('gridster');
+        widget_selector: '.gridster-item',
+        widget_margins: [1, 1],
+        widget_base_dimensions: [100, 100],
+        min_cols: LAYOUT.maxGridWidth,
+        max_cols: LAYOUT.maxGridWidth,
+        draggable: {
+            stop: savePositions,
+            handle: '.settings-overlay.drag-box'
+        }
+    }).data('gridster');
     gridster.recalculate_faux_grid();
 }
 
@@ -224,13 +224,13 @@ function initGridster() {
 function deleteModule(moduleId) {
     if (confirm('Delete this module ?')) {
         $.ajax({
-                   url: '/module/' + moduleId,
-                   type: 'DELETE',
-                   success: function (result) {
-                       getLayout();
-                       $('#module-modal').modal('hide');
-                   }
-               });
+            url: '/module/' + moduleId,
+            type: 'DELETE',
+            success: function (result) {
+                getLayout();
+                $('#module-modal').modal('hide');
+            }
+        });
     }
 }
 
@@ -253,17 +253,23 @@ function getLayout() {
 
     // getting th layout for the page and view port
     $.getJSON('/modules-layout/' + PAGE + '/' + WIDTH, function (json) {
-                  $('#layout').html(json.html);
-                  updateLayoutInfo(json.layout);
+            $('#layout').html(json.html);
+            updateLayoutInfo(json.layout);
 
-                  $('.gridster-item').each(function (index, module) {
-                      var module = MODULES[$(this).attr('data-module')];
-                      if (module != undefined && module.documentReady != undefined) {
-                          module.documentReady($(this).find('.module').attr('data-size'));
-                      }
-                  });
+            $('.gridster-item').each(function (index, module) {
+                var element = $(this);
 
-              }
+                var module = MODULES[element.attr('data-module')];
+                if (module != undefined && module.documentReady != undefined) {
+                    module.documentReady(element.find('.module').attr('data-size'));
+                }
+
+                //Setting the loading background color to the same as the module background color if available.
+                var cssColor = element.find('.content').css('background-color');
+                element.find('.module-loading').css('background-color', cssColor);
+            });
+
+        }
     ).fail(function () {
         PAGE = 1;
 
@@ -292,5 +298,6 @@ function updateLayoutInfo(layoutJson) {
 
     $('#layout-wrapper .loading').fadeOut('fast');
     $('#page-title .layout').html(' (' + LAYOUT.name + ')');
+
 
 }

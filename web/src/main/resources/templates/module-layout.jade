@@ -2,6 +2,7 @@
     for layout in layouts
         .gridster-item(data-row="#{layout.getY()}", data-col="#{layout.getX()}", data-sizex="#{layout.getWidth()}", data-sizey="#{layout.getHeight()}",  data-module="#{layout.getModule().getId()}")
             .module-loading
+                .breath-overlay
             div(class="module #{layout.getSize()}", data-module="#{layout.getModule().getId()}", data-size="#{layout.getSize()}")
                 .module-settings
                     .module-settings-icon(data-id="#{layout.getModule().getId()}")

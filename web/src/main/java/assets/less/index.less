@@ -74,18 +74,21 @@
 
       transform-origin: center center;
 
-      animation: module-loading-breathing 2s infinite ease-in-out;
-      animation-direction: alternate;
+      .breath-overlay {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+
+        background-color: black;
+        animation: module-loading-breathing 2s infinite ease-in-out;
+        animation-direction: alternate;
+      }
     }
 
     .module-loading.fade {
       opacity: 0;
-      @loadingScale: 1.5;
-      -webkit-transform: scale(@loadingScale);
-      -moz-transform: scale(@loadingScale);
-      -ms-transform: scale(@loadingScale);
-      -o-transform: scale(@loadingScale);
-      transform: scale(@loadingScale);
     }
 
     .module {
@@ -176,11 +179,11 @@
 
 @keyframes module-loading-breathing {
   from {
-    background-color: @accentColor;
+    opacity: 0;
   }
 
   to {
-    background-color: darken(@accentColor, 10%);
+    opacity: 0.3;
   }
 
 }
