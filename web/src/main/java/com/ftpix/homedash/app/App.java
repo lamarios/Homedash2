@@ -1,7 +1,5 @@
 package com.ftpix.homedash.app;
 
-import com.google.common.io.Files;
-
 import com.ftpix.homedash.app.controllers.SettingsController;
 import com.ftpix.homedash.db.DB;
 import com.ftpix.homedash.jobs.BackgroundRefresh;
@@ -10,7 +8,7 @@ import com.ftpix.homedash.models.Page;
 import com.ftpix.homedash.plugins.SystemInfoPlugin;
 import com.ftpix.homedash.websocket.FullScreenWebSocket;
 import com.ftpix.homedash.websocket.MainWebSocket;
-
+import com.google.common.io.Files;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.DateBuilder;
@@ -39,7 +37,6 @@ import static spark.Spark.before;
 import static spark.Spark.port;
 import static spark.Spark.staticFileLocation;
 import static spark.Spark.webSocket;
-import static spark.debug.DebugScreen.enableDebugScreen;
 
 /**
  * Hello world!
@@ -80,7 +77,7 @@ public class App {
             // set up the notifications
             SettingsController.getInstance().updateNotificationProviders();
 
-            enableDebugScreen();
+//            enableDebugScreen();
 
             prepareJobs();
 
