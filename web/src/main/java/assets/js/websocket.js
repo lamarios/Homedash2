@@ -98,7 +98,7 @@ function onMessage(event) {
     if (loadingOverlay.length === 1) {
         loadingOverlay.addClass('fade');
         setTimeout(function () {
-            loadingOverlay.remove();
+            loadingOverlay.hide();
         }, 250);
     }
 }

@@ -153,12 +153,14 @@ function changeSize(moduleId, size) {
 }
 
 function getModuleContent(moduleId, size) {
-    var module = $('#layout .module[data-module="' + moduleId + '"]');
-    module.find('.loading').show();
+    var module = $('#layout .gridster-item[data-module="' + moduleId + '"]');
+    var loadingOverlay = module.find('.module-loading');
+    loadingOverlay.show();
+    loadingOverlay.removeClass('fade');
 
     $.get('/module-content/' + moduleId + '/' + size, function (html) {
         module.find('.content').html(html);
-        module.find('.loading').fadeOut("slow");
+
         sendMessage(moduleId, 'refresh', size);
 
         var moduleObject = MODULES[moduleId];

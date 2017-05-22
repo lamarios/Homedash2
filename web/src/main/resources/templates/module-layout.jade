@@ -19,7 +19,5 @@
                         a(href="#{plugins.get(layout.getModule().getId()).getExternalLink()}", target="_blank")
                             i.fa.fa-share-square-o
                 .settings-overlay
-                .loading
-                    .loader
                 div(class="content #{plugins.get(layout.getModule().getId()).getId()} size-#{layout.getSize()}")
                     !{plugins.get(layout.getModule().getId()).getView(layout.getSize())}
