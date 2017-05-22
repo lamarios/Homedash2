@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.ftpix.homedash</groupId>
     <artifactId>homedash</artifactId>
-    <version>1.0.19</version>
+    <version>1.0.20</version>
     <name>Archetype - homedash</name>
     <url>http://maven.apache.org</url>
     <packaging>pom</packaging>
