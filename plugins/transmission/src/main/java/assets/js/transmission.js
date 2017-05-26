@@ -290,6 +290,9 @@ function transmission(moduleId) {
         var percent = Math.ceil(torrent.percentDone * 100);
 
         var selected = this.selection.indexOf(torrent.id) !== -1;
+        var maxUpload = torrent.totalSize * torrent.seedRatioLimit;
+
+        var percentUploaded = Math.ceil((torrent.uploaded / maxUpload) * 100);
 
         html.push('<div class="torrent-row ', multipleSelect, '" data-id="', torrent.id, '" >');
         html.push('<div class="torrent-checkbox">');
@@ -306,18 +309,35 @@ function transmission(moduleId) {
         html.push(this.getStatusIcon(torrent.status, rpcVersion), ' ');
         html.push('<strong>', torrent.name, '</strong>');
         html.push('</p>');
-        html.push('<div class="progress small-progress-bar">');
-        html.push('<div class="progress-bar" role="progressbar" aria-valuenow="', percent,
-            '" aria-valuemin="0" aria-valuemax="100" style="width: ', percent, '%;">');
-        //html.push('<span class="sr-only">', percent, '% Complete</span>');
+        //downloading torrent
+        if (percent < 100) {
+            html.push('<div class="progress small-progress-bar">');
+            html.push('<div class="progress-bar" role="progressbar" aria-valuenow="', percent,
+                '" aria-valuemin="0" aria-valuemax="100" style="width: ', percent, '%;">');
+        } else {
+            //seeding torrent
+            html.push('<div class="progress small-progress-bar seeding">');
+            html.push('<div class="progress-bar" role="progressbar" aria-valuenow="', percentUploaded,
+                '" aria-valuemin="0" aria-valuemax="100" style="width: ', percentUploaded, '%;">');
+
+        }
+
         html.push('</div>');
         html.push('</div>');
         html.push('<p>');
         html.push('DL: ', this.humanFileSize(torrent.downloadSpeed, true), '/s | Ul: ',
             this.humanFileSize(torrent.uploadSpeed, true), '/s');
         html.push('<span style="float:right">');
-        html.push(this.humanFileSize(torrent.downloaded, true), '/',
-            this.humanFileSize(torrent.totalSize, true));
+
+        //downloading torrent
+        if (percent < 100) {
+            html.push(this.humanFileSize(torrent.downloaded, true), '/',
+                this.humanFileSize(torrent.totalSize, true));
+        } else {
+            //torrent is now seeding
+            html.push(this.humanFileSize(torrent.uploaded, true), '/',
+                this.humanFileSize(maxUpload, true));
+        }
         html.push('</span>');
         html.push('</p>');
         html.push('</div>'); //.torrent
@@ -408,9 +428,9 @@ function transmission(moduleId) {
 
     this.removeTorrent = function (ids) {
         if (confirm("Remove torrent ?")) {
-            if(confirm("Delete downloaded data as well ?")) {
+            if (confirm("Delete downloaded data as well ?")) {
                 sendMessage(this.moduleId, 'removeTorrentDelete', ids);
-            }else {
+            } else {
                 sendMessage(this.moduleId, 'removeTorrent', ids);
             }
         }

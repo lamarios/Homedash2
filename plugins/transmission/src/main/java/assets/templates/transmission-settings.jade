@@ -25,3 +25,18 @@
         input.form-control(type="password", id="password", name="password", placeholder="", value='#{settings.get("password")}')
     else
         input.form-control(type="password", id="password", name ="password", placeholder = "")
+hr
+.form-group
+    label
+        if settings && settings.containsKey("autoDelete")
+            input(type="checkbox", name="autoDelete", value="1", checked = "true")
+        else
+            input(type="checkbox", name="autoDelete", value="1")
+        span  Delete torrents automatically that are completed (reach upload ratio or seeding time limit, ie: in paused status and download completed)
+.form-group
+    label
+        if settings && settings.containsKey("autoRemoveFile")
+            input(type="checkbox", name="autoRemoveFile", value="1", checked = "true")
+        else
+            input(type="checkbox", name="autoRemoveFile", value="1")
+        span  Also delete files when torrents are deleted automatically ?

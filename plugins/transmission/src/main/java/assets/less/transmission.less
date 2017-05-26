@@ -237,6 +237,15 @@
         width: 95%;
       }
     }
+
+    .progress.seeding {
+      @accentColor: #e67e22;
+      background-color: @accentColor;
+
+      .progress-bar {
+        background-color: darken(@accentColor, 10%);
+      }
+    }
   }
 
   .module-overlay {
@@ -269,7 +278,7 @@
     text-align: center;
     font-size: 20px;
 
-    p{
+    p {
       margin: 6px;
     }
   }

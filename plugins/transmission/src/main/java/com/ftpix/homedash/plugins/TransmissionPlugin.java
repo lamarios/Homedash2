@@ -4,6 +4,7 @@ import com.ftpix.homedash.Utils.ByteUtils;
 import com.ftpix.homedash.models.ModuleExposedData;
 import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
+import com.ftpix.homedash.notifications.Notifications;
 import com.ftpix.homedash.plugins.models.TorrentObject;
 import com.ftpix.homedash.plugins.models.TorrentSession;
 
@@ -12,12 +13,15 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import ca.benow.transmission.AddTorrentParameters;
 import ca.benow.transmission.TransmissionClient;
 import ca.benow.transmission.model.TorrentStatus;
 import ca.benow.transmission.model.TransmissionSession;
+
 
 /**
  * Created by gz on 07-Jun-16.
@@ -26,11 +30,12 @@ public class TransmissionPlugin extends Plugin {
     private TransmissionClient client;
 
 
-    public static final String URL = "url", PORT = "port", USERNAME = "username", PASSWORD = "password";
+    public static final String SETTING_URL = "url", SETTING_PORT = "port", SETTING_USERNAME = "username", SETTING_PASSWORD = "password", SETTING_AUTO_DELETE = "autoDelete", SETTING_AUTO_REMOVE_FILE = "autoRemoveFile";
     public static final String METHOD_ADDTORRENT = "addTorrent", METHOD_ALTSPEED = "altSpeed", METHOD_REMOVETORRENT = "removeTorrent", METHOD_REMOVETORRENT_DELETE = "removeTorrentDelete", METHOD_PAUSETORRENT = "pauseTorrent";
 
     private final String VOICE_THROTTLE = "torrent throttle", VOICE_FULL_SPEED = "torrent full speed";
 
+    private boolean autoDelete = false, autoRemoveFile = false;
 
     @Override
     public String getId() {
@@ -49,7 +54,7 @@ public class TransmissionPlugin extends Plugin {
 
     @Override
     public String getExternalLink() {
-        return "http://" + settings.get(URL) + ":" + settings.get(PORT);
+        return "http://" + settings.get(SETTING_URL) + ":" + settings.get(SETTING_PORT);
     }
 
     @Override
@@ -58,6 +63,9 @@ public class TransmissionPlugin extends Plugin {
 
 
         this.client = createClient(settings);
+
+        autoDelete = settings.getOrDefault(SETTING_AUTO_DELETE, "0").equalsIgnoreCase("1");
+        autoRemoveFile = settings.getOrDefault(SETTING_AUTO_REMOVE_FILE, "0").equalsIgnoreCase("1");
 
         logger.info("Transmission client ready !");
     }
@@ -69,7 +77,11 @@ public class TransmissionPlugin extends Plugin {
 
     @Override
     public int getBackgroundRefreshRate() {
-        return NEVER;
+        if (autoDelete) {
+            return ONE_HOUR;
+        } else {
+            return NEVER;
+        }
     }
 
     @Override
@@ -97,7 +109,36 @@ public class TransmissionPlugin extends Plugin {
 
     @Override
     public void doInBackground() {
+        if (autoDelete) {
+            logger.info("Looking for torrents to delete");
+            TorrentSession torrentSession = fullScreenRefresh();
+            List<TorrentObject> torrents = torrentSession.torrents;
 
+
+            //finding all torrents that have a status of finished
+            Object[] ids = torrents.stream()
+                    .filter(t -> {
+                        return t.percentDone == 1
+                                &&
+                                (
+                                        TorrentStatus.parseStatus(t.status, torrentSession.rpcVersion).equals(TorrentStatus.StatusField.finished)
+                                                || TorrentStatus.parseStatus(t.status, torrentSession.rpcVersion).equals(TorrentStatus.StatusField.stopped)
+                                );
+
+                    })
+                    .map(t -> {
+                        Notifications.send("Deleting torrent", t.name);
+                        return Integer.valueOf(t.id);
+                    })
+                    .collect(Collectors.toList()).toArray();
+
+            try {
+                logger.info("Deleting torrents {}", ids);
+                client.removeTorrents(ids, autoRemoveFile);
+            } catch (IOException e) {
+                logger.error("Couldn't delete torrents", e);
+            }
+        }
     }
 
     @Override
@@ -123,11 +164,11 @@ public class TransmissionPlugin extends Plugin {
     public Map<String, String> validateSettings(Map<String, String> settings) {
         Map<String, String> errors = new Hashtable<>();
 
-        String url = settings.get(URL);
+        String url = settings.get(SETTING_URL);
 
         if (!url.trim().equalsIgnoreCase("")) {
             try {
-                int port = Integer.parseInt(settings.get(PORT));
+                int port = Integer.parseInt(settings.get(SETTING_PORT));
 
                 TransmissionClient client = createClient(settings);
 
@@ -164,7 +205,7 @@ public class TransmissionPlugin extends Plugin {
     @Override
     public Map<String, String> exposeSettings() {
         Map<String, String> result = new Hashtable<>();
-        result.put("Transmission URL", settings.get(URL));
+        result.put("Transmission URL", settings.get(SETTING_URL));
         return result;
     }
 
@@ -183,7 +224,7 @@ public class TransmissionPlugin extends Plugin {
             obj = getSessionStats();
 
             TorrentStatus.TorrentField[] fields = new TorrentStatus.TorrentField[]{TorrentStatus.TorrentField.name, TorrentStatus.TorrentField.rateDownload, TorrentStatus.TorrentField.rateUpload, TorrentStatus.TorrentField.percentDone, TorrentStatus.TorrentField.id, TorrentStatus.TorrentField.status,
-                    TorrentStatus.TorrentField.downloadedEver, TorrentStatus.TorrentField.uploadedEver, TorrentStatus.TorrentField.totalSize};
+                    TorrentStatus.TorrentField.downloadedEver, TorrentStatus.TorrentField.uploadedEver, TorrentStatus.TorrentField.totalSize, TorrentStatus.TorrentField.seedRatioLimit};
 
             logger.info("" + obj.rpcVersion);
             obj.torrents = new ArrayList<TorrentObject>();
@@ -203,12 +244,12 @@ public class TransmissionPlugin extends Plugin {
 
     private TransmissionClient createClient(Map<String, String> settings) {
         TransmissionClient client;
-        if (settings.get(USERNAME).equalsIgnoreCase("") || settings.get(PASSWORD).equalsIgnoreCase("")) {
-            logger.info("Connecting to [{}] No username and password.", settings.get(URL) + ":" + settings.get(PORT));
-            client = new TransmissionClient(settings.get(URL), Integer.parseInt(settings.get(PORT)));
+        if (settings.get(SETTING_USERNAME).equalsIgnoreCase("") || settings.get(SETTING_PASSWORD).equalsIgnoreCase("")) {
+            logger.info("Connecting to [{}] No username and password.", settings.get(SETTING_URL) + ":" + settings.get(SETTING_PORT));
+            client = new TransmissionClient(settings.get(SETTING_URL), Integer.parseInt(settings.get(SETTING_PORT)));
         } else {
-            logger.info("Connecting to [{}] Using username [{}] and password.", settings.get(URL) + ":" + settings.get(PORT), settings.get(USERNAME));
-            client = new TransmissionClient(settings.get(URL), Integer.parseInt(settings.get(PORT)), settings.get(USERNAME), settings.get(PASSWORD));
+            logger.info("Connecting to [{}] Using username [{}] and password.", settings.get(SETTING_URL) + ":" + settings.get(SETTING_PORT), settings.get(SETTING_USERNAME));
+            client = new TransmissionClient(settings.get(SETTING_URL), Integer.parseInt(settings.get(SETTING_PORT)), settings.get(SETTING_USERNAME), settings.get(SETTING_PASSWORD));
         }
 
         return client;
@@ -253,7 +294,7 @@ public class TransmissionPlugin extends Plugin {
         WebSocketMessage response = new WebSocketMessage();
         try {
             int[] ids = gson.fromJson(idArray, int[].class);
-            if(ids.length == 1) {
+            if (ids.length == 1) {
 
                 TorrentStatus torrent = client.getTorrents(ids, TorrentStatus.TorrentField.status).get(0);
 
@@ -264,7 +305,7 @@ public class TransmissionPlugin extends Plugin {
                     client.stopTorrents(ids[0]);
                     response.setMessage("Torrent paused successfully !");
                 }
-            }else{
+            } else {
                 client.stopTorrents(ids);
             }
 
@@ -303,6 +344,4 @@ public class TransmissionPlugin extends Plugin {
 
         return obj;
     }
-
-
 }

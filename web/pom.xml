@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>1.0.20</version>
+        <version>1.0.21</version>
     </parent>
 
 
@@ -207,7 +207,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>1.0.20</version>
+            <version>1.0.21</version>
             <exclusions>
                 <exclusion>
                     <artifactId>jade4j</artifactId>
@@ -341,10 +341,9 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        Make module-loading overlay adapt the module background color.
-                        Now using less tacky animation for the module pre-loading
-                        The main websocket thread count is now the same as the total amount of modules to avoid having
-                        one module blocking other modules from refreshing
+                        Better UI for transmission plugin: showing progress of upload related to ratio with a different
+                        progress bar
+                        Add option to auto delete finished torrents for transmission plugin
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>

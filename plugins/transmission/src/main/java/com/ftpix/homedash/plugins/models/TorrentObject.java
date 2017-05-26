@@ -12,7 +12,7 @@ public class TorrentObject {
     public String statusStr;
     public int downloadSpeed, uploadSpeed, id, status;
     public double percentDone;
-    public long downloaded, uploaded, totalSize;
+    public long downloaded, uploaded, totalSize, seedRatioLimit;
 
     public void mapTorrent(TorrentStatus torrent, int rpcVersion) {
 
@@ -28,5 +28,7 @@ public class TorrentObject {
         downloaded = Long.parseLong(torrent.getField(TorrentStatus.TorrentField.downloadedEver).toString());
         uploaded = Long.parseLong(torrent.getField(TorrentStatus.TorrentField.uploadedEver).toString());
         totalSize = Long.parseLong(torrent.getField(TorrentStatus.TorrentField.totalSize).toString());
+
+        seedRatioLimit = Long.parseLong(torrent.getField(TorrentStatus.TorrentField.seedRatioLimit).toString());
     }
 }
