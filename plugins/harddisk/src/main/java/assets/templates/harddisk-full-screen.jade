@@ -7,7 +7,13 @@ p
         span.sr-only.text
 
 h2 Browse
-p.current-path
+p
+    button.btn.btn-default#new-folder New folder
+    button.btn.btn-success#upload-file Upload file
+    input#file-input(type="file")
+p
+    | Current path:&nbsp;
+    span.current-path
 table.files.table.table-striped.table-hover
     tbody
 

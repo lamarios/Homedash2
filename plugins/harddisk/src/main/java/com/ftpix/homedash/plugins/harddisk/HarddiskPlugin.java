@@ -7,8 +7,8 @@ import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.AttributeView;
 import java.util.*;
@@ -16,6 +16,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.codec.binary.*;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.util.Strings;
 import oshi.SystemInfo;
@@ -23,11 +25,13 @@ import oshi.hardware.HWDiskStore;
 import oshi.hardware.HWPartition;
 import oshi.software.os.OSFileStore;
 
+import javax.xml.bind.DatatypeConverter;
+
 /**
  * Created by gz on 06-Jun-16.
  */
 public class HarddiskPlugin extends Plugin {
-    private final static String MOUNT = "mount", COMMAND_BROWSE = "browse", COMMAND_DELETE = "delete", COMMAND_RENAME = "rename", COMMAND_MOVE = "move", COMMAND_COPY = "copy";
+    private final static String MOUNT = "mount", COMMAND_BROWSE = "browse", COMMAND_DELETE = "delete", COMMAND_RENAME = "rename", COMMAND_MOVE = "move", COMMAND_COPY = "copy", COMMAND_NEW_FOLDER = "newFolder", COMMAND_UPLOAD_FILE = "uploadFile";
     private final static int MAX_DATA = 100;
     private SystemInfo systemInfo = new SystemInfo();
     private Path mountPoint;
@@ -98,6 +102,15 @@ public class HarddiskPlugin extends Plugin {
                     webSocketMessage.setCommand(WebSocketMessage.COMMAND_SUCCESS);
                     webSocketMessage.setMessage("File renamed successfully");
                     break;
+                case COMMAND_NEW_FOLDER:
+                    createFolder(gson.fromJson(message, FileOperation.class));
+                    webSocketMessage.setCommand(WebSocketMessage.COMMAND_SUCCESS);
+                    webSocketMessage.setMessage("Folder created successfully");
+                    break;
+                case COMMAND_UPLOAD_FILE:
+                    uploadFile(gson.fromJson(message, FileOperation.class));
+                    webSocketMessage.setCommand(WebSocketMessage.COMMAND_SUCCESS);
+                    webSocketMessage.setMessage("File uploaded successfully");
             }
         } catch (Exception e) {
             logger.error("Error while processing message", e);
@@ -423,5 +436,41 @@ public class HarddiskPlugin extends Plugin {
         });
 
         Files.deleteIfExists(folder);
+    }
+
+    /**
+     * Creates a new folder
+     *
+     * @param fileOperation the source if the parent folder of the new folder, destination is the name of the folder
+     */
+    private void createFolder(FileOperation fileOperation) throws IOException {
+
+        Path p = mountPoint.resolve(fileOperation.getSource());
+
+        if (!fileOperation.getDestination().contains("..") && !fileOperation.getDestination().contains("/") && !fileOperation.getDestination().contains("\\")) {
+            Path newFolder = p.resolve(fileOperation.getDestination());
+            Files.createDirectory(newFolder);
+        } else {
+            new OperationException("The folder name contains invalid characters");
+        }
+    }
+
+    /**
+     * Uploads a file
+     *
+     * @param fileOperation source will be the complete path of the file, destination will be the base64 encoding of the file.
+     */
+    private void uploadFile(FileOperation fileOperation) throws IOException {
+        String partSeparator = ",";
+        if(fileOperation.getDestination().contains(partSeparator)) {
+            Path fullPath = mountPoint.resolve(fileOperation.getSource());
+            byte[] base64 = java.util.Base64.getDecoder().decode(fileOperation.getDestination().split(partSeparator)[1].getBytes(StandardCharsets.UTF_8));
+            logger.info("Creating file: [{}]", fullPath);
+            try (BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(fullPath.toFile()))) {
+                stream.write(base64);
+            }
+
+            logger.info("File written");
+        }
     }
 }

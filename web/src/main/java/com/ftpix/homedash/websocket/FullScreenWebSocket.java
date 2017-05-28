@@ -27,7 +27,7 @@ import io.gsonfire.GsonFireBuilder;
 /**
  * Created by gz on 07-Jun-16.
  */
-@WebSocket
+@WebSocket(maxTextMessageSize = Integer.MAX_VALUE)
 public class FullScreenWebSocket {
     private Map<Session, InnerSocketClass> sessions = new HashMap<>();
     private Logger logger = LogManager.getLogger();

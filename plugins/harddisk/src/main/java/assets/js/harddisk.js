@@ -73,6 +73,27 @@ function harddisk(moduleId) {
                 sendMessage(self.moduleId, 'move', JSON.stringify(data));
                 $('.clipboard').html('<p>Operation in progress...</p>');
             });
+
+            $('body').on('click', '#new-folder', function () {
+                var newName = prompt('New folder name');
+                if (newName !== undefined && $.trim(newName) !== '') {
+                    var data = {
+                        'source': self.path.join('/'),
+                        'destination': newName
+                    }
+
+                    sendMessage(self.moduleId, 'newFolder', JSON.stringify(data));
+                }
+            });
+
+            $('body').on('click', '#upload-file', function () {
+                $('#file-input').click();
+            });
+
+
+            $('body').on('change', '#file-input', function () {
+                self.sendFile();
+            });
         }
     };
 
@@ -103,6 +124,10 @@ function harddisk(moduleId) {
             sendMessage(this.moduleId, 'browse', this.path.join('/'));
             $('.clipboard').html('');
             this.showClipboard();
+
+
+            $('#upload-file').html('Upload file');
+            $('#upload-file').removeAttr('disabled');
         }
 
     }
@@ -217,6 +242,42 @@ function harddisk(moduleId) {
         });
 
         return html.join('');
+    }
+
+    /**
+     * Sends file as base64 to the backend
+     */
+    this.sendFile = function () {
+        var reader = new FileReader();
+        var input = document.querySelector('#file-input');
+        var fileName = input.value.split(/(\\|\/)/g).pop();
+
+        var self = this;
+        if (fileName !== undefined && $.trim(fileName) !== '') {
+
+            $('#upload-file').html('Uploading...');
+            $('#upload-file').attr('disabled', true);
+
+            reader.readAsDataURL(input.files[0]);
+            reader.onload = function () {
+                //disabling the input + chaning text
+                $('#file-input')
+
+                var data = {
+                    'source': self.path.join('/') + '/' + fileName,
+                    'destination': reader.result
+                };
+
+                sendMessage(self.moduleId, 'uploadFile', JSON.stringify(data));
+
+            };
+            reader.onerror = function (error) {
+                alert('Couldn\'t load file: ' + error);
+
+                $('#upload-file').html('Upload file');
+                $('#upload-file').removeAttr('disabled');
+            };
+        }
     }
 
 }
