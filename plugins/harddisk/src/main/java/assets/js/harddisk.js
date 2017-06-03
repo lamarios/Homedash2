@@ -9,6 +9,9 @@ function harddisk(moduleId) {
     };
     this.path = ['.'];
 
+    //The clip board will hold more than one file
+    this.clipboard = [];
+
     this.documentReady = function (size) {
         if (size === 'full-screen') {
 
@@ -31,7 +34,12 @@ function harddisk(moduleId) {
 
             $('.files').on('click', '.add-clipboard', function () {
                 var path = self.path.join('/') + '/' + $(this).attr('data-name');
-                self.clipBoardHtml(path);
+
+
+                if (!self.clipboard.includes(path)) {
+                    self.clipboard.push(path);
+                }
+                self.clipBoardHtml();
             });
 
 
@@ -61,7 +69,7 @@ function harddisk(moduleId) {
                 };
 
                 sendMessage(self.moduleId, 'copy', JSON.stringify(data));
-                $('.clipboard').html('<p>Operation in progress...</p>');
+                $(this).parent('td').html('in progress...');
             });
 
             $('body').on('click', '.action-move', function () {
@@ -71,7 +79,8 @@ function harddisk(moduleId) {
                 };
 
                 sendMessage(self.moduleId, 'move', JSON.stringify(data));
-                $('.clipboard').html('<p>Operation in progress...</p>');
+                $(this).parent('td').html('in progress...');
+
             });
 
             $('body').on('click', '#new-folder', function () {
@@ -93,6 +102,19 @@ function harddisk(moduleId) {
 
             $('body').on('change', '#file-input', function () {
                 self.sendFile();
+            });
+
+            $('body').on('click', '.clipboard .counter, .clipboard .content p', function (event) {
+
+                $('.clipboard').toggleClass('expand');
+                event.stopPropagation();
+
+            });
+
+            $('body').on('click', '.action-remove-from-clipboard', function (){
+               self.removeFromClipboard($(this).attr('data-path'));
+               self.clipBoardHtml();
+               self.showClipboard();
             });
         }
     };
@@ -122,8 +144,14 @@ function harddisk(moduleId) {
             $('.files tbody').html(this.files2html(message));
         } else if (command === 'success' || command === 'error') {
             sendMessage(this.moduleId, 'browse', this.path.join('/'));
-            $('.clipboard').html('');
-            this.showClipboard();
+
+
+            if (extra !== undefined && extra.source !== undefined) {
+                this.removeFromClipboard(extra.source);
+                this.clipBoardHtml();
+                this.showClipboard();
+
+            }
 
 
             $('#upload-file').html('Upload file');
@@ -149,22 +177,50 @@ function harddisk(moduleId) {
         root.find('.hdd-container').html(this.generateSVG(percentage, diskSpace.usage));
     };
 
-    this.clipBoardHtml = function (filePath) {
+    this.clipBoardHtml = function () {
 
         var html = [];
 
-        html.push('<p>');
-        html.push(filePath);
-        html.push('<button  data-path="', filePath, '"class="btn btn-primary action-copy" >Copy here</button>');
-        html.push('<button  data-path="', filePath, '"class="btn btn-primary action-move" >Move here</button>');
+        html.push('<p class="counter">');
+        html.push(this.clipboard.length);
+        html.push(' files in clipboard');
+        html.push('<i class="fa fa-chevron-down"></i>');
         html.push('</p>');
 
+
+        html.push('<div class="content">');
+        html.push('<p><i class="fa fa-times"></i></p>');
+        html.push('<div class="table-responsive">');
+        html.push('<table class="table table-condensed"><tbody>');
+
+        $.each(this.clipboard, function (index, filePath) {
+            var filename = filePath.replace(/^.*[\\\/]/, '');
+
+            html.push('<tr>');
+            html.push('<td class="text">', filename, '</td>');
+            html.push('<td class="actions">');
+            html.push('<button data-path="', filePath, '" class="btn btn-primary btn-sm action-copy" >Copy here</button>');
+            html.push('<button data-path="', filePath, '" class="btn btn-primary btn-sm action-move" >Move here</button>');
+            html.push('<button data-path="', filePath, '" class="btn btn-default btn-sm action-remove-from-clipboard"><i class="fa fa-times"></i></buton>');
+            html.push('</td>');
+            html.push('</tr>');
+
+        });
+
+
+        html.push('</tbody></table></div>');
+
+        html.push('</div>') // content
+
+
         $('.clipboard').html(html.join(''));
+
+
         this.showClipboard();
     }
 
     this.showClipboard = function () {
-        if ($('.clipboard p').length > 0) {
+        if (this.clipboard.length > 0) {
             $('.clipboard').addClass('active');
         } else {
             $('.clipboard').removeClass('active');
@@ -243,7 +299,6 @@ function harddisk(moduleId) {
 
         return html.join('');
     }
-
     /**
      * Sends file as base64 to the backend
      */
@@ -279,5 +334,19 @@ function harddisk(moduleId) {
             };
         }
     }
+
+    /**
+     * Removes an item from the clipboard
+     * @param filePath the full path of the file to remove
+     */
+    this.removeFromClipboard = function (filePath) {
+        var found = this.clipboard.indexOf(filePath);
+
+        while (found !== -1) {
+            this.clipboard.splice(found, 1);
+            found = this.clipboard.indexOf(filePath);
+        }
+    }
+
 
 }

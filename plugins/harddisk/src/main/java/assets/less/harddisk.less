@@ -10,9 +10,9 @@
 
   h4 {
     position: absolute;
-    left:0;
-    bottom:0;
-    right:0;
+    left: 0;
+    bottom: 0;
+    right: 0;
     text-align: center;
     font-size: 15px;
     margin-bottom: 2px;
@@ -29,7 +29,7 @@
     left: 20px;
     width: 60px;
     bottom: 5px;
-    top:20px;
+    top: 20px;
 
     polygon {
       fill: #57CCC1;
@@ -71,7 +71,7 @@
 .harddisk.size-2x1 {
   h4 {
     text-align: left;
-    left:5px;
+    left: 5px;
   }
 
   p {
@@ -97,7 +97,7 @@
     cursor: pointer;
   }
 
-  .files tr td:nth-of-type(2){
+  .files tr td:nth-of-type(2) {
     width: 60px;
   }
 
@@ -106,14 +106,14 @@
       color: red;
     }
 
-    a{
+    a {
       cursor: pointer;
     }
   }
 
+  @backgroundColor: #e67e22;
   .clipboard {
 
-    @backgroundColor: #e67e22;
     background-color: darken(@backgroundColor, 20%);
 
     opacity: 0;
@@ -122,8 +122,8 @@
     right: 0;
     bottom: -60px;
     margin: 0;
-    height: 60px;
     text-align: center;
+    height: 40px;
 
     @transitionSpeed: 0.25s;
 
@@ -138,6 +138,61 @@
       color: white;
       font-size: 20px;
       padding-top: 8px;
+      cursor: pointer;
+
+      .fa-chevron-down {
+        position: absolute;
+        right: 10px;
+      }
+
+    }
+
+    .content {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: -100%;
+      margin: 0;
+      opacity: 0;
+
+      background-color: darken(@backgroundColor, 20%);
+
+      -webkit-transition: all @transitionSpeed;
+      -moz-transition: all @transitionSpeed;
+      -ms-transition: all @transitionSpeed;
+      -o-transition: all @transitionSpeed;
+      transition: all @transitionSpeed;
+
+      p {
+        text-align: right;
+        padding: 15px;
+        cursor: pointer;
+      }
+
+      .table-responsive {
+        border: none;
+
+        table {
+          tr {
+            border: none;
+          }
+
+          td {
+            color: white;
+            border: none;
+          }
+
+          td.text {
+            color: white;
+            text-align: left;
+            font-size: 20px;
+          }
+
+          td.actions {
+            text-align: right;
+          }
+        }
+      }
     }
   }
 
@@ -146,7 +201,15 @@
     bottom: 0;
   }
 
-  #file-input{
+  .clipboard.active.expand {
+    .content {
+      background-color: darken(@backgroundColor, 10%);
+      bottom: 0px;
+      opacity: 1;
+    }
+  }
+
+  #file-input {
     display: none;
   }
 }

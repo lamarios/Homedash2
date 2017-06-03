@@ -83,9 +83,11 @@ public class HarddiskPlugin extends Plugin {
                     webSocketMessage.setMessage(browse(message));
                     break;
                 case COMMAND_COPY:
-                    copy(gson.fromJson(message, FileOperation.class));
+                    FileOperation operation = gson.fromJson(message, FileOperation.class);
+                    copy(operation);
                     webSocketMessage.setCommand(WebSocketMessage.COMMAND_SUCCESS);
                     webSocketMessage.setMessage("File copied successfully");
+                    webSocketMessage.setExtra(operation);
                     break;
                 case COMMAND_DELETE:
                     delete(message);
@@ -93,9 +95,11 @@ public class HarddiskPlugin extends Plugin {
                     webSocketMessage.setMessage("File deleted successfully");
                     break;
                 case COMMAND_MOVE:
-                    move(gson.fromJson(message, FileOperation.class));
+                    FileOperation fileOperation = gson.fromJson(message, FileOperation.class);
+                    move(fileOperation);
                     webSocketMessage.setCommand(WebSocketMessage.COMMAND_SUCCESS);
                     webSocketMessage.setMessage("File moved successfully");
+                    webSocketMessage.setExtra(fileOperation);
                     break;
                 case COMMAND_RENAME:
                     rename(gson.fromJson(message, FileOperation.class));
