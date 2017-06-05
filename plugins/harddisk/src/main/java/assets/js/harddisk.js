@@ -283,6 +283,7 @@ function harddisk(moduleId) {
             }
 
             html.push('<td data-name="', value.name, '">', icon, '&nbsp;', value.name, '</td>');
+            html.push('<td data-name="', value.size, '" class="size">', value.size, '</td>');
 
             html.push('<td><div class="dropdown">');
             html.push('<button class="btn btn-primary btn-sm" id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">');
