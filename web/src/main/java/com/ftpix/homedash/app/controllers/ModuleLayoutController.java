@@ -11,11 +11,14 @@ import com.google.gson.Gson;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
+import com.sun.media.sound.ModelAbstractChannelMixer;
 import io.gsonfire.GsonFireBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.http.HttpStatus;
 import spark.ModelAndView;
+import spark.Request;
+import spark.Response;
 import spark.Spark;
 import spark.template.jade.JadeTemplateEngine;
 
@@ -48,34 +51,42 @@ public class ModuleLayoutController implements Controller<ModuleLayout, Integer>
         /*
          * Gets the layout of the modules for the current page
 		 */
-        Spark.get("/modules-layout/:page/:width", "application/json",  (req, res) -> {
-                int page = Integer.parseInt(req.params("page"));
-                int width = Integer.parseInt(req.params("width"));
-
-                logger.info("/modules-layout/{}/{}", page, width);
-
-                List<ModuleLayout> layouts = generatePageLayout(page, width);
-                Map<String, Object> model = new HashMap<>();
-                model.put("layouts", layouts);
-                model.put("plugins", PluginModuleMaintainer.getInstance().PLUGIN_INSTANCES);
-
-
-                JadeTemplateEngine engine = new JadeTemplateEngine();
-                String html = engine.render(new ModelAndView(model, "module-layout"));
-
-                Map<String, Object> toJson = new HashMap<String, Object>();
-                toJson.put("html", html);
-                toJson.put("layout", LayoutController.getInstance().findClosestLayout(width));
-
-                return toJson;
-
-        }, gson::toJson);
+        Spark.get("/modules-layout/:page/:width", "application/json",  this::layoutForPage, gson::toJson);
 
 
         /**
          * save a layout grid
          */
         Spark.post("/save-module-positions/:layoutId", (req, res) -> savePositions(Integer.parseInt(req.params("layoutId")), req.queryParams("data")), gson::toJson);
+    }
+
+    /**
+     * Gets the layout of the modules for the current page.
+     * @param req a Spark request {@link Request}
+     * @param res a Spark response {@link Response}
+     * @return a map with the HTML and the layout information.
+     * @throws SQLException
+     */
+    private Map<String, Object> layoutForPage(Request req, Response res) throws SQLException {
+        int page = Integer.parseInt(req.params("page"));
+        int width = Integer.parseInt(req.params("width"));
+
+        logger.info("/modules-layout/{}/{}", page, width);
+
+        List<ModuleLayout> layouts = generatePageLayout(page, width);
+        Map<String, Object> model = new HashMap<>();
+        model.put("layouts", layouts);
+        model.put("plugins", PluginModuleMaintainer.getInstance().PLUGIN_INSTANCES);
+
+
+        JadeTemplateEngine engine = new JadeTemplateEngine();
+        String html = engine.render(new ModelAndView(model, "module-layout"));
+
+        Map<String, Object> toJson = new HashMap<String, Object>();
+        toJson.put("html", html);
+        toJson.put("layout", LayoutController.getInstance().findClosestLayout(width));
+
+        return toJson;
     }
 
     @Override

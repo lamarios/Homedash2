@@ -57,114 +57,17 @@ public class SettingsController implements Controller<Settings, String> {
         /**
          * Settings page
          */
-        Spark.get("/settings", (req, res) -> {
-            List<Settings> settings = getAll();
-            Map<String, String> map = new HashMap<>();
+        Spark.get("/settings", this::getSettingsPage, new JadeTemplateEngine());
 
-            settings.forEach((setting) -> {
-                map.put(setting.getName(), setting.getValue());
-            });
-
-            Map<String, Object> model = new HashMap<>();
-            model.put("settings", map);
-            model.put("about", UpdateController.getInstance().getVersion());
-
-
-            return new ModelAndView(model, "settings");
-        }, new JadeTemplateEngine());
-
-        Spark.post("/settings", (req, res) -> {
-            Map<String, String[]> postParam = req.queryMap().toMap();
-
-            // checking on checkboxes, if they're not in the params, we need to
-            // delete them
-            if (!postParam.containsKey(Settings.USE_AUTH)) {
-                deleteById(Settings.USE_AUTH);
-            }
-
-            if (!postParam.containsKey(Settings.PUSHBULLET)) {
-                deleteById(Settings.PUSHBULLET);
-            }
-
-            if (!postParam.containsKey(Settings.PUSHALOT)) {
-                deleteById(Settings.PUSHALOT);
-            }
-
-            if (!postParam.containsKey(Settings.PUSHOVER)) {
-                deleteById(Settings.PUSHOVER);
-            }
-
-            if (!postParam.containsKey(Settings.USE_REMOTE)) {
-                deleteById(Settings.USE_REMOTE);
-            }
-
-            postParam.forEach((name, value) -> {
-                try {
-
-                    Settings setting = new Settings();
-                    setting.setName(name);
-
-                    if (name.equalsIgnoreCase(Settings.PASSWORD)) {
-                        if (value[0].trim().length() > 0 && postParam.containsKey(Settings.USERNAME) && postParam.get(Settings.USERNAME)[0].trim().length() > 0) {
-                            try {
-                                String password = hashPassword(postParam.get(Settings.USERNAME)[0].trim(), value[0].trim());
-                                setting.setValue(password);
-                                logger.info("Setting to save: [{} => {}]", name, password);
-                            } catch (NoSuchAlgorithmException e) {
-                                logger.error("Can't save password", e);
-                            }
-                            //only saving this one if we do something with it.
-                            createOrUpdate(setting);
-                        }
-                    } else {
-                        logger.info("Setting to save: [{} => {}]", name, value[0]);
-
-                        setting.setValue(value[0]);
-                        createOrUpdate(setting);
-                    }
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            });
-
-            updateNotificationProviders();
-
-            res.redirect("/settings");
-            return "";
-        });
+        Spark.post("/settings", this::saveSettings);
 
 
         /**
          * Login form
          */
-        Spark.get("/login", (req, res) -> {
-            return new ModelAndView(new HashMap<String, String>(), "login");
-        }, new JadeTemplateEngine());
+        Spark.get("/login", (req, res) -> new ModelAndView(new HashMap<String, String>(), "login"), new JadeTemplateEngine());
 
-        Spark.post("/login", (req, res) -> {
-
-            String username = req.queryParams("username");
-            String password = req.queryParams("password");
-            String hash = hashPassword(username, password);
-
-            try {
-                if (checkPassword(hash)) {
-                    logger.info("Logging in successful, redirecting to main");
-                    Session session = req.session(true);
-                    session.attribute(AUTH_KEY, hash);
-                    res.cookie(AUTH_KEY, hash, 31557600);//one year
-
-                    res.redirect("/");
-                    return null;
-                }
-            } catch (Exception e) {
-                logger.error("Logging in failed due to some error", e);
-            }
-            Map<String, String> error = new HashMap<String, String>();
-            error.put("error", "Wrong username/password");
-            return new ModelAndView(error, "login");
-        }, new JadeTemplateEngine());
+        Spark.post("/login", this::login, new JadeTemplateEngine());
 
 
         /**
@@ -179,6 +82,130 @@ public class SettingsController implements Controller<Settings, String> {
         });
     }
 
+
+    /**
+     * Processes a login request.
+     *
+     * @param req a Spark {@link Request}
+     * @param res a Spark {@link Response}
+     * @return null, will redirect to main page if the login is successful, if not will, return the login compiled template with errors
+     * @throws NoSuchAlgorithmException
+     */
+    private ModelAndView login(Request req, Response res) throws NoSuchAlgorithmException {
+        String username = req.queryParams("username");
+        String password = req.queryParams("password");
+        String hash = hashPassword(username, password);
+
+        try {
+            if (checkPassword(hash)) {
+                logger.info("Logging in successful, redirecting to main");
+                Session session = req.session(true);
+                session.attribute(AUTH_KEY, hash);
+                res.cookie(AUTH_KEY, hash, 31557600);//one year
+
+                res.redirect("/");
+                return null;
+            }
+        } catch (Exception e) {
+            logger.error("Logging in failed due to some error", e);
+        }
+        Map<String, String> error = new HashMap<String, String>();
+        error.put("error", "Wrong username/password");
+        return new ModelAndView(error, "login");
+    }
+
+    /**
+     * Save settings from the POST request.
+     *
+     * @param req a Spark {@link Request}
+     * @param res a Spark {@link Response}
+     * @return
+     * @throws SQLException
+     */
+    private String saveSettings(Request req, Response res) throws SQLException {
+        Map<String, String[]> postParam = req.queryMap().toMap();
+
+        // checking on checkboxes, if they're not in the params, we need to
+        // delete them
+        if (!postParam.containsKey(Settings.USE_AUTH)) {
+            deleteById(Settings.USE_AUTH);
+        }
+
+        if (!postParam.containsKey(Settings.PUSHBULLET)) {
+            deleteById(Settings.PUSHBULLET);
+        }
+
+        if (!postParam.containsKey(Settings.PUSHALOT)) {
+            deleteById(Settings.PUSHALOT);
+        }
+
+        if (!postParam.containsKey(Settings.PUSHOVER)) {
+            deleteById(Settings.PUSHOVER);
+        }
+
+        if (!postParam.containsKey(Settings.USE_REMOTE)) {
+            deleteById(Settings.USE_REMOTE);
+        }
+
+        postParam.forEach((name, value) -> {
+            try {
+
+                Settings setting = new Settings();
+                setting.setName(name);
+
+                if (name.equalsIgnoreCase(Settings.PASSWORD)) {
+                    if (value[0].trim().length() > 0 && postParam.containsKey(Settings.USERNAME) && postParam.get(Settings.USERNAME)[0].trim().length() > 0) {
+                        try {
+                            String password = hashPassword(postParam.get(Settings.USERNAME)[0].trim(), value[0].trim());
+                            setting.setValue(password);
+                            logger.info("Setting to save: [{} => {}]", name, password);
+                        } catch (NoSuchAlgorithmException e) {
+                            logger.error("Can't save password", e);
+                        }
+                        //only saving this one if we do something with it.
+                        createOrUpdate(setting);
+                    }
+                } else {
+                    logger.info("Setting to save: [{} => {}]", name, value[0]);
+
+                    setting.setValue(value[0]);
+                    createOrUpdate(setting);
+                }
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        });
+
+        updateNotificationProviders();
+
+        res.redirect("/settings");
+        return "";
+    }
+
+    /**
+     * Gets the template for the settings page.
+     *
+     * @param req a Spark {@link Request}
+     * @param res a Spark {@link Response}
+     * @return
+     * @throws SQLException
+     */
+    private ModelAndView getSettingsPage(Request req, Response res) throws SQLException {
+        List<Settings> settings = getAll();
+        Map<String, String> map = new HashMap<>();
+
+        settings.forEach((setting) -> {
+            map.put(setting.getName(), setting.getValue());
+        });
+
+        Map<String, Object> model = new HashMap<>();
+        model.put("settings", map);
+        model.put("about", UpdateController.getInstance().getVersion());
+
+
+        return new ModelAndView(model, "settings");
+    }
 
     @Override
     public Settings get(String id) throws SQLException {

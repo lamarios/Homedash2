@@ -10,6 +10,8 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import spark.ModelAndView;
+import spark.Request;
+import spark.Response;
 import spark.Spark;
 import spark.template.jade.JadeTemplateEngine;
 
@@ -41,13 +43,7 @@ public class RemoteController implements Controller<RemoteFavorite, Integer> {
     @Override
     public void defineEndpoints() {
 
-        Spark.get("/add-remote", (req, res) -> {
-            Map<String, Object> model = new HashMap<String, Object>();
-
-            model.put("favorites", getAll());
-
-            return new ModelAndView(model, "add-remote");
-        }, new JadeTemplateEngine());
+        Spark.get("/add-remote", this::addRemotePage, new JadeTemplateEngine());
 
 
         Spark.post("/remote/browse-remote", "application/json", (req, res) -> {
@@ -58,32 +54,53 @@ public class RemoteController implements Controller<RemoteFavorite, Integer> {
         }, gson::toJson);
 
 
-        Spark.post("/remote/add", "application/json", (req, res) -> {
-
-            String id = req.queryParams("id");
-            String name = req.queryParams("name");
-            String url = req.queryParams("url");
-            String key = req.queryParams("key");
-            String pluginClass = req.queryParams("pluginClass");
-
-
-            Page page;
-            //find page
-            int pageId = 1;
-            if (req.session().attribute(ModuleController.SESSION_NEW_MODULE_PAGE) != null) {
-                pageId = req.session().attribute(ModuleController.SESSION_NEW_MODULE_PAGE);
-            }
-            page = PageController.getInstance().get(pageId);
-
-
-            return addRemoteModule(id, name, url, key, pluginClass, page);
-        }, gson::toJson);
-
-
+        Spark.post("/remote/add", "application/json", this::addRemoteModule, gson::toJson);
 
 
     }
 
+    /**
+     * Adds a remote module.
+     * @param req a Spark Request {@link Request}
+     * @param res a Spark Response {@link Response}
+     * @return
+     * @throws SQLException
+     */
+    private boolean addRemoteModule(Request req, Response res) throws SQLException {
+        String id = req.queryParams("id");
+        String name = req.queryParams("name");
+        String url = req.queryParams("url");
+        String key = req.queryParams("key");
+        String pluginClass = req.queryParams("pluginClass");
+
+
+        Page page;
+        //find page
+        int pageId = 1;
+        if (req.session().attribute(ModuleController.SESSION_NEW_MODULE_PAGE) != null) {
+            pageId = req.session().attribute(ModuleController.SESSION_NEW_MODULE_PAGE);
+        }
+        page = PageController.getInstance().get(pageId);
+
+
+        return addRemoteModule(id, name, url, key, pluginClass, page);
+    }
+
+    /**
+     * Gets the template for adding a new remote module
+     *
+     * @param req a Spark Request {@link Request}
+     * @param res a Spark Response {@link Response}
+     * @return
+     * @throws Exception
+     */
+    private ModelAndView addRemotePage(Request req, Response res) throws Exception {
+        Map<String, Object> model = new HashMap<String, Object>();
+
+        model.put("favorites", getAll());
+
+        return new ModelAndView(model, "add-remote");
+    }
 
     @Override
     public RemoteFavorite get(Integer id) throws Exception {
@@ -175,7 +192,6 @@ public class RemoteController implements Controller<RemoteFavorite, Integer> {
         ModuleSettings nameSetting = new ModuleSettings("name", name);
         ModuleSettings urlSettings = new ModuleSettings("url", url);
         ModuleSettings keySettings = new ModuleSettings("key", key);
-
 
 
         Module module = new Module();

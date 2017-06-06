@@ -26,20 +26,20 @@ public class BackgroundRefresh implements Job {
         long time = TIME++;
 
         try {
-            PluginModuleMaintainer.getInstance().getAllPluginInstances().stream()
-                    .filter(p -> p.getBackgroundRefreshRate() > Plugin.NEVER && time % p.getBackgroundRefreshRate() == 0 && p.getModule().getLocation() == ModuleLocation.LOCAL).forEach((plugin) -> {
-                try {
-                    logger.info("Background task: plugin:[{}] module:[{}]", plugin.getId(), plugin.getModule().getId());
-                    plugin.doInBackground();
-                }catch(Exception e){
-                    logger.info("Error during background refresh", e);
-                }
-            });
+            PluginModuleMaintainer.getInstance().getAllPluginInstances()
+                    .stream()
+                    .filter(p -> p.getBackgroundRefreshRate() > Plugin.NEVER && time % p.getBackgroundRefreshRate() == 0 && p.getModule().getLocation() == ModuleLocation.LOCAL)
+                    .forEach((plugin) -> {
+                        try {
+                            logger.info("Background task: plugin:[{}] module:[{}]", plugin.getId(), plugin.getModule().getId());
+                            plugin.doInBackground();
+                        } catch (Exception e) {
+                            logger.info("Error during background refresh", e);
+                        }
+                    });
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.info("error while doing background process", e);
         }
-
 
 
     }
@@ -48,7 +48,7 @@ public class BackgroundRefresh implements Job {
     /**
      * Resets the background refresh timer
      */
-    public static void resetTimer(){
+    public static void resetTimer() {
         TIME = 0;
     }
 

@@ -65,9 +65,8 @@ public class MainWebSocket {
 
     @OnWebSocketClose
     public void closed(Session session, int statusCode, String reason) {
-        Optional<WebSocketSession> client = getClientFromSession(session);
-        if (client.isPresent()) {
-            sessions.remove(client.get());
+        getClientFromSession(session).ifPresent(client -> {
+            sessions.remove(client);
 
             if (sessions.isEmpty()) {
                 stopRefresh();
@@ -80,7 +79,7 @@ public class MainWebSocket {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-        }
+        });
 
     }
 
@@ -131,13 +130,6 @@ public class MainWebSocket {
 
         Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(moduleId);
         WebSocketMessage response = plugin.refreshPlugin(size);
-//        try {
-//            response.setMessage(plugin.refreshPlugin(size));
-//        } catch (Exception e) {
-//            // logger.error("Error while refreshing " + plugin.getDisplayName(), e);
-//            response.setCommand(WebSocketMessage.COMMAND_ERROR);
-//            response.setMessage("Error while refreshing " + plugin.getDisplayName() + ": " + e.getMessage());
-//        }
 
         return response;
 
@@ -194,24 +186,20 @@ public class MainWebSocket {
                             // finding which clients to send to and sending
                             // the
                             // message
-                            exec.execute(new Runnable() {
-                                @Override
-                                public void run() {
+                            exec.execute(() -> {
+                                try {
+                                    logger.info("Refreshing plugin [{}] for layout[{}]", plugin.getId(), ml.getLayout().getName());
 
-                                    try {
-                                        logger.info("Refreshing plugin [{}] for layout[{}]", plugin.getId(), ml.getLayout().getName());
+                                    WebSocketMessage response = refreshSingleModule(ml.getModule().getId(), ml.getSize());
 
-                                        WebSocketMessage response = refreshSingleModule(ml.getModule().getId(), ml.getSize());
+                                    String jsonResponse = gson.toJson(response);
 
-                                        String jsonResponse = gson.toJson(response);
+                                    sendMessage(jsonResponse, ml);
 
-                                        sendMessage(jsonResponse, ml);
-
-                                    } catch (Exception e) {
-                                        logger.error("Can't refresh module #" + ml.getModule().getId(), e);
-                                    }
-
+                                } catch (Exception e) {
+                                    logger.error("Can't refresh module #" + ml.getModule().getId(), e);
                                 }
+
                             });
 
                         }
@@ -237,21 +225,26 @@ public class MainWebSocket {
      * Find all the module layouts to refresh based on the clients connected
      */
     private List<ModuleLayout> getModuleLayoutsToRefresh() {
-        List<ModuleLayout> layouts = new ArrayList<>();
+//        List<ModuleLayout> layouts = new ArrayList<>();
 
-        sessions.stream().filter(s -> s.getLayout() != null && s.getPage() != null).forEach(s -> {
-            try {
-                logger.info("Getting module layout for settings page:[{}], Layout[{}]", s.getPage().getName(), s.getLayout().getName());
-                layouts.addAll(ModuleLayoutController.getInstance().generatePageLayout(s.getPage(), s.getLayout()));
-            } catch (Exception e) {
-                logger.error("Can't get layouts for page:[" + s.getPage().getId() + "], layout [" + s.getLayout().getName() + "]", e);
-            }
-        });
+        return sessions.stream()
+                .filter(s -> s.getLayout() != null && s.getPage() != null)
+                .flatMap(s -> {
+                    try {
+                        logger.info("Getting module layout for settings page:[{}], Layout[{}]", s.getPage().getName(), s.getLayout().getName());
+                        return ModuleLayoutController.getInstance().generatePageLayout(s.getPage(), s.getLayout()).stream();
+                    } catch (Exception e) {
+                        logger.error("Can't get layouts for page:[" + s.getPage().getId() + "], layout [" + s.getLayout().getName() + "]", e);
+                        return new ArrayList<ModuleLayout>().stream();
+                    }
+                })
+                .filter(Predicates.distinctByKey(l -> l.getId()))
+                .collect(Collectors.toList());
 
-        List<ModuleLayout> layoutsToServe = layouts.stream().filter(Predicates.distinctByKey(l -> l.getId())).collect(Collectors.toList());
-        logger.info("We have {} module layouts to refresh", layoutsToServe.size());
-
-        return layoutsToServe;
+//        List<ModuleLayout> layoutsToServe = layouts.stream().filter(Predicates.distinctByKey(l -> l.getId())).collect(Collectors.toList());
+//        logger.info("We have {} module layouts to refresh", layoutsToServe.size());
+//
+//        return layoutsToServe;
     }
 
     /**
@@ -261,9 +254,11 @@ public class MainWebSocket {
         //we will start refresh only if at least one of the clients has a page
         stopRefresh();
 
-        long readyClients = sessions.stream().filter(s -> {
-            return s.getLayout() != null && s.getPage() != null;
-        }).count();
+        long readyClients = sessions.stream()
+                .filter(s -> {
+                    return s.getLayout() != null && s.getPage() != null;
+                })
+                .count();
 
         logger.info("{}/{} clients are ready", readyClients, sessions.size());
 
@@ -273,12 +268,8 @@ public class MainWebSocket {
 
             exec = Executors.newFixedThreadPool(PluginModuleMaintainer.getInstance().getAllPluginInstances().size() + 1);
 
-            exec.execute(new Runnable() {
-
-                @Override
-                public void run() {
-                    refreshModules();
-                }
+            exec.execute(() -> {
+                refreshModules();
             });
         }
     }

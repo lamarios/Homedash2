@@ -197,6 +197,13 @@ public abstract class Plugin {
         return result;
     }
 
+    /**
+     * Processes an incoming command from the front end
+     * @param command the command name
+     * @param message the content of the command
+     * @param extra any extra object that the front end might want to add
+     * @return a {@link WebSocketMessage} to be sent to the front end
+     */
     public final WebSocketMessage processIncomingCommand(String command, String message, Object extra) {
         switch (module.getLocation()) {
             case LOCAL:

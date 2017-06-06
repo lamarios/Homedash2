@@ -73,7 +73,6 @@ public class FullScreenWebSocket {
         private long time = 0;
         private Gson gson = new GsonFireBuilder().enableExposeMethodResult().createGson();
         private ExecutorService exec;
-        private final int THREADS_COUNT = 1;
 
         private int moduleId;
 
@@ -192,13 +191,7 @@ public class FullScreenWebSocket {
 
                 exec = Executors.newSingleThreadExecutor();
 
-                exec.execute(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        refreshModule();
-                    }
-                });
+                exec.execute(() -> refreshModule());
             }
         }
 

@@ -1,10 +1,8 @@
 package com.ftpix.homedash.app;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.ftpix.homedash.app.controllers.ModuleController;
 import com.ftpix.homedash.app.controllers.PluginController;
@@ -18,18 +16,19 @@ import com.ftpix.homedash.plugins.Plugin;
 
 import javassist.NotFoundException;
 
-public class PluginModuleMaintainer implements PluginListener{
+public class PluginModuleMaintainer implements PluginListener {
 
     public final Map<Integer, Plugin> PLUGIN_INSTANCES = new HashMap<>();
-    private  Logger logger = LogManager.getLogger();
+    private Logger logger = LogManager.getLogger();
 
     private static PluginModuleMaintainer pluginModuleMaintainer;
 
-    private PluginModuleMaintainer(){}
+    private PluginModuleMaintainer() {
+    }
 
-    public static PluginModuleMaintainer getInstance(){
+    public static PluginModuleMaintainer getInstance() {
 
-        if(pluginModuleMaintainer == null){
+        if (pluginModuleMaintainer == null) {
             pluginModuleMaintainer = new PluginModuleMaintainer();
         }
 
@@ -53,6 +52,7 @@ public class PluginModuleMaintainer implements PluginListener{
     public Plugin getPluginForModule(int moduleId) throws Exception {
         logger.info("Looking for module  {}", moduleId);
         Module module = ModuleController.getInstance().get(moduleId);
+
         if (module != null) {
             return getPluginForModule(module);
         } else {
@@ -68,7 +68,7 @@ public class PluginModuleMaintainer implements PluginListener{
      * @return
      * @throws Exception
      */
-    public  Plugin getPluginForModule(Module module) throws Exception {
+    public Plugin getPluginForModule(Module module) throws Exception {
         logger.debug("Module found, checking if the plugin is already instanciated");
         Plugin plugin = null;
         if (PLUGIN_INSTANCES.containsKey(module.getId())) {
@@ -93,17 +93,19 @@ public class PluginModuleMaintainer implements PluginListener{
      * @throws Exception
      * @throws SQLException
      */
-    public  List<Plugin> getAllPluginInstances() throws Exception {
-        List<Plugin> plugins = new ArrayList<>();
-        ModuleController.getInstance().getAll().forEach((module) -> {
-            try {
-                plugins.add(getPluginForModule(module));
-            } catch (Exception e) {
-                logger.error("Can't get plugin for module", e);
-            }
-        });
-
-        return plugins;
+    public List<Plugin> getAllPluginInstances() throws Exception {
+        return ModuleController.getInstance().getAll()
+                .stream()
+                .map((module) -> {
+                    try {
+                        return getPluginForModule(module);
+                    } catch (Exception e) {
+                        logger.error("Can't get plugin for module", e);
+                        return null;
+                    }
+                })
+                .filter(plugin -> plugin != null)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -111,7 +113,7 @@ public class PluginModuleMaintainer implements PluginListener{
      *
      * @param moduleId
      */
-    public  void removeModule(int moduleId) {
+    public void removeModule(int moduleId) {
         if (PLUGIN_INSTANCES.containsKey(moduleId)) {
             PLUGIN_INSTANCES.remove(moduleId);
         }
@@ -122,8 +124,8 @@ public class PluginModuleMaintainer implements PluginListener{
     public void saveModuleData(ModuleData data) {
         try {
             ModuleController.getInstance().saveModuleData(data);
-        }catch(Exception e){
-            logger.error("Error while saving data "+data.getName(), e);
+        } catch (Exception e) {
+            logger.error("Error while saving data " + data.getName(), e);
         }
     }
 
@@ -131,8 +133,8 @@ public class PluginModuleMaintainer implements PluginListener{
     public void removeModuleData(ModuleData data) {
         try {
             ModuleController.getInstance().deleteModuleData(data);
-        }catch(Exception e){
-            logger.error("Error while saving data "+data.getName(), e);
+        } catch (Exception e) {
+            logger.error("Error while saving data " + data.getName(), e);
         }
     }
 }

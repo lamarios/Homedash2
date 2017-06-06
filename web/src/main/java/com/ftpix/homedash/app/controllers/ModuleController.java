@@ -18,6 +18,7 @@ import com.j256.ormlite.stmt.Where;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.maven.model.Model;
 import org.eclipse.jetty.http.HttpStatus;
 
 import java.sql.SQLException;
@@ -28,6 +29,8 @@ import java.util.Optional;
 
 import io.gsonfire.GsonFireBuilder;
 import spark.ModelAndView;
+import spark.Request;
+import spark.Response;
 import spark.Spark;
 import spark.template.jade.JadeTemplateEngine;
 
@@ -61,204 +64,279 @@ public class ModuleController implements Controller<Module, Integer> {
         /*
          * Add module
 		 */
-        Spark.get("/add-module/on-page/:page", (req, res) -> {
-            logger.info("/add-module");
-            try {
-                int pageId = Integer.parseInt(req.params("page"));
-                Page p = DB.PAGE_DAO.queryForId(pageId);
-                if (p != null) {
-                    req.session().attribute(SESSION_NEW_MODULE_PAGE, p.getId());
-
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("plugins", PluginController.getInstance().listAvailablePlugins());
-
-                    return new ModelAndView(map, "add-module");
-                } else {
-                    res.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
-                    return null;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }, new JadeTemplateEngine());
+        Spark.get("/add-module/on-page/:page", this::addModuleOnPage, new JadeTemplateEngine());
 
 		/*
          * Add module with class This will save the module if there are no
 		 * settings to display, otherwise it'll show the settings
 		 */
-        Spark.get("/add-module/:pluginclass", (req, res) -> {
-            Plugin plugin = (Plugin) Class.forName(req.params("pluginclass")).newInstance();
-
-            logger.info("/add-module/{}", plugin.getClass().getCanonicalName());
-            try {
-                Map<String, Object> map = new HashMap<>();
-                map.put("settings", PluginController.getInstance().getPluginSettingsHtml(plugin));
-                map.put("pluginClass", plugin.getClass().getCanonicalName());
-                map.put("pluginName", plugin.getDisplayName());
-
-                return new ModelAndView(map, "module-settings");
-            } catch (Exception e) {
-                logger.info("no settings to display we save the module");
-
-                //find page
-                int page = 1;
-                if (req.session().attribute(SESSION_NEW_MODULE_PAGE) != null) {
-                    page = req.session().attribute(SESSION_NEW_MODULE_PAGE);
-                }
-
-                Map<String, String[]> params = req.queryMap().toMap();
-                params.put("class", new String[]{plugin.getClass().getCanonicalName()});
-                saveModuleWithSettings(params, page);
-                res.redirect("/");
-                return null;
-            }
-
-        }, new JadeTemplateEngine());
+        Spark.get("/add-module/:pluginclass", this::addModule, new JadeTemplateEngine());
 
 		/*
          * Add module
 		 */
-        Spark.get("/module/:moduleId/settings", (req, res) -> {
-            int moduleId = Integer.parseInt(req.params("moduleId"));
-            logger.info("/add-module/{}/settings");
-            try {
-                Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(moduleId);
-
-                Map<String, Object> map = new HashMap<>();
-                map.put("plugin", plugin);
-                map.put("pluginName", plugin.getDisplayName());
-                map.put("settings", PluginController.getInstance().getPluginSettingsHtml(plugin));
-                return new ModelAndView(map, "module-settings");
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }, new JadeTemplateEngine());
+        Spark.get("/module/:moduleId/settings", this::getModuleSettings, new JadeTemplateEngine());
 
 		/*
          * Save a new or edited module
 		 */
-        Spark.post("/save-module", (req, res) -> {
-            logger.info("/save-module");
-            try {
-
-                //find page
-                int page = 1;
-                if (req.session().attribute(SESSION_NEW_MODULE_PAGE) != null) {
-                    page = req.session().attribute(SESSION_NEW_MODULE_PAGE);
-                }
-                logger.info("/save-module ({} params)", req.queryMap().toMap().size());
-
-                //checking settings
-
-                //flattening post query
-                Map<String, String> flatSettings = new HashMap<String, String>();
-                req.queryMap().toMap().forEach((key, value) -> {
-                    flatSettings.put(key, value[0]);
-                });
-
-                Plugin plugin;
-                boolean editing = false;
-                if (flatSettings.containsKey("module_id")) {
-                    editing = true;
-                    plugin = PluginModuleMaintainer.getInstance().getPluginForModule(Integer.parseInt(flatSettings.get("module_id")));
-                } else {
-                    plugin = PluginController.getInstance().createPluginFromClass(req.queryParams("class"));
-                }
-
-
-                Map<String, String> errors = plugin.validateSettings(flatSettings);
-
-                //No errors, we're good to go
-                if (errors == null || errors.size() == 0) {
-                    saveModuleWithSettings(req.queryMap().toMap(), page);
-                } else {
-                    logger.info("[{}] errors found !", errors.size());
-                    Map<String, Object> map = new HashMap<>();
-                    if (editing) {
-                        map.put("plugin", plugin);
-                    } else {
-                        map.put("pluginClass", plugin.getClass().getCanonicalName());
-                    }
-                    map.put("pluginName", plugin.getDisplayName());
-                    map.put("settings", PluginController.getInstance().getPluginSettingsHtml(plugin, flatSettings));
-                    map.put("errors", errors);
-                    return new ModelAndView(map, "module-settings");
-                }
-            } catch (Exception e) {
-                logger.error("Error while saving module", e);
-            }
-            res.redirect("/");
-            return null;
-        }, new JadeTemplateEngine());
+        Spark.post("/save-module", this::saveModule, new JadeTemplateEngine());
 
 		/*
          * Deletes a module
 		 */
-        Spark.delete("/module/:moduleId", (req, res) -> {
-            int moduleId = Integer.parseInt(req.params("moduleId"));
-
-            logger.info("/delete-module/{}", moduleId);
-            try {
-                deleteById(moduleId);
-
-//                res.redirect("/");
-                return true;
-            } catch (Exception e) {
-                logger.error("Error while deleting module", e);
-                res.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
-                return false;
-            }
-
-        });
+        Spark.delete("/module/:moduleId", this::deleteModule);
 
 
         /**
          * Gets the available sizes for a module's plugin
          */
-        Spark.get("/module/:id/availableSizes", (req, res) -> {
-            int moduleId = Integer.parseInt(req.params("id"));
-            logger.info("/module/{}/availableSizes", moduleId);
-
-            return PluginController.getInstance().getPluginSizes(getModulePlugin(moduleId));
-        }, gson::toJson);
+        Spark.get("/module/:id/availableSizes", this::getModuleSizes, gson::toJson);
 
 
-        Spark.get("/module/:moduleId/move-to-page/:pageId", (req, res) -> {
-
-            int moduleId = Integer.parseInt(req.params("moduleId"));
-            int pageId = Integer.parseInt(req.params("pageId"));
-
-            logger.info("get /module/{}/move-to-page/{}", moduleId, pageId);
-
-            Module module = DB.MODULE_DAO.queryForId(moduleId);
-            Page page = DB.PAGE_DAO.queryForId(pageId);
-
-            if (page != null && module != null) {
-                module.setPage(page);
-                DB.MODULE_DAO.update(module);
-                return true;
-            } else {
-                return false;
-            }
-
-        }, gson::toJson);
+        Spark.get("/module/:moduleId/move-to-page/:pageId", this::moveModule, gson::toJson);
 
 
-        Spark.get("/module/:moduleId/full-screen", (req, res) -> {
-            Map<String, Object> map = new HashMap<String, Object>();
-
-            int id = Integer.parseInt(req.params("moduleId"));
-
-            Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(id);
-            map.put("plugin", plugin);
-            map.put("html", plugin.getView(ModuleLayout.FULL_SCREEN));
-
-            return new ModelAndView(map, "module-full-screen");
-        }, new JadeTemplateEngine());
+        Spark.get("/module/:moduleId/full-screen", this::getFullScreenView, new JadeTemplateEngine());
     }
 
+    /**
+     * Gets the view for a full screen plugin
+     * @param req A Spark Request
+     * @param res A Spark response
+     * @return
+     * @throws Exception
+     */
+    private ModelAndView getFullScreenView(Request req, Response res) throws Exception {
+    Map<String, Object> map = new HashMap<String, Object>();
+    int id = Integer.parseInt(req.params("moduleId"));
+
+    Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(id);
+    map.put("plugin", plugin);
+    map.put("html", plugin.getView(ModuleLayout.FULL_SCREEN));
+
+    return new ModelAndView(map, "module-full-screen");
+}
+    /**
+     * Moves a module to a different page
+     * @param req A Spark Request
+     * @param res A Spark response
+     * @return
+     * @throws SQLException
+     */
+    private boolean moveModule(Request req, Response res) throws SQLException {
+        int moduleId = Integer.parseInt(req.params("moduleId"));
+        int pageId = Integer.parseInt(req.params("pageId"));
+
+        logger.info("get /module/{}/move-to-page/{}", moduleId, pageId);
+
+        Module module = DB.MODULE_DAO.queryForId(moduleId);
+        Page page = DB.PAGE_DAO.queryForId(pageId);
+
+        if (page != null && module != null) {
+            module.setPage(page);
+            DB.MODULE_DAO.update(module);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Gets the available sizes for a module.
+     *
+     * @param req A Spark Request
+     * @param res A Spark response
+     * @return a list of String with the different sizes
+     */
+    private String[] getModuleSizes(Request req, Response res) throws ClassNotFoundException, SQLException, InstantiationException, IllegalAccessException {
+        int moduleId = Integer.parseInt(req.params("id"));
+        logger.info("/module/{}/availableSizes", moduleId);
+
+        return PluginController.getInstance().getPluginSizes(getModulePlugin(moduleId));
+    }
+
+    /**
+     * deletes a module
+     *
+     * @param req A Spark Request
+     * @param res A Spark response
+     * @return a boolean telling if the deletion has been successful.
+     */
+    private boolean deleteModule(Request req, Response res) {
+
+        int moduleId = Integer.parseInt(req.params("moduleId"));
+
+        logger.info("/delete-module/{}", moduleId);
+        try {
+            deleteById(moduleId);
+
+//                res.redirect("/");
+            return true;
+        } catch (Exception e) {
+            logger.error("Error while deleting module", e);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
+            return false;
+        }
+    }
+
+    /**
+     * Save of update a module
+     *
+     * @param req A Spark Request
+     * @param res A Spark response
+     * @return the template for the module settings if necessary, redirect to index if the module has no settings.
+     */
+    private ModelAndView saveModule(Request req, Response res) {
+
+        logger.info("/save-module");
+        try {
+
+            //find page
+            int page = 1;
+            if (req.session().attribute(SESSION_NEW_MODULE_PAGE) != null) {
+                page = req.session().attribute(SESSION_NEW_MODULE_PAGE);
+            }
+            logger.info("/save-module ({} params)", req.queryMap().toMap().size());
+
+            //checking settings
+
+            //flattening post query
+            Map<String, String> flatSettings = new HashMap<String, String>();
+            req.queryMap().toMap().forEach((key, value) -> {
+                flatSettings.put(key, value[0]);
+            });
+
+            Plugin plugin;
+            boolean editing = false;
+            if (flatSettings.containsKey("module_id")) {
+                editing = true;
+                plugin = PluginModuleMaintainer.getInstance().getPluginForModule(Integer.parseInt(flatSettings.get("module_id")));
+            } else {
+                plugin = PluginController.getInstance().createPluginFromClass(req.queryParams("class"));
+            }
+
+
+            Map<String, String> errors = plugin.validateSettings(flatSettings);
+
+            //No errors, we're good to go
+            if (errors == null || errors.size() == 0) {
+                saveModuleWithSettings(req.queryMap().toMap(), page);
+            } else {
+                logger.info("[{}] errors found !", errors.size());
+                Map<String, Object> map = new HashMap<>();
+                if (editing) {
+                    map.put("plugin", plugin);
+                } else {
+                    map.put("pluginClass", plugin.getClass().getCanonicalName());
+                }
+                map.put("pluginName", plugin.getDisplayName());
+                map.put("settings", PluginController.getInstance().getPluginSettingsHtml(plugin, flatSettings));
+                map.put("errors", errors);
+                return new ModelAndView(map, "module-settings");
+            }
+        } catch (Exception e) {
+            logger.error("Error while saving module", e);
+        }
+        res.redirect("/");
+        return null;
+    }
+
+    /**
+     * Get and displays the settings for a module
+     *
+     * @param req A Spark Request
+     * @param res A Spark response
+     * @return Gets the settings of a module, nothing if we can't get it.
+     */
+    private ModelAndView getModuleSettings(Request req, Response res) {
+
+        int moduleId = Integer.parseInt(req.params("moduleId"));
+        logger.info("/add-module/{}/settings");
+        try {
+            Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(moduleId);
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("plugin", plugin);
+            map.put("pluginName", plugin.getDisplayName());
+            map.put("settings", PluginController.getInstance().getPluginSettingsHtml(plugin));
+            return new ModelAndView(map, "module-settings");
+        } catch (Exception e) {
+            logger.error("Couldn't get module settings", e);
+            return null;
+        }
+    }
+
+    /**
+     * Adds a module
+     *
+     * @param req A Spark Request
+     * @param res A Spark response
+     * @return
+     * @throws ClassNotFoundException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     * @throws SQLException
+     */
+    private ModelAndView addModule(Request req, Response res) throws ClassNotFoundException, IllegalAccessException, InstantiationException, SQLException {
+
+        Plugin plugin = (Plugin) Class.forName(req.params("pluginclass")).newInstance();
+
+        logger.info("/add-module/{}", plugin.getClass().getCanonicalName());
+        try {
+            Map<String, Object> map = new HashMap<>();
+            map.put("settings", PluginController.getInstance().getPluginSettingsHtml(plugin));
+            map.put("pluginClass", plugin.getClass().getCanonicalName());
+            map.put("pluginName", plugin.getDisplayName());
+
+            return new ModelAndView(map, "module-settings");
+        } catch (Exception e) {
+            logger.info("no settings to display we save the module");
+
+            //find page
+            int page = 1;
+            if (req.session().attribute(SESSION_NEW_MODULE_PAGE) != null) {
+                page = req.session().attribute(SESSION_NEW_MODULE_PAGE);
+            }
+
+            Map<String, String[]> params = req.queryMap().toMap();
+            params.put("class", new String[]{plugin.getClass().getCanonicalName()});
+            saveModuleWithSettings(params, page);
+            res.redirect("/");
+            return null;
+        }
+
+    }
+
+    /**
+     * Adds a module on a specific page
+     *
+     * @param req A Spark Request
+     * @param res A Spark response
+     * @return the compiled template for every plugin available.
+     */
+    private ModelAndView addModuleOnPage(Request req, Response res) {
+
+        logger.info("/add-module");
+        try {
+            int pageId = Integer.parseInt(req.params("page"));
+            Page p = DB.PAGE_DAO.queryForId(pageId);
+            if (p != null) {
+                req.session().attribute(SESSION_NEW_MODULE_PAGE, p.getId());
+
+                Map<String, Object> map = new HashMap<>();
+                map.put("plugins", PluginController.getInstance().listAvailablePlugins());
+
+                return new ModelAndView(map, "add-module");
+            } else {
+                res.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     @Override
     public Module get(Integer id) throws SQLException {
@@ -386,7 +464,7 @@ public class ModuleController implements Controller<Module, Integer> {
      * Saves a single module data
      */
     public boolean saveModuleData(ModuleData moduleData) throws SQLException {
-        getModuleData(moduleData.getModule().getId(),  moduleData.getName()).ifPresent((data)->{
+        getModuleData(moduleData.getModule().getId(), moduleData.getName()).ifPresent((data) -> {
             moduleData.setId(data.getId());
         });
         return DB.MODULE_DATA_DAO.createOrUpdate(moduleData).getNumLinesChanged() == 1;
@@ -396,7 +474,7 @@ public class ModuleController implements Controller<Module, Integer> {
      * Deletes a single module data
      */
     public boolean deleteModuleData(ModuleData moduleData) throws SQLException {
-        getModuleData(moduleData.getModule().getId(),  moduleData.getName()).ifPresent((data)->{
+        getModuleData(moduleData.getModule().getId(), moduleData.getName()).ifPresent((data) -> {
             moduleData.setId(data.getId());
         });
         return DB.MODULE_DATA_DAO.delete(moduleData) == 1;
