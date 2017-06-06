@@ -1,21 +1,19 @@
 package com.ftpix.homedash.app.controllers;
 
 import com.ftpix.homedash.app.PluginModuleMaintainer;
-import com.ftpix.homedash.models.Layout;
-import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.db.DB;
+import com.ftpix.homedash.models.Layout;
 import com.ftpix.homedash.models.Module;
+import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.Page;
 import com.ftpix.homedash.plugins.Plugin;
 import com.google.gson.Gson;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
-import com.sun.media.sound.ModelAbstractChannelMixer;
 import io.gsonfire.GsonFireBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.jetty.http.HttpStatus;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -28,17 +26,18 @@ import java.util.*;
 /**
  * Created by gz on 04-Jun-16.
  */
-public class ModuleLayoutController implements Controller<ModuleLayout, Integer>{
+public class ModuleLayoutController implements Controller<ModuleLayout, Integer> {
     private Logger logger = LogManager.getLogger();
     private final Gson gson = new GsonFireBuilder().enableExposeMethodResult().createGsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
     ///Singleton
     private static ModuleLayoutController controller;
 
-    private ModuleLayoutController(){}
+    private ModuleLayoutController() {
+    }
 
-    public static ModuleLayoutController getInstance(){
-        if(controller == null){
+    public static ModuleLayoutController getInstance() {
+        if (controller == null) {
             controller = new ModuleLayoutController();
         }
         return controller;
@@ -51,7 +50,7 @@ public class ModuleLayoutController implements Controller<ModuleLayout, Integer>
         /*
          * Gets the layout of the modules for the current page
 		 */
-        Spark.get("/modules-layout/:page/:width", "application/json",  this::layoutForPage, gson::toJson);
+        Spark.get("/modules-layout/:page/:width", "application/json", this::layoutForPage, gson::toJson);
 
 
         /**
@@ -62,6 +61,7 @@ public class ModuleLayoutController implements Controller<ModuleLayout, Integer>
 
     /**
      * Gets the layout of the modules for the current page.
+     *
      * @param req a Spark request {@link Request}
      * @param res a Spark response {@link Response}
      * @return a map with the HTML and the layout information.
@@ -120,7 +120,7 @@ public class ModuleLayoutController implements Controller<ModuleLayout, Integer>
         return object.getId();
     }
 
-    public boolean deleteMany(Collection<ModuleLayout> objects) throws SQLException{
+    public boolean deleteMany(Collection<ModuleLayout> objects) throws SQLException {
         return DB.MODULE_LAYOUT_DAO.delete(objects) == objects.size();
     }
 
@@ -207,21 +207,19 @@ public class ModuleLayoutController implements Controller<ModuleLayout, Integer>
 
                 //Checking if the size we're trying to save really exists (sometimes resizing can fail);
                 boolean contains = false;
-                for(String s:availableSizes){
-                    if(s.equalsIgnoreCase(size)){
+                for (String s : availableSizes) {
+                    if (s.equalsIgnoreCase(size)) {
                         contains = true;
                         break;
                     }
                 }
 
                 //if it's not there, we go back to the first and smallest size
-                if(contains){
+                if (contains) {
                     ml.setSize(size);
-                }else{
+                } else {
                     ml.setSize(availableSizes[0]);
                 }
-
-
 
 
                 logger.info("Layout update: moduleId:[{}] x:[{}] y:[{}] size:[{}]", module.getId(), ml.getX(), ml.getY(), ml.getSize());
@@ -273,11 +271,12 @@ public class ModuleLayoutController implements Controller<ModuleLayout, Integer>
 
     /**
      * Gets all the module layouts for a layout
+     *
      * @param layout
      * @return
      * @throws SQLException
      */
-    public List<ModuleLayout> getModuleLayoutsForLayout(Layout layout) throws SQLException{
+    public List<ModuleLayout> getModuleLayoutsForLayout(Layout layout) throws SQLException {
         QueryBuilder<ModuleLayout, Integer> query = DB.MODULE_LAYOUT_DAO.queryBuilder();
         PreparedQuery<ModuleLayout> preparedQuery = query.where().eq("layout_id", layout.getId()).prepare();
 

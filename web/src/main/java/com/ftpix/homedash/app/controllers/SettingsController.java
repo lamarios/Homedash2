@@ -2,32 +2,23 @@ package com.ftpix.homedash.app.controllers;
 
 
 import com.ftpix.homedash.app.Constants;
-import com.ftpix.homedash.models.Settings;
 import com.ftpix.homedash.db.DB;
+import com.ftpix.homedash.models.Settings;
 import com.ftpix.homedash.notifications.Notifications;
 import com.ftpix.homedash.notifications.implementations.PushBullet;
 import com.ftpix.homedash.notifications.implementations.PushOver;
 import com.ftpix.homedash.notifications.implementations.Pushalot;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import spark.*;
 import spark.template.jade.JadeTemplateEngine;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import static spark.Spark.get;
-import static spark.Spark.post;
-import static spark.Spark.redirect;
 
 /**
  * Created by gz on 01-Jun-16.

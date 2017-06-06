@@ -6,7 +6,6 @@ import com.google.gson.Gson;
 import io.gsonfire.GsonFireBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bouncycastle.cert.ocsp.Req;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
@@ -14,10 +13,6 @@ import spark.Spark;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
-
-import static spark.Spark.delete;
-import static spark.Spark.get;
-import static spark.Spark.post;
 
 /**
  * Created by gz on 28-May-16.

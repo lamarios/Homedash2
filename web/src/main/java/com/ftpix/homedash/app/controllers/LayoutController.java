@@ -1,28 +1,25 @@
 package com.ftpix.homedash.app.controllers;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.*;
-
-import com.ftpix.homedash.models.Layout;
-import com.google.gson.Gson;
-import io.gsonfire.GsonFireBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.ftpix.homedash.db.DB;
+import com.ftpix.homedash.models.Layout;
 import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.plugins.Plugin;
-
+import com.google.gson.Gson;
 import de.neuland.jade4j.exceptions.JadeException;
-import org.bouncycastle.cert.ocsp.Req;
+import io.gsonfire.GsonFireBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.http.HttpStatus;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
 import spark.template.jade.JadeTemplateEngine;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.*;
 
 public class LayoutController implements Controller<Layout, Integer> {
     private Logger logger = LogManager.getLogger();

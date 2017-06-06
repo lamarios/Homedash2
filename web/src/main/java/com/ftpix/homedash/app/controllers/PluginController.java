@@ -1,15 +1,13 @@
 package com.ftpix.homedash.app.controllers;
 
-import java.io.IOException;
-import java.util.*;
-
+import com.ftpix.homedash.plugins.Plugin;
+import de.neuland.jade4j.exceptions.JadeException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.reflections.Reflections;
 
-import com.ftpix.homedash.plugins.Plugin;
-
-import de.neuland.jade4j.exceptions.JadeException;
+import java.io.IOException;
+import java.util.*;
 
 public class PluginController {
     private Logger logger = LogManager.getLogger();
