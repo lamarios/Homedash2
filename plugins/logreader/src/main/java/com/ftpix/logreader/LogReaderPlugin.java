@@ -74,8 +74,7 @@ public class LogReaderPlugin extends Plugin implements TailerListener {
     public void doInBackground() {
         //getting the "maxLines" last lines of the files so that if the user visits the plugin when there is no activity, at least he/she can see something
         if (!tailerRunning) {
-            try {
-                ReversedLinesFileReader reversedLinesFileReader = new ReversedLinesFileReader(new File(settings.get(SETTINGS_PATH)));
+            try (ReversedLinesFileReader reversedLinesFileReader = new ReversedLinesFileReader(new File(settings.get(SETTINGS_PATH)));) {
                 String line = null;
                 List<String> linesTemp = new ArrayList<>();
                 do {
