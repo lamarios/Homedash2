@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>1.0.23</version>
+        <version>1.0.24</version>
     </parent>
 
 
@@ -207,7 +207,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>1.0.23</version>
+            <version>1.0.24</version>
             <exclusions>
                 <exclusion>
                     <artifactId>jade4j</artifactId>
@@ -347,7 +347,8 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        Add possibility to upload files and create new folders for the Hard disk plugin
+                        add Log reader plugin
+                        add possibility for a plugin to do something when there's at least one client and when the last client leaves the ui
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>
