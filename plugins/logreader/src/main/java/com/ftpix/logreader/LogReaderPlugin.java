@@ -4,12 +4,14 @@ import com.ftpix.homedash.models.ModuleExposedData;
 import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
+import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,6 +27,7 @@ public class LogReaderPlugin extends Plugin implements TailerListener {
     private int maxLines = 200, linesSinceRefresh = 0;
 
     private Tailer tailer;
+    private boolean tailerRunning = false;
     private Queue<String> lines = new ConcurrentLinkedQueue<>();
 
     @Override
@@ -59,7 +62,7 @@ public class LogReaderPlugin extends Plugin implements TailerListener {
 
     @Override
     public int getBackgroundRefreshRate() {
-        return 0;
+        return ONE_MINUTE * 10;
     }
 
     @Override
@@ -69,7 +72,26 @@ public class LogReaderPlugin extends Plugin implements TailerListener {
 
     @Override
     public void doInBackground() {
+        //getting the "maxLines" last lines of the files so that if the user visits the plugin when there is no activity, at least he/she can see something
+        if (!tailerRunning) {
+            try {
+                ReversedLinesFileReader reversedLinesFileReader = new ReversedLinesFileReader(new File(settings.get(SETTINGS_PATH)));
+                String line = null;
+                List<String> linesTemp = new ArrayList<>();
+                do {
+                    line = reversedLinesFileReader.readLine();
+                    linesTemp.add(0, line);
+                } while (line != null && linesTemp.size() < maxLines);
 
+                logger.info("lines {}", lines.size());
+                logger.info("lines temp {}", linesTemp.size());
+                lines.addAll(linesTemp);
+                logger.info("fetched {} lines from {}", lines.size(), settings.get(SETTINGS_PATH));
+
+            } catch (IOException e) {
+                logger.info("Couldn't read file {}", settings.get(SETTINGS_PATH), e);
+            }
+        }
     }
 
     @Override
@@ -87,7 +109,7 @@ public class LogReaderPlugin extends Plugin implements TailerListener {
 
     @Override
     public int getRefreshRate(String size) {
-            return ONE_SECOND;
+        return ONE_SECOND;
     }
 
     @Override
@@ -131,12 +153,14 @@ public class LogReaderPlugin extends Plugin implements TailerListener {
     @Override
     protected void onFirstClientConnect() {
         tailer = Tailer.create(new File(settings.get(SETTINGS_PATH)), this, 1000, true);
+        tailerRunning = true;
     }
 
     @Override
     protected void onLastClientDisconnect() {
         logger.info("Stopping to tail {}", settings.get(SETTINGS_PATH));
         tailer.stop();
+        tailerRunning = false;
     }
 
     @Override
