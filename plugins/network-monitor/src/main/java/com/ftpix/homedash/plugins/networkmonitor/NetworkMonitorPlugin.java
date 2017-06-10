@@ -120,6 +120,16 @@ public class NetworkMonitorPlugin extends Plugin {
   }
 
   @Override
+  protected void onFirstClientConnect() {
+
+  }
+
+  @Override
+  protected void onLastClientDisconnect() {
+
+  }
+
+  @Override
   protected Map<String, Object> getSettingsModel() {
     return Stream.of(systemInfo.getHardware().getNetworkIFs()).collect(Collectors.toMap(NetworkIF::getName, netIf -> String.join(", ", netIf.getIPv4addr())));
   }

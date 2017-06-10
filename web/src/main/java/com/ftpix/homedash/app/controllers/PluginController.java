@@ -40,7 +40,7 @@ public class PluginController {
     public List<Plugin> listAvailablePlugins() {
         logger.info("listAvailablePlugins()");
         List<Plugin> availablePlugins = new ArrayList<>();
-        Reflections reflections = new Reflections("com.ftpix.homedash");
+        Reflections reflections = new Reflections();
 
         Set<Class<? extends Plugin>> subTypes = reflections.getSubTypesOf(Plugin.class);
 
@@ -56,7 +56,7 @@ public class PluginController {
         });
 
 
-        Collections.sort(availablePlugins, (o1, o2) -> o1.getDisplayName().compareTo(o2.getDisplayName()));
+        Collections.sort(availablePlugins, Comparator.comparing(Plugin::getDisplayName));
         return availablePlugins;
     }
 

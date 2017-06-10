@@ -185,6 +185,16 @@ public class HarddiskPlugin extends Plugin {
     }
 
     @Override
+    protected void onFirstClientConnect() {
+
+    }
+
+    @Override
+    protected void onLastClientDisconnect() {
+
+    }
+
+    @Override
     protected Map<String, Object> getSettingsModel() {
 
         return Stream.of(systemInfo.getOperatingSystem().getFileSystem().getFileStores()).filter(fs -> {

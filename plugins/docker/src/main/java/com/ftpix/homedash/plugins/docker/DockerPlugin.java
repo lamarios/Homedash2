@@ -212,6 +212,16 @@ public class DockerPlugin extends Plugin {
     }
 
     @Override
+    protected void onFirstClientConnect() {
+
+    }
+
+    @Override
+    protected void onLastClientDisconnect() {
+
+    }
+
+    @Override
     protected Map<String, Object> getSettingsModel() {
         String dockerHost = System.getenv(ENV_DOCKER_HOST);
         if (dockerHost != null && dockerHost.length() > 0) {

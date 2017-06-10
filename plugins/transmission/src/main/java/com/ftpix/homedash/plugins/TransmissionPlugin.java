@@ -210,6 +210,16 @@ public class TransmissionPlugin extends Plugin {
     }
 
     @Override
+    protected void onFirstClientConnect() {
+
+    }
+
+    @Override
+    protected void onLastClientDisconnect() {
+
+    }
+
+    @Override
     protected Map<String, Object> getSettingsModel() {
         return null;
     }

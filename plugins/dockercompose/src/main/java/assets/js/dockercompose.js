@@ -56,6 +56,7 @@ function dockercompose(moduleId) {
         this.onMessage_1x1(command, message, extra);
     }
 
+
     this.onMessage_fullScreen = function (command, message, extra) {
         var root = rootElement(this.moduleId);
         if (command === 'refresh') {

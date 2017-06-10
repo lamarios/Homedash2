@@ -27,6 +27,7 @@
         <module>googlepubliccalendar</module>
         <module>mma</module>
         <module>dockercompose</module>
+        <module>logreader</module>
     </modules>
 
     <dependencies>

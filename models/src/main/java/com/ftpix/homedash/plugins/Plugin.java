@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public abstract class Plugin {
@@ -50,6 +51,8 @@ public abstract class Plugin {
     private List<PluginListener> listeners = new ArrayList<>();
 
     private final static String REMOTE_URL = "url", REMOTE_API_KEY = "key", REMOTE_MODULE_ID = "id";
+
+    private AtomicInteger clients = new AtomicInteger(0);
 
     public Plugin() {
     }
@@ -147,6 +150,18 @@ public abstract class Plugin {
      */
     public abstract Map<String, String> exposeSettings();
 
+
+    /**
+     * Do something when the first websocket client connects
+     */
+    protected abstract void onFirstClientConnect();
+
+
+    /**
+     * Do something when the last websocket client disconnects
+     */
+    protected abstract void onLastClientDisconnect();
+
     /**
      * Gets the html for a specific size
      */
@@ -199,9 +214,10 @@ public abstract class Plugin {
 
     /**
      * Processes an incoming command from the front end
+     *
      * @param command the command name
      * @param message the content of the command
-     * @param extra any extra object that the front end might want to add
+     * @param extra   any extra object that the front end might want to add
      * @return a {@link WebSocketMessage} to be sent to the front end
      */
     public final WebSocketMessage processIncomingCommand(String command, String message, Object extra) {
@@ -494,4 +510,31 @@ public abstract class Plugin {
             return null;
         }
     }
+
+
+    /**
+     * Increase the number of clients, if it's the first one, do something
+     *
+     */
+    public void increaseClients() {
+        if (clients.incrementAndGet() == 1) {
+            logger.info("[{}] onFirstClientConnect()", getId());
+            onFirstClientConnect();
+        }
+
+        logger.info("[{}] has now {} clients", getId(), clients.get());
+    }
+
+    /**
+     * Decrease the number of clients, if it's the last one, do something
+     */
+    public void decreaseClients(){
+        if(clients.decrementAndGet() == 0){
+            logger.info("[{}] onLastClientDisconnect()", getId());
+            onLastClientDisconnect();
+        }
+
+        logger.info("[{}] has now {} clients", getId(), clients.get());
+    }
+
 }

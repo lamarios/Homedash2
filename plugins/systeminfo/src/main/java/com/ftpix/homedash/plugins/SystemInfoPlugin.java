@@ -130,6 +130,16 @@ public class SystemInfoPlugin extends Plugin {
     }
 
     @Override
+    protected void onFirstClientConnect() {
+
+    }
+
+    @Override
+    protected void onLastClientDisconnect() {
+
+    }
+
+    @Override
     public void doInBackground() {
         try {
             CpuInfo cpu = getCPUInfo();

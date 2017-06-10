@@ -1,0 +1,12 @@
+.form-group
+    label(for="path") Log file location
+    if settings && settings.containsKey("path")
+        input.form-control(type="text", id="path", name="path", placeholder="Path", value='#{settings.get("path")}')
+    else
+        input.form-control(type="text", id="path", name ="path", placeholder = "Path")
+.form-group
+    label(for="lines") Maximum lines to keep in memory (the more lines you keep, the more memory the application is going to take. when showing the dashboard.
+    if settings && settings.containsKey("path")
+        input.form-control(type="number", id="lines", name="lines", placeholder="Lines", value='#{settings.get("lines")}')
+    else
+        input.form-control(type="number", id="lines", name ="lines", placeholder = "Lines", value="200")

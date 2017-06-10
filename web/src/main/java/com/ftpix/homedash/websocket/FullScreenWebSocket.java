@@ -178,10 +178,11 @@ public class FullScreenWebSocket {
         /**
          * Start refreshing the modules
          */
-        private void startRefresh() {
+        private void startRefresh() throws Exception {
             //we will start refresh only if at least one of the clients has a page
             stopRefresh();
 
+            PluginModuleMaintainer.getInstance().getPluginForModule(moduleId).increaseClients();
 
             logger.info("clients are ready");
 
@@ -191,7 +192,7 @@ public class FullScreenWebSocket {
 
                 exec = Executors.newSingleThreadExecutor();
 
-                exec.execute(() -> refreshModule());
+                exec.execute(this::refreshModule);
             }
         }
 
@@ -211,6 +212,8 @@ public class FullScreenWebSocket {
                     logger.info("FINALLY STOPPED");
                     exec = null;
                     time = 0;
+
+                    PluginModuleMaintainer.getInstance().getPluginForModule(moduleId).decreaseClients();
 
                 }
             } catch (Exception e) {

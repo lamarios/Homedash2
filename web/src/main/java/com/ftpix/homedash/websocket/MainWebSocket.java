@@ -49,13 +49,14 @@ public class MainWebSocket {
     }
 
     @OnWebSocketConnect
-    public void connected(Session session) {
+    public void connected(Session session) throws Exception {
         Optional<WebSocketSession> client = getClientFromSession(session);
         if (!client.isPresent()) {
             stopRefresh();
             WebSocketSession newClient = new WebSocketSession();
             newClient.setSession(session);
             sessions.add(newClient);
+            PluginModuleMaintainer.getInstance().getAllPluginInstances().forEach(Plugin::increaseClients);
             logger.info("New Client !, We now have {} clients", sessions.size());
 
         } else {
@@ -67,7 +68,11 @@ public class MainWebSocket {
     public void closed(Session session, int statusCode, String reason) {
         getClientFromSession(session).ifPresent(client -> {
             sessions.remove(client);
-
+            try {
+                PluginModuleMaintainer.getInstance().getAllPluginInstances().forEach(Plugin::decreaseClients);
+            } catch (Exception e) {
+                logger.error("Couldn't decrease the number of clients");
+            }
             if (sessions.isEmpty()) {
                 stopRefresh();
             }
@@ -268,9 +273,7 @@ public class MainWebSocket {
 
             exec = Executors.newFixedThreadPool(PluginModuleMaintainer.getInstance().getAllPluginInstances().size() + 1);
 
-            exec.execute(() -> {
-                refreshModules();
-            });
+            exec.execute(this::refreshModules);
         }
     }
 

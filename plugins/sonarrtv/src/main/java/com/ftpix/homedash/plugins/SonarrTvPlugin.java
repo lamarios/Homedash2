@@ -165,6 +165,16 @@ public class SonarrTvPlugin extends Plugin {
         return result;
     }
 
+    @Override
+    protected void onFirstClientConnect() {
+
+    }
+
+    @Override
+    protected void onLastClientDisconnect() {
+
+    }
+
 
     private String getImagePath() {
         return getCacheFolder() + IMAGE_PATH;

@@ -244,6 +244,16 @@ public class DynamicDnsPlugin extends Plugin {
         return null;
     }
 
+    @Override
+    protected void onFirstClientConnect() {
+
+    }
+
+    @Override
+    protected void onLastClientDisconnect() {
+
+    }
+
 
     @Override
     protected Map<String, Object> getSettingsModel() {
