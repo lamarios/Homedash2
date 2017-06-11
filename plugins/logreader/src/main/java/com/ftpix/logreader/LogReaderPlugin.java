@@ -85,6 +85,9 @@ public class LogReaderPlugin extends Plugin implements TailerListener {
                 } while (line != null && linesTemp.size() < maxLines);
 
                 lines.addAll(linesTemp);
+                while(lines.size() > maxLines){
+                    lines.remove();
+                }
                 logger.info("fetched {} lines from {}", lines.size(), settings.get(SETTINGS_PATH));
 
             } catch (IOException e) {
