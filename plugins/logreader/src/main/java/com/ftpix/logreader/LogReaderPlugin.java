@@ -79,11 +79,11 @@ public class LogReaderPlugin extends Plugin implements TailerListener {
                 List<String> linesTemp = new ArrayList<>();
                 do {
                     line = reversedLinesFileReader.readLine();
-                    linesTemp.add(0, line);
+                    if (line != null) {
+                        linesTemp.add(0, line);
+                    }
                 } while (line != null && linesTemp.size() < maxLines);
 
-                logger.info("lines {}", lines.size());
-                logger.info("lines temp {}", linesTemp.size());
                 lines.addAll(linesTemp);
                 logger.info("fetched {} lines from {}", lines.size(), settings.get(SETTINGS_PATH));
 
@@ -186,7 +186,7 @@ public class LogReaderPlugin extends Plugin implements TailerListener {
     @Override
     public void handle(String s) {
         lines.add(s);
-        if (lines.size() > maxLines) {
+        while (lines.size() > maxLines) {
             lines.remove();
         }
         linesSinceRefresh++;
