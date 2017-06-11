@@ -348,6 +348,7 @@
                 <configuration>
                     <description>
                         Fix bug on log reader when file was less than 200 lines.
+                        Fix bug of setting validation error message not showing properly.
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>
