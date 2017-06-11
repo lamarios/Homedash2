@@ -5,15 +5,14 @@ block content
     .head-links
         a(href="/") << Back
     h1 Settings for #{pluginName}
-
     if errors
         .alert.alert-danger(role="alert")
             each message, title in errors
                 p
                     strong
-                        #{title}
+                        = title
                         | :&nbsp;
-                    #{message}
+                    = message
 
 
     form(action="/save-module", method="post")

@@ -94,23 +94,26 @@ public class ModuleController implements Controller<Module, Integer> {
 
     /**
      * Gets the view for a full screen plugin
+     *
      * @param req A Spark Request
      * @param res A Spark response
      * @return
      * @throws Exception
      */
     private ModelAndView getFullScreenView(Request req, Response res) throws Exception {
-    Map<String, Object> map = new HashMap<String, Object>();
-    int id = Integer.parseInt(req.params("moduleId"));
+        Map<String, Object> map = new HashMap<String, Object>();
+        int id = Integer.parseInt(req.params("moduleId"));
 
-    Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(id);
-    map.put("plugin", plugin);
-    map.put("html", plugin.getView(ModuleLayout.FULL_SCREEN));
+        Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(id);
+        map.put("plugin", plugin);
+        map.put("html", plugin.getView(ModuleLayout.FULL_SCREEN));
 
-    return new ModelAndView(map, "module-full-screen");
-}
+        return new ModelAndView(map, "module-full-screen");
+    }
+
     /**
      * Moves a module to a different page
+     *
      * @param req A Spark Request
      * @param res A Spark response
      * @return
@@ -210,7 +213,6 @@ public class ModuleController implements Controller<Module, Integer> {
 
 
             Map<String, String> errors = plugin.validateSettings(flatSettings);
-
             //No errors, we're good to go
             if (errors == null || errors.size() == 0) {
                 saveModuleWithSettings(req.queryMap().toMap(), page);
@@ -225,6 +227,7 @@ public class ModuleController implements Controller<Module, Integer> {
                 map.put("pluginName", plugin.getDisplayName());
                 map.put("settings", PluginController.getInstance().getPluginSettingsHtml(plugin, flatSettings));
                 map.put("errors", errors);
+                ((Map<String, String>) map.get("errors")).forEach((k, v) -> logger.info("error {} ->{}", k, v));
                 return new ModelAndView(map, "module-settings");
             }
         } catch (Exception e) {

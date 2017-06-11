@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>1.0.25</version>
+        <version>1.0.26</version>
     </parent>
 
 
@@ -207,7 +207,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>1.0.25</version>
+            <version>1.0.26</version>
             <exclusions>
                 <exclusion>
                     <artifactId>jade4j</artifactId>
@@ -347,7 +347,7 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        modify log reader to get the last few lines of a file even when no clients are connected
+                        Fix bug on log reader when file was less than 200 lines.
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>
