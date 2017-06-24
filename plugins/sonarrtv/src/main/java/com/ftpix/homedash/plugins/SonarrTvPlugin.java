@@ -7,8 +7,13 @@ import com.ftpix.homedash.plugins.api.SonarrApi;
 import com.ftpix.homedash.plugins.api.SonarrUnauthorizedException;
 import com.ftpix.homedash.plugins.api.models.SonarrCalendar;
 
+import com.google.common.io.Files;
 import org.apache.commons.io.FileUtils;
+import org.imgscalr.Scalr;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -25,6 +30,7 @@ import java.util.Map;
 public class SonarrTvPlugin extends Plugin {
 
     public static final String URL = "url", API_KEY = "apiKey";
+    private static final int THUMB_SIZE = 500;
     private final String IMAGE_PATH = "images/";
     private String url, apiKey;
     private SonarrApi api;
@@ -93,7 +99,7 @@ public class SonarrTvPlugin extends Plugin {
         List<SonarrCalendar> calendar = api.getCalendar(null, cal.getTime(), false);
 
 
-        calendar.forEach((series) -> {
+        calendar.parallelStream().forEach((series) -> {
             downloadFanArt(series);
         });
 
@@ -187,6 +193,11 @@ public class SonarrTvPlugin extends Plugin {
     //////////////////////////
     /////plugin methods
 
+
+    /**
+     * Will download and resize pictures
+     * @param series
+     */
     private void downloadFanArt(SonarrCalendar series) {
         File f = new File(getImagePath() + series.getSeriesId() + "-fanart.jpg");
 
@@ -200,6 +211,12 @@ public class SonarrTvPlugin extends Plugin {
                     logger.info("Download from: {}", poster);
 
                     FileUtils.copyURLToFile(new URL(poster), f);
+
+                    // resizing the picture.
+                    BufferedImage image = ImageIO.read(f);
+                    BufferedImage resize = Scalr.resize(image, THUMB_SIZE);
+
+                    ImageIO.write(resize, Files.getFileExtension(f.getName()), f);
 
                     break;
                 } catch (Exception e) {

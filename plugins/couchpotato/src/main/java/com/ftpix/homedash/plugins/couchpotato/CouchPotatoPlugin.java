@@ -4,13 +4,17 @@ import com.ftpix.homedash.models.ModuleExposedData;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.plugins.couchpotato.models.MovieObject;
+import com.google.common.io.Files;
 import com.mashape.unirest.http.Unirest;
 
 import org.apache.commons.io.FileUtils;
+import org.imgscalr.Scalr;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.URLEncoder;
@@ -21,12 +25,16 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by gz on 22-Jun-16.
  */
 public class CouchPotatoPlugin extends Plugin {
     public static final String URL = "url", API_KEY = "apiKey";
+    private static final int THUMB_SIZE = 500;
     public String url, apiKey, baseUrl;
 
     public static final String METHOD_SEARCH_MOVIE = "searchMovie", METHOD_MOVIE_LIST = "movieList", METHOD_ADD_MOVIE = "addMovie";
@@ -148,6 +156,9 @@ public class CouchPotatoPlugin extends Plugin {
                             File f = new File(getImagePath() + movieInfo.getString("imdb") + ".jpg");
                             if (!f.exists()) {
                                 FileUtils.copyURLToFile(new java.net.URL(images.getString(new Random().nextInt(images.length()))), f);
+                                BufferedImage image = ImageIO.read(f);
+                                BufferedImage resized = Scalr.resize(image, THUMB_SIZE);
+                                ImageIO.write(resized, Files.getFileExtension(f.getName()), f);
                             }
                             poster = getImagePath() + movieInfo.getString("imdb") + ".jpg";
                         } catch (Exception e) {
@@ -194,13 +205,7 @@ public class CouchPotatoPlugin extends Plugin {
 
         File f = new File(getImagePath());
 
-        FilenameFilter filter = new FilenameFilter() {
-
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.matches("([^\\s]+(\\.(?i)(jpg|png|gif|bmp))$)");
-            }
-        };
+        FilenameFilter filter = (dir, name) -> name.matches("([^\\s]+(\\.(?i)(jpg|png|gif|bmp))$)");
 
         List<File> filesArray = Arrays.asList(f.listFiles(filter));
         Collections.shuffle(filesArray);
@@ -257,6 +262,8 @@ public class CouchPotatoPlugin extends Plugin {
         String response = Unirest.get(queryUrl).asString().getBody();
         logger.info("Search query:[{}] response:{}", queryUrl, response);
 
+        List<Callable<Void>> pictureDownload = new ArrayList<>();
+
         try {
             JSONObject json = new JSONObject(response);
 
@@ -274,7 +281,17 @@ public class CouchPotatoPlugin extends Plugin {
                     if (images.length() != 0) {
                         File f = new File(getImagePath() + movieObject.imdbId + ".jpg");
                         if (!f.exists()) {
-                            FileUtils.copyURLToFile(new java.net.URL(images.getString(0)), f);
+
+                            pictureDownload.add(() -> {
+                                FileUtils.copyURLToFile(new java.net.URL(images.getString(0)), f);
+
+                                BufferedImage image = ImageIO.read(f);
+                                BufferedImage resized = Scalr.resize(image, THUMB_SIZE);
+                                ImageIO.write(resized, Files.getFileExtension(f.getName()), f);
+
+                                return null;
+                            });
+
                         }
                         movieObject.poster = getImagePath() + movieObject.imdbId + ".jpg";
                     }
@@ -299,9 +316,19 @@ public class CouchPotatoPlugin extends Plugin {
                 movieObject.year = movie.getInt("year");
 
                 result.add(movieObject);
+
             }
         } catch (Exception e) {
             logger.info("No movies found");
+        }
+
+
+        //downloading thumbnails
+        ExecutorService exec = Executors.newFixedThreadPool(result.size());
+        try{
+            exec.invokeAll(pictureDownload);
+        }finally{
+            exec.shutdown();
         }
         return result;
     }
