@@ -41,7 +41,9 @@ function logreader(moduleId) {
 
     this.onMessage_fullScreen = function (command, message, extra) {
         var logs = $('#logs');
-        logs.val(message.join('\n'));
+        logs.val(message.lines.join('\n'));
+
+        $('#file').html(message.file);
 
         if (logs.length && this.autoScroll === true) {
             logs.scrollTop(logs[0].scrollHeight - logs.height());

@@ -85,7 +85,7 @@ public class LogReaderPlugin extends Plugin implements TailerListener {
                 } while (line != null && linesTemp.size() < maxLines);
 
                 lines.addAll(linesTemp);
-                while(lines.size() > maxLines){
+                while (lines.size() > maxLines) {
                     lines.remove();
                 }
                 logger.info("fetched {} lines from {}", lines.size(), settings.get(SETTINGS_PATH));
@@ -99,7 +99,12 @@ public class LogReaderPlugin extends Plugin implements TailerListener {
     @Override
     protected Object refresh(String size) throws Exception {
         if (size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)) {
-            return lines;
+            Map<String, Object> data = new HashMap<>();
+            data.put("lines", lines);
+            data.put("file", settings.get(SETTINGS_PATH));
+
+
+            return data;
         } else {
             Map<String, String> data = new HashMap<>();
             data.put("path", new File(settings.get(SETTINGS_PATH)).getName());

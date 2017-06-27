@@ -10,31 +10,30 @@ block content
         span.name
         span.layout
     div#layout-wrapper
-        .loading
-            .loader
         #layout
 
 
-
-    i#settings-button.fa.fa-cog
-    .global-settings
-        ul
-            li
-                a#add-module
-                    i.fa.fa-plus
-                    |  Add module
-            li 
-                a(href="/settings")
-                    i.fa.fa-wrench
-                    |  Settings
-            li#edit-layout
-                a
-                    i.fa.fa-th
-                    |  Edit Layout
-            li
-                a(href="/logout")
-                    i.fa.fa-sign-out
-                    |  Log out
+    #settings
+        p.icon
+            i#settings-button.fa.fa-cog
+        .global-settings
+            ul
+                li
+                    a#add-module
+                        i.fa.fa-plus
+                        |  Add module
+                li
+                    a(href="/settings")
+                        i.fa.fa-wrench
+                        |  Settings
+                li#edit-layout
+                    a
+                        i.fa.fa-th
+                        |  Edit Layout
+                li
+                    a(href="/logout")
+                        i.fa.fa-sign-out
+                        |  Log out
 
     #pages-overlay
     #pages

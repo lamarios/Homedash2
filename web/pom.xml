@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>1.0.28</version>
+        <version>1.0.29</version>
     </parent>
 
 
@@ -207,7 +207,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>1.0.28</version>
+            <version>1.0.29</version>
             <exclusions>
                 <exclusion>
                     <artifactId>jade4j</artifactId>
@@ -347,8 +347,10 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        Reduce size of thumbnails for sonarr and couchpotato plugin
-                        Fix settings bug for those two
+                        Remove loading on main screen
+                        Redo settings pop up UI
+                        Use more elegant animation for grid
+                        Add log path on log reader module full screen
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>

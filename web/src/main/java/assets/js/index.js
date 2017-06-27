@@ -95,7 +95,7 @@ $(document).ready(function () {
      * Toggle settings display
      */
     $('#settings-button').click(function () {
-        $('.global-settings').toggleClass('showing');
+        $('#settings').toggleClass('showing');
     });
 
 });
@@ -238,7 +238,7 @@ function deleteModule(moduleId) {
 
 function toggleLayoutEditMode() {
     $('#layout, #layout-edit-mode').toggleClass('layout-edit');
-    $('.global-settings').removeClass('showing');
+    $('#settings').removeClass('showing');
 }
 
 function rootElement(moduleId) {
@@ -298,7 +298,6 @@ function updateLayoutInfo(layoutJson) {
         sendMessage(-1, "changeLayout", LAYOUT.id);
     }
 
-    $('#layout-wrapper .loading').fadeOut('fast');
     $('#page-title .layout').html(' (' + LAYOUT.name + ')');
 
 

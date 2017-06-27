@@ -13,8 +13,8 @@
   font-size: 30px;
   margin: 10px;
 
-  .fa{
-    margin-right:15px;
+  .fa {
+    margin-right: 15px;
   }
 
   .name {
@@ -53,9 +53,10 @@
   margin: 0 auto;
   -webkit-transition: all @transition-speed;
   transition: all @transition-speed;
+  transform-origin: top center;
 
   animation-name: show-grid;
-  animation-duration: 0.75s;
+  animation-duration: 0.25s;
 
   .gridster-item {
     -webkit-transition: all @transition-speed !important;
@@ -196,15 +197,7 @@
 @keyframes show-grid {
   0% {
     opacity: 0;
-    @scale: 0.5;
-    -ms-transform: scale(@scale); /* IE 9 */
-    -webkit-transform: scale(@scale); /* Safari */
-    transform: scale(@scale);
-  }
-
-  60% {
-    opacity: 1;
-    @scale: 1.05;
+    @scale: 0.8;
     -ms-transform: scale(@scale); /* IE 9 */
     -webkit-transform: scale(@scale); /* Safari */
     transform: scale(@scale);
@@ -260,53 +253,52 @@
 //gridster
 
 ///settings
-#settings-button {
-  display: block;
-  cursor: pointer;
-  position: fixed;
-  bottom: 5px;
-  right: 5px;
-  top: inherit;
-  margin-bottom: 12px;
-  color: @accentColor;
-  font-size: 16px;
-}
 
-.global-settings {
-  position: fixed;
-  bottom: -20%;
-  right: 5px;
-  margin-right: 25px;
-  opacity: 0;
-  font-size: 16px;
+#settings {
 
-  @scale-size: 0.5;
-  -ms-transform: scale(@scale-size); /* IE 9 */
-  -webkit-transform: scale(@scale-size); /* Safari */
-  transform: scale(@scale-size);
+  p.icon {
+    text-align: right;
+
+    #settings-button {
+      display: inline-block;
+      width: 50px;
+      cursor: pointer;
+      color: @accentColor;
+      padding: 10px;
+    }
+  }
+
+  position: fixed;
+  bottom: -185px;
+  right: 0;
+  left: 0;
+  font-size: 16px;
 
   -webkit-transition: all @transition-speed !important;
   transition: all @transition-speed !important;
 
   @menu-border-color: #eee;
 
-  z-index: 100;
 
   ul {
     list-style: none;
     padding: 0;
-    border: 1px solid @menu-border-color;
-    border-left: 5px solid @accentColor;
-    border-radius: 4px;
-    background-color: white;
-    box-shadow: 0 0 10px #666;
+    background-color: @accentColor;
+    margin-bottom: 0;
+
     li {
+      -webkit-transition: all 0.25s;
+      -moz-transition: all 0.25s;
+      -ms-transition: all 0.25s;
+      -o-transition: all 0.25s;
+      transition: all 0.25s;
+
       display: block;
       padding: 10px;
 
       a {
         cursor: pointer;
-        color: @text-color;
+        color: white;
         display: block;
         width: 100%;
         height: 100%;
@@ -316,12 +308,16 @@
         text-decoration: none;
       }
       .fa {
-        color: @accentColor;
+        color: lighten(@accentColor, 20%);
       }
     }
 
+    li:hover {
+      background-color: darken(@accentColor, 10%);
+    }
+
     li:not(:last-of-type) {
-      border-bottom: 1px solid @menu-border-color;
+      border-bottom: 1px solid darken(@accentColor, 10%);
     }
   }
 
@@ -346,16 +342,8 @@
   }
 }
 
-.global-settings.showing {
-  bottom: 5px;
-  right: 5px;
-  opacity: 1;
-  left: inherit;
-
-  @scale-size: 1;
-  -ms-transform: scale(@scale-size); /* IE 9 */
-  -webkit-transform: scale(@scale-size); /* Safari */
-  transform: scale(@scale-size);
+#settings.showing {
+  bottom: 0;
 }
 
 #layout-edit-mode {
