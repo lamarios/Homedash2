@@ -1,17 +1,23 @@
 package com.ftpix.homedash.plugins.docker;
 
+import com.ftpix.homedash.Utils.ByteUtils;
 import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.ModuleExposedData;
 import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.plugins.docker.models.DockerInfo;
+import com.ftpix.homedash.plugins.docker.models.DockerImageInfo;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.ContainerInfo;
 import com.spotify.docker.client.messages.ContainerStats;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +28,12 @@ import java.util.stream.Collectors;
 
 public class DockerPlugin extends Plugin {
 
-    private static final String ENV_DOCKER_HOST = "DOCKER_HOST", DOCKER_URL = "url", ACTION_CONTAINER_DETAILS = "details", ACTION_RESTART = "restart", ACTION_START = "start", ACTION_STOP = "stop", ACTION_REMOVE = "remove", ACTION_KILL = "kill", SUCCESS_MESSAGE = "Container %sed successfully";
+    private static final String ENV_DOCKER_HOST = "DOCKER_HOST", DOCKER_URL = "url", ACTION_REMOVE_IMAGE = "removeImage",
+            ACTION_REMOVE_IMAGE_FORCE = "removeImageForce", ACTION_CONTAINER_DETAILS = "details",
+            ACTION_RESTART = "restart", ACTION_START = "start", ACTION_STOP = "stop", ACTION_REMOVE = "remove",
+            ACTION_KILL = "kill", SUCCESS_MESSAGE_CONTAINER = "Container %sed successfully",
+            SUCCESS_MESSAGE_IMAGE = "Image %sed successfully";
+
     private DockerClient client;
 
 
@@ -58,19 +69,10 @@ public class DockerPlugin extends Plugin {
 
         String url = settings.get(DOCKER_URL);
 
-        System.out.println(url);
         if (url.startsWith("unix://")) {
             client = new DefaultDockerClient(url);
         } else {
             client = DefaultDockerClient.builder().uri(url).build();
-        }
-
-        try {
-            System.out.println(client.listImages().size());
-        } catch (DockerException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
 
     }
@@ -98,62 +100,67 @@ public class DockerPlugin extends Plugin {
             switch (command) {
                 case ACTION_START:
                     startContainer(message);
-                    response.setMessage(String.format(SUCCESS_MESSAGE, command));
-                    response.setExtra(getContainersInfo());
+                    response.setMessage(String.format(SUCCESS_MESSAGE_CONTAINER, command));
+                    response.setExtra(refresh(ModuleLayout.FULL_SCREEN));
                     break;
                 case ACTION_RESTART:
                     restartContainer(message);
-                    response.setMessage(String.format(SUCCESS_MESSAGE, command));
-                    response.setExtra(getContainersInfo());
+                    response.setMessage(String.format(SUCCESS_MESSAGE_CONTAINER, command));
+                    response.setExtra(refresh(ModuleLayout.FULL_SCREEN));
                     break;
                 case ACTION_STOP:
                     stopContainer(message);
-                    response.setMessage(String.format(SUCCESS_MESSAGE, command));
-                    response.setExtra(getContainersInfo());
+                    response.setMessage(String.format(SUCCESS_MESSAGE_CONTAINER, command));
+                    response.setExtra(refresh(ModuleLayout.FULL_SCREEN));
                     break;
                 case ACTION_KILL:
                     killContainer(message);
-                    response.setMessage(String.format(SUCCESS_MESSAGE, command));
-                    response.setExtra(getContainersInfo());
+                    response.setMessage(String.format(SUCCESS_MESSAGE_CONTAINER, command));
+                    response.setExtra(refresh(ModuleLayout.FULL_SCREEN));
                     break;
                 case ACTION_REMOVE:
                     removeContainer(message);
                     //shitty trick because remove finishes with a e and will bug with String formatting...
                     command = command.substring(0, command.length() - 1);
-                    response.setMessage(String.format(SUCCESS_MESSAGE, command));
-                    response.setExtra(getContainersInfo());
+                    response.setMessage(String.format(SUCCESS_MESSAGE_CONTAINER, command));
+                    response.setExtra(refresh(ModuleLayout.FULL_SCREEN));
                     break;
                 case ACTION_CONTAINER_DETAILS:
                     response.setCommand(ACTION_CONTAINER_DETAILS);
                     response.setMessage(getContainerDetails(message));
                     break;
+
+                case ACTION_REMOVE_IMAGE:
+                    client.removeImage(message);
+                    response.setMessage(String.format(SUCCESS_MESSAGE_IMAGE, ACTION_REMOVE));
+                    response.setExtra(refresh(ModuleLayout.FULL_SCREEN));
+                    break;
+                case ACTION_REMOVE_IMAGE_FORCE:
+                    client.removeImage(message, true, true);
+                    response.setMessage(String.format(SUCCESS_MESSAGE_IMAGE, ACTION_REMOVE));
+                    response.setExtra(refresh(ModuleLayout.FULL_SCREEN));
+                    break;
             }
-        } catch (DockerException | InterruptedException e) {
+        } catch (Exception e) {
             response.setCommand(WebSocketMessage.COMMAND_ERROR);
             response.setMessage("Docker command failed: " + e.getMessage());
         }
 
-
         return response;
     }
 
-    public static void main(String[] args) {
-        DockerClient d = DefaultDockerClient.builder().uri("http://localhost:4243").build();
-        try {
-            System.out.println(d.listImages().size());
-        } catch (DockerException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+
     @Override
     public Object refresh(String size) throws Exception {
-        System.out.print(client);
         if (!size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)) {
             return client.listContainers().size();
         } else {
-            return getContainersInfo();
+
+            List<DockerInfo> containers = getContainersInfo();
+            Map<String, Object> data = new HashMap<>();
+            data.put("containers", containers);
+            data.put("images", getImagesInfo(containers));
+            return data;
         }
     }
 
@@ -238,7 +245,46 @@ public class DockerPlugin extends Plugin {
     }
 
 
-    //Class methods
+    /**
+     * List all the images available
+     *
+     * @return
+     * @throws DockerException
+     * @throws InterruptedException
+     */
+    private List<DockerImageInfo> getImagesInfo(List<DockerInfo> containers) throws DockerException, InterruptedException {
+
+        return client.listImages()
+                .stream()
+                .map(i -> {
+                    DockerImageInfo info = new DockerImageInfo();
+                    info.setId(i.id());
+                    info.setTag(i.repoTags().stream().collect(Collectors.joining(", ")));
+                    info.setSize(ByteUtils.humanReadableByteCount(i.size(), true));
+
+                    ZonedDateTime created = Instant.ofEpochSecond(Long.parseLong(i.created())).atZone(ZoneId.systemDefault());
+                    info.setCreated(created.format(DateTimeFormatter.RFC_1123_DATE_TIME));
+
+                    String usedBy = containers
+                            .stream()
+                            .filter(c -> c.imageId.equalsIgnoreCase(i.id()))
+                            .map(c -> c.names.stream().collect(Collectors.joining(", ")))
+                            .collect(Collectors.joining(", "));
+
+                    info.setUsedBy(usedBy);
+
+                    return info;
+                })
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Gets the list of all the containers with detailed information about them
+     *
+     * @return
+     * @throws DockerException
+     * @throws InterruptedException
+     */
     private List<DockerInfo> getContainersInfo() throws DockerException, InterruptedException {
         logger.info("Getting container stats for all containers");
         List<DockerInfo> containers = client.listContainers(DockerClient.ListContainersParam.allContainers())
@@ -249,9 +295,12 @@ public class DockerPlugin extends Plugin {
 
         List<Callable<Void>> statsTasks = containers.stream().map(c -> {
             return (Callable<Void>) () -> {
-                ContainerStats stats = client.stats(c.id);
-                c.setStats(stats);
-
+                try {
+                    ContainerStats stats = client.stats(c.id);
+                    c.setStats(stats);
+                } catch (Exception e) {
+                    logger.info("Error while setting stats", e);
+                }
                 return null;
             };
         }).collect(Collectors.toList());
@@ -261,7 +310,7 @@ public class DockerPlugin extends Plugin {
             logger.info("Getting all stats");
             exec.invokeAll(statsTasks);
             logger.info("All stats finish");
-        }finally{
+        } finally {
             exec.shutdown();
         }
         return containers;

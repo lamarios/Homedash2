@@ -1,15 +1,41 @@
-h2 Containers
-.table-responsive
-    table.table.containers.table-striped.table-hover
-        thead
-            tr
-                th Id
-                th Names
-                th Status
-                th Memory
-                th
-        tbody
-            tr
-                td(colspan="5") Loading...
+
+div
+    ul.nav.nav-tabs(role="tablist")
+        li.active(role="presentation")
+            a(href="#containers", aria-controls="containers", role="tab", data-toggle="tab") Containers
+        li(role="presentation")
+            a(href="#images", aria-controls="images", role="tab", data-toggle="tab") Images
+
+    .tab-content
+        #containers.tab-pane.active(role="tabpanel")
+            .table-responsive
+                table.table.containers.table-striped.table-hover
+                    thead
+                        tr
+                            th Names
+                            th Image
+                            th Status
+                            th Memory
+                            th Bytes received
+                            th Bytes sent
+                            th
+                    tbody
+                        tr
+                            td(colspan="7") Loading...
+        #images.tab-pane(role="tabpanel")
+            .table-responsive
+                table.table.images.table-striped.table-hover
+                    thead
+                        tr
+                            th Labels
+                            th Used by
+                            th Size
+                            th Created
+                            th
+                    tbody
+                        tr
+                            td(colspan="5") Loading...
+
 
 include ./docker-modal
+include ./docker-image-modal

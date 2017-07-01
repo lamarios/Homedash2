@@ -1,0 +1,13 @@
+#image-modal.modal.fade(tabindex="-1", role="dialog")
+    .modal-dialog(role="document")
+        .modal-content
+            .modal-header
+                button.close(type="button", data-dismiss="modal", aria-label="Close")
+                    span(aria=hidden="true") &times;
+                h4.modal-title
+            .modal-body
+                p
+                    strong ID:&nbsp;
+                    span.id
+                button.btn.btn-warning.image-action.not-running(data-action="removeImage") Remove
+                button.btn.btn-danger.image-action.not-running(data-action="removeImageForce") Force remove

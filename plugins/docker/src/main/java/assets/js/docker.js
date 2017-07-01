@@ -1,36 +1,32 @@
 function docker(moduleId) {
     this.moduleId = moduleId;
     this.selectedContainer;
+    this.selectedImage;
 
     this.documentReady = function (size) {
         var root = rootElement(this.moduleId);
         var self = this;
         if (size == 'full-screen') {
 
-            root.on('click', '.container-modal', function (event) {
-                var modal = root.find('.modal');
-                self.selectedContainer = $(this).attr('data-id');
-                var status = root.find(
-                    '.containers tr[data-id="' + self.selectedContainer + '"] .status').html();
+            root.on('click', '.container-modal', function () {
+                self.showContainerModal($(this));
+            });
 
-                modal.find('.modal-header h4').html($(this).attr('data-name'));
-
-                modal.find('.action').hide();
-                if (status.startsWith('Up')) {
-                    modal.find('.action.running').show();
-                } else {
-                    modal.find('.action.not-running').show();
-                }
-
-                modal.find('.container-info').html('<div class="loader"></div>');
-                sendMessage(self.moduleId, 'details', self.selectedContainer);
-
-                modal.modal('show');
+            root.on('click', '.image-modal', function () {
+                self.showImageModal($(this));
             });
 
             root.on('click', '.action', function (event) {
                 if (self.selectedContainer !== undefined) {
                     sendMessage(self.moduleId, $(this).attr('data-action'), self.selectedContainer);
+                    root.find('.modal').modal('hide');
+                }
+            });
+
+
+            root.on('click', '.image-action', function (event) {
+                if (self.selectedImage !== undefined) {
+                    sendMessage(self.moduleId, $(this).attr('data-action'), self.selectedImage);
                     root.find('.modal').modal('hide');
                 }
             });
@@ -50,12 +46,53 @@ function docker(moduleId) {
 
     this.onMessage_fullScreen = function (command, message, extra) {
         if (command === 'refresh') {
-            this.refreshContainers(message);
+            this.refreshContainers(message.containers);
+            this.refreshImages(message.images);
         } else if (command === 'success') {
-            this.refreshContainers(extra);
+            this.refreshContainers(extra.containers);
+            this.refreshImages(extra.images);
         } else if (command === 'details') {
             this.showContainerDetails(message);
         }
+    };
+
+
+    this.showImageModal = function (source) {
+        var root = rootElement(this.moduleId);
+
+        var modal = root.find('#image-modal');
+        this.selectedImage = source.attr('data-id');
+        modal.find('.modal-title').html(source.attr('data-name'));
+        modal.find('.id').html(this.selectedImage);
+
+        modal.modal('show');
+
+    };
+
+
+    this.showContainerModal = function (source) {
+        var root = rootElement(this.moduleId);
+
+        var modal = root.find('#container-modal');
+        this.selectedContainer = source.attr('data-id');
+        var status = root.find(
+            '.containers tr[data-id="' + this.selectedContainer + '"] .status').html();
+
+        modal.find('.modal-header h4').html(source.attr('data-name'));
+
+        modal.find('.id').html(this.selectedContainer);
+
+        modal.find('.action').hide();
+        if (status.startsWith('Up')) {
+            modal.find('.action.running').show();
+        } else {
+            modal.find('.action.not-running').show();
+        }
+
+        modal.find('.container-info').html('<div class="loader"></div>');
+        sendMessage(this.moduleId, 'details', this.selectedContainer);
+
+        modal.modal('show');
     };
 
     this.showContainerDetails = function (data) {
@@ -154,6 +191,30 @@ function docker(moduleId) {
         return html.join('');
     };
 
+    this.refreshImages = function (images) {
+
+        var root = rootElement(this.moduleId);
+
+        var html = [];
+        $.each(images, function (index, image) {
+            html.push('<tr data-id="', image.id, '">');
+
+            html.push('<td>', image.tag, '</td>');
+            html.push('<td>', image.usedBy, '</td>');
+            html.push('<td>', image.size, '</td>');
+            html.push('<td>', image.created, '</td>');
+            html.push('<td class="image-modal" data-id="', image.id, '", data-name="',
+                image.tag, '">',
+                '<i class="fa fa-info-circle" aria-hidden="true"></i>',
+                '</td>');
+
+            html.push('</tr>');
+        });
+
+        root.find('.images tbody').html(html.join(''));
+    }
+
+
     this.refreshContainers = function (message) {
 
         var root = rootElement(this.moduleId);
@@ -162,13 +223,15 @@ function docker(moduleId) {
         $.each(message, function (index, container) {
             html.push('<tr data-id="', container.id, '">');
 
-            html.push('<td>', container.id, '</td>');
             html.push('<td>', container.names.join(','), '</td>');
+            html.push('<td>', container.image, '</td>');
             html.push('<td class="status">', container.status, '</td>');
             html.push('<td>', container.memoryUsagePretty, '</td>');
+            html.push('<td>', container.bytesReceivedPretty, '</td>');
+            html.push('<td>', container.bytesSentPretty, '</td>');
             html.push('<td class="container-modal" data-id="', container.id, '", data-name="',
                 container.names.join(','), '">',
-                '<i class="fa fa-ellipsis-v" aria-hidden="true"></i>',
+                '<i class="fa fa-info-circle" aria-hidden="true"></i>',
                 '</td>');
 
             html.push('</tr>');
