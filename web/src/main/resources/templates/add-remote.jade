@@ -4,7 +4,7 @@ block scripts
     script(src="/js/add-remote.js")
 
 block css
-
+    link(href='/css/remotes.css', rel='stylesheet')
 block content
     .head-links
         a(href="/") << Back
@@ -12,14 +12,17 @@ block content
     h1 Add remote module
     p Input the details of your server and choose which module you want to add
 
-    div
-        .form-group
-            label(for="remote-url") Remote URL
-            input(type="text", class="form-control", id="remote-url", name="remote-url")
-        .form-group
-            label(for="remote-key") Remote API key
-            input(type="text", class="form-control", id="remote-key", name="remote-key")
-        button#browse-remote.btn.btn-primary Browse remote
+    .row
+        .col-md-8
+            div
+                .form-group
+                    label(for="remote-url") Remote URL
+                    input(type="text", class="form-control", id="remote-url", name="remote-url")
+                .form-group
+                    label(for="remote-key") Remote API key
+                    input(type="text", class="form-control", id="remote-key", name="remote-key")
+                button#browse-remote.btn.btn-primary Browse remote
+        .col-md-4#favourites
 
     h1#remote-name
     #remote-modules

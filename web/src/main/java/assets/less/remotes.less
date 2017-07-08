@@ -1,0 +1,74 @@
+#favourites .remotes {
+
+  padding: 0;
+
+  li {
+    list-style: none;
+    cursor:pointer;
+    padding: 5px;
+  }
+
+}
+
+.add-favourite, .remove-favourite {
+
+  transform-origin: center center;
+
+  display: inline-block;
+  padding: 5px;
+
+  cursor: pointer;
+}
+
+.fa-star {
+  color: #FCE94F;
+
+  animation: favourite 0.5s;
+}
+
+@keyframes favourite {
+  @scale: 2;
+  @rotation: -10deg;
+
+  @scaleOri: 1;
+  @rotationOri: 0deg;
+
+  0% {
+    -webkit-transform: scale(@scaleOri) rotate(@rotationOri);
+    -moz-transform: scale(@scaleOri) rotate(@rotationOri);
+    -ms-transform: scale(@scaleOri) rotate(@rotationOri);
+    -o-transform: scale(@scaleOri) rotate(@rotationOri);
+    transform: scale(@scaleOri) rotate(@rotationOri);
+
+  }
+
+  80% {
+    -webkit-transform: scale(@scale) rotate(@rotation);
+    -moz-transform: scale(@scale) rotate(@rotation);
+    -ms-transform: scale(@scale) rotate(@rotation);
+    -o-transform: scale(@scale) rotate(@rotation);
+    transform: scale(@scale) rotate(@rotation);
+
+  }
+
+  @scaleSmall: 0.8;
+
+  90% {
+    -webkit-transform: scale(@scaleSmall) rotate(@rotationOri);
+    -moz-transform: scale(@scaleSmall) rotate(@rotationOri);
+    -ms-transform: scale(@scaleSmall) rotate(@rotationOri);
+    -o-transform: scale(@scaleSmall) rotate(@rotationOri);
+    transform: scale(@scaleSmall) rotate(@rotationOri);
+
+  }
+
+  100% {
+    -webkit-transform: scale(@scaleOri);
+    -moz-transform: scale(@scaleOri);
+    -ms-transform: scale(@scaleOri);
+    -o-transform: scale(@scaleOri);
+    transform: scale(@scaleOri);
+
+  }
+}
+

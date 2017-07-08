@@ -1,5 +1,7 @@
 $(document).ready(function () {
 
+    var currentRemote;
+
     $('#browse-remote').click(function () {
         var url = $('#remote-url').val();
         var key = $('#remote-key').val();
@@ -10,7 +12,22 @@ $(document).ready(function () {
 
 
         $.post('/remote/browse-remote', {url: url, key: key}, function (remote) {
-            $('#remote-name').html(remote.name);
+
+            var fav = '';
+            if (remote.favourite === true) {
+                fav = '<i class="fa fa-star remove-favourite"  aria-hidden="true"></i>&nbsp;';
+            } else {
+                fav = '<i class="fa fa-star-o add-favourite"  aria-hidden="true"></i>&nbsp;';
+            }
+
+
+            currentRemote = {
+                name: remote.name,
+                apiKey: $('#remote-key').val(),
+                url: $('#remote-url').val()
+            };
+
+            $('#remote-name').html(fav+remote.name);
 
             moduleDiv.html('');
 
@@ -45,16 +62,94 @@ $(document).ready(function () {
             pluginClass: pluginClass
         }, function (result) {
             if (result) {
-                location.href ="/";
+                location.href = "/";
             }
         }, 'json');
 
 
     });
 
+
+    $(document).on('click', '.add-favourite', function () {
+        var source = $(this);
+        console.log('current remote', currentRemote);
+        $.post('/remote/save', currentRemote, function (data) {
+
+            source.removeClass('fa-star-o');
+            source.addClass('fa-star');
+            source.removeClass('add-favourite');
+            source.addClass('remove-favourite');
+
+
+            getAllFavourites();
+        }, 'json');
+
+    });
+
+    $(document).on('click', '.remove-favourite', function () {
+        console.log('current remote', currentRemote);
+        var source = $(this);
+        $.post('/remote/delete', currentRemote, function (data) {
+
+            source.removeClass('fa-star');
+            source.addClass('fa-star-o')
+            source.removeClass('remove-favourite');
+            source.addClass('add-favourite');
+
+            getAllFavourites();
+
+        }, 'json');
+
+    });
+
+    $(document).on('click', '.remotes li', function(){
+        var source = $(this);
+
+        $('#remote-url').val(source.attr('data-url'));
+        $('#remote-key').val(source.attr('data-key'));
+
+        $('#browse-remote').click();
+
+    });
+
+
+    getAllFavourites();
+
+    function getAllFavourites(){
+        $.getJSON('/remote/all', function(remotes){
+
+            var html = [];
+            html.push('<h2>Favourites</h2>');
+            html.push('<ul class="remotes">');
+
+            $.each(remotes, function(index, remote){
+
+                html.push('<li data-url="'+remote.url+'" data-key="'+remote.apiKey+'">');
+
+                html.push('<strong>'+remote.name+'</strong> - '+remote.url);
+
+
+                html.push('</li>');
+
+            });
+
+            html.push('</ul>');
+
+            $('#favourites').html(html.join(''));
+
+        });
+    }
+
+
     function module2html(module) {
         var html = [];
-        html.push('<h3>', module.name, '</h3>');
+
+
+        html.push('<h3>')
+
+
+        html.push(module.name);
+        html.push('</h3>');
         html.push('<p>', module.description, '</h3>');
 
 

@@ -7,7 +7,7 @@ import com.j256.ormlite.table.DatabaseTable;
  * Created by gz on 22-Jun-16.
  */
 
-@DatabaseTable(tableName = "remote+favorite")
+@DatabaseTable(tableName = "remote_favorite")
 public class RemoteFavorite {
 
     @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
@@ -16,7 +16,7 @@ public class RemoteFavorite {
     @DatabaseField
     private String name;
 
-    @DatabaseField
+    @DatabaseField(unique = true)
     private String url;
 
     @DatabaseField
@@ -54,5 +54,16 @@ public class RemoteFavorite {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+
+    @Override
+    public String toString() {
+        return "RemoteFavorite{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", url='" + url + '\'' +
+                ", apiKey='" + apiKey + '\'' +
+                '}';
     }
 }

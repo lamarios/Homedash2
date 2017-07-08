@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>1.0.30</version>
+        <version>1.0.31</version>
     </parent>
 
 
@@ -64,16 +64,6 @@
             <groupId>com.sparkjava</groupId>
             <artifactId>spark-template-jade</artifactId>
             <version>2.5.5</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>spark-core</artifactId>
-                    <groupId>com.sparkjava</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
 
@@ -121,20 +111,6 @@
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>updater</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jackson-annotations</artifactId>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jackson-core</artifactId>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jackson-databind</artifactId>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- plugins -->
@@ -207,13 +183,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>1.0.30</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jade4j</artifactId>
-                    <groupId>de.neuland-bfi</groupId>
-                </exclusion>
-            </exclusions>
+            <version>1.0.31</version>
         </dependency>
 
         <dependency>
@@ -347,8 +317,8 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        Docker plugin: Add image management
-                        Add complete twitter bootstrap (to use tabs)
+                        Smoother animations.
+                        Remote favourites management.
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>

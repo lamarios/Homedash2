@@ -56,7 +56,7 @@
   transform-origin: top center;
 
   animation-name: show-grid;
-  animation-duration: 0.25s;
+  animation-duration: 0.35s;
 
   .gridster-item {
     -webkit-transition: all @transition-speed !important;
@@ -274,6 +274,8 @@
   left: 0;
   font-size: 16px;
 
+  z-index: 200;
+
   -webkit-transition: all @transition-speed !important;
   transition: all @transition-speed !important;
 
@@ -343,7 +345,20 @@
 }
 
 #settings.showing {
+  animation: showSettings 0.5s;
   bottom: 0;
+}
+
+@keyframes showSettings {
+  0%{
+    bottom:-185px;
+  }
+  70%{
+    bottom: 20px;
+  }
+  100%{
+    bottom: 0;
+  }
 }
 
 #layout-edit-mode {
@@ -353,7 +368,7 @@
   bottom: -100px;
   height: 50px;
   background-color: @accentColor;
-  z-index: 10;
+  z-index: 201;
   -webkit-transition: all @transition-speed !important;
   transition: all @transition-speed !important;
 

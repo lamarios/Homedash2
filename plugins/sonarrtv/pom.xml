@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash.plugins</groupId>
         <artifactId>plugins</artifactId>
-        <version>1.0.30</version>
+        <version>1.0.31</version>
     </parent>
 
     <artifactId>sonarrtv</artifactId>

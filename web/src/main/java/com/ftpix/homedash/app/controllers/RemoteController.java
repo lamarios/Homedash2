@@ -6,7 +6,6 @@ import com.google.gson.GsonBuilder;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import spark.ModelAndView;
@@ -16,10 +15,7 @@ import spark.Spark;
 import spark.template.jade.JadeTemplateEngine;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.ftpix.homedash.db.DB.REMOTE_FAVORITE_DAO;
 
@@ -56,11 +52,59 @@ public class RemoteController implements Controller<RemoteFavorite, Integer> {
 
         Spark.post("/remote/add", "application/json", this::addRemoteModule, gson::toJson);
 
+        Spark.post("/remote/save", "application/json", this::saveRemoteModule, gson::toJson);
+        Spark.post("/remote/delete", "application/json", this::deleteRemoteModule, gson::toJson);
+        Spark.get("/remote/all", (req, resp) -> this.getAll(), gson::toJson);
+    }
 
+    private boolean deleteRemoteModule(Request request, Response response) throws Exception {
+        String url = request.queryParams("url");
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            url = "http://" + url;
+        }
+
+        if (!url.endsWith("/")) {
+            url += "/";
+        }
+
+        get(url).ifPresent(fav -> {
+            try {
+                deleteById(fav.getId());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        return true;
+    }
+
+
+    private boolean saveRemoteModule(Request request, Response response) throws Exception {
+        String url = request.queryParams("url");
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            url = "http://" + url;
+        }
+
+        if (!url.endsWith("/")) {
+            url += "/";
+        }
+
+
+        RemoteFavorite favorite = new RemoteFavorite();
+        favorite.setApiKey(request.queryParams("apiKey"));
+        favorite.setName(request.queryParams("name"));
+        favorite.setUrl(url);
+
+        int id = create(favorite);
+
+        logger.info("Created favourite {} with data: {}", id, favorite);
+
+        return true;
     }
 
     /**
      * Adds a remote module.
+     *
      * @param req a Spark Request {@link Request}
      * @param res a Spark Response {@link Response}
      * @return
@@ -107,6 +151,15 @@ public class RemoteController implements Controller<RemoteFavorite, Integer> {
         return REMOTE_FAVORITE_DAO.queryForId(id);
     }
 
+    public Optional<RemoteFavorite> get(String url) throws Exception {
+        try {
+            System.out.println(url);
+            return Optional.ofNullable(REMOTE_FAVORITE_DAO.queryForEq("url", url)).map(l -> l.get(0));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
     @Override
     public List<RemoteFavorite> getAll() throws Exception {
         return REMOTE_FAVORITE_DAO.queryForAll();
@@ -136,7 +189,7 @@ public class RemoteController implements Controller<RemoteFavorite, Integer> {
     /**
      * Query a remote instance for its modules
      */
-    private Map<String, Object> browseRemote(String url, String key) throws UnirestException {
+    private Map<String, Object> browseRemote(String url, String key) throws Exception {
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
             url = "http://" + url;
         }
@@ -145,13 +198,15 @@ public class RemoteController implements Controller<RemoteFavorite, Integer> {
             url += "/";
         }
 
+        Map<String, Object> remote = new HashMap<>();
+
+        remote.put("favourite", get(url).isPresent());
+
         url += "api/browse";
 
         logger.info("Browsing remote: url[{}] key[{}]", url, key);
 
         HttpResponse<JsonNode> response = Unirest.get(url).header(APIController.HEADER_AUTHORIZATION, key).asJson();
-
-        Map<String, Object> remote = new HashMap<>();
 
 
         remote.put("name", response.getBody().getObject().getString("name"));
@@ -164,6 +219,7 @@ public class RemoteController implements Controller<RemoteFavorite, Integer> {
 
         remote.put("modules", modules);
         logger.info("Response: \n {}", response.getBody().toString());
+
 
         return remote;
 
