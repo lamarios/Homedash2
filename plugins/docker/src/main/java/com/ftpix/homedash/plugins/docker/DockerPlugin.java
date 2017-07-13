@@ -18,9 +18,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -179,7 +177,7 @@ public class DockerPlugin extends Plugin {
         Map<String, String> errors = new HashMap<>();
         String url = settings.get(DOCKER_URL);
 
-        logger.info("Testing docker container !");
+        logger.info("Testing docker container for url {}", url);
 
         try {
             DockerClient testClient;
@@ -259,9 +257,8 @@ public class DockerPlugin extends Plugin {
                 .map(i -> {
                     DockerImageInfo info = new DockerImageInfo();
                     info.setId(i.id());
-                    info.setTag(i.repoTags().stream().collect(Collectors.joining(", ")));
+                    info.setTag(Optional.ofNullable(i.repoTags()).map(tags -> tags.stream().collect(Collectors.joining(", "))).orElse(""));
                     info.setSize(ByteUtils.humanReadableByteCount(i.size(), true));
-
                     ZonedDateTime created = Instant.ofEpochSecond(Long.parseLong(i.created())).atZone(ZoneId.systemDefault());
                     info.setCreated(created.format(DateTimeFormatter.RFC_1123_DATE_TIME));
 

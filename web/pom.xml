@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>1.0.31</version>
+        <version>1.0.32</version>
     </parent>
 
 
@@ -29,7 +29,6 @@
         <connection>scm:git:https://github.com/lamarios/Homedash2.git</connection>
         <developerConnection>scm:git:git@github.com:lamarios/Homedash2.git</developerConnection>
     </scm>
-
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -111,6 +110,12 @@
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>updater</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jackson-databind</artifactId>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- plugins -->
@@ -183,7 +188,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>1.0.31</version>
+            <version>1.0.32</version>
         </dependency>
 
         <dependency>
@@ -317,8 +322,7 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        Smoother animations.
-                        Remote favourites management.
+                        Fix network monitor bug (hopefully) where data could be null and would make the whole plugin crash
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>
