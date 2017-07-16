@@ -31,6 +31,14 @@ function sonarrtv(moduleId) {
 
     };
 
+    this.onMessage = function (size, command, message, extra) {
+        switch (size) {
+            default:
+                this['onMessage_' + size](command, message, extra);
+                break;
+        }
+    }
+
     this.onMessage_2x2 = function (command, message, extra) {
         this.processData(message);
     };
@@ -102,7 +110,7 @@ function sonarrtv(moduleId) {
     this.showToHtml = function (show, index) {
         var html = [];
         html.push('<div class="show" data-show="', index, '" style="background-image:url(',
-                  show.fanart, ')">');
+            show.fanart, ')">');
         html.push('<div class="show-info">');
         html.push('<p>');
         html.push('<span class="show-date">', show.airDate, '</span>');

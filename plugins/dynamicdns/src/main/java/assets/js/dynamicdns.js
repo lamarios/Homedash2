@@ -57,6 +57,21 @@ function dynamicdns(moduleId) {
         return $(document).find('.modal[data-module="' + this.moduleId + '"]');
     };
 
+
+    this.onMessage = function (message, command, message, extra) {
+        switch (size) {
+            case '2x1':
+                this.onMessage_2x1(command, message, extra);
+                break;
+            case '4x3':
+                this.onMessage_4x3(command, message, extra);
+                break;
+            case 'full-screen':
+                this.onMessage_fullScreen(command, message, extra);
+                break;
+        }
+    }
+
     this.onMessage_2x1 = function (command, message, extra) {
         this.processMessage(command, message, extra);
     };
@@ -138,9 +153,9 @@ function dynamicdns(moduleId) {
         var html = [];
         html.push('<div class="form-group">');
         html.push('<label for="ddns-', this.moduleId, '-input-', input.name, '">', input.label,
-                  '</label>');
+            '</label>');
         html.push('<input type="password" class="form-control" "ddns-', this.moduleId, '-input-',
-                  input.name, '" name="', input.name, '">');
+            input.name, '" name="', input.name, '">');
         html.push('</div>');
 
         return html.join('');
@@ -150,9 +165,9 @@ function dynamicdns(moduleId) {
         var html = [];
         html.push('<div class="form-group">');
         html.push('<label for="ddns-', this.moduleId, '-input-', input.name, '">', input.label,
-                  '</label>');
+            '</label>');
         html.push('<input type="text" class="form-control""ddns-', this.moduleId, '-input-',
-                  input.name, '" name="', input.name, '">');
+            input.name, '" name="', input.name, '">');
         html.push('</div>');
         return html.join('');
     };
@@ -181,7 +196,7 @@ function dynamicdns(moduleId) {
         //html.push('<a class="btn btn-sm btn-primary edit-provider" data="', provider.id,
         // '">edit</a>');
         html.push('<a class="btn btn-sm btn-danger delete-provider" data="', provider.id,
-                  '">delete</a>');
+            '">delete</a>');
         html.push('</td>');
 
         html.push('</tr>');

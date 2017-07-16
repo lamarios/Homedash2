@@ -38,6 +38,17 @@ function docker(moduleId) {
 
     };
 
+    this.onMessage = function (size, command, message, extra) {
+        switch (size) {
+            case '1x1':
+                this.onMessage_1x1(commans, message, extra);
+                break;
+            case 'full-screen':
+                this.onMessage_fullScreen(command, message, extra);
+                break;
+        }
+    }
+
     this.onMessage_1x1 = function (command, message, extra) {
         var root = rootElement(this.moduleId);
 

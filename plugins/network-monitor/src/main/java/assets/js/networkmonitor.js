@@ -12,6 +12,15 @@ function networkmonitor(moduleId) {
 
     };
 
+
+    this.onMessage = function (size, command, message, extra) {
+        switch (size) {
+            default:
+                this['onMessage_' + size](command, message, extra);
+                break;
+        }
+    }
+
     this.onMessage_2x1 = function (command, message, extra) {
         this.width = 2;
         this.processData(message);
@@ -34,8 +43,8 @@ function networkmonitor(moduleId) {
         root.find('.up-txt').html(obj.readableUp);
         root.find('.down-txt').html(obj.readableDown);
 
-        root.find('.up-total-txt').html(' '+obj.readableTotalUp);
-        root.find('.down-total-txt').html(' '+obj.readableTotalDown);
+        root.find('.up-total-txt').html(' ' + obj.readableTotalUp);
+        root.find('.down-total-txt').html(' ' + obj.readableTotalDown);
 
         root.find('.interface-name').html(obj.name + '<small> - ' + obj.ip + '</small>');
 
@@ -69,9 +78,9 @@ function networkmonitor(moduleId) {
             var position = i * step;
 
             downStr.push('<rect width="', width, '" height="', downPerc, '" y="0" x="', position,
-                         '" />');
+                '" />');
             upStr.push('<rect width="', width, '" height="', upPerc, '" y="', 100 + (100 - upPerc),
-                       '" x="', position, '" />');
+                '" x="', position, '" />');
         }
 
         var html = [];

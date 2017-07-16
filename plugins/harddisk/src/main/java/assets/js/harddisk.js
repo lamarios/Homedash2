@@ -131,6 +131,22 @@ function harddisk(moduleId) {
         }
     };
 
+    this.onMessage = function (size, command, message, extra) {
+        switch (size) {
+            case '2x1':
+            case 'kiosk':
+                this.onMessage_2x1(command, message, extra);
+                break;
+            case '1x1':
+                this.onMessage_1x1(command, message, extra);
+                break;
+
+            case 'full-screen':
+                this.onMessage_fullScreen(command, message, extra);
+                break;
+        }
+    }
+
     this.onMessage_2x1 = function (command, message, extra) {
         this.width = 2;
         this.processData(message);

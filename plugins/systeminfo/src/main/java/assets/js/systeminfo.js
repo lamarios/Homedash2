@@ -24,6 +24,17 @@ function systeminfo(moduleId) {
         }
     };
 
+    this.onMessage = function (size, command, message, extra) {
+        switch (size) {
+            case 'full-screen':
+                this.onMessage_fullScreen(command, message, extra);
+                break;
+            default:
+                this['onMessage_' + size](command, message, extra);
+                break;
+        }
+    }
+
     this.onMessage_kiosk = function (command, message, extra) {
         this.width = 2;
         this.processData(message);
@@ -186,8 +197,8 @@ function systeminfo(moduleId) {
             return memory + ' B';
         }
         var units = si ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] : ['KiB', 'MiB', 'GiB',
-                                                                             'TiB', 'PiB', 'EiB',
-                                                                             'ZiB', 'YiB'];
+            'TiB', 'PiB', 'EiB',
+            'ZiB', 'YiB'];
         var u = -1;
         do {
             memory /= thresh;
@@ -202,8 +213,8 @@ function systeminfo(moduleId) {
             return max + ' B';
         }
         var units = si ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] : ['KiB', 'MiB', 'GiB',
-                                                                             'TiB', 'PiB', 'EiB',
-                                                                             'ZiB', 'YiB'];
+            'TiB', 'PiB', 'EiB',
+            'ZiB', 'YiB'];
         var u = -1;
         do {
             used /= thresh;
@@ -258,11 +269,11 @@ function systeminfo(moduleId) {
             console.log("Corecount", coreCount);
             for (var i = 0; i < coreCount; i++) {
                 html.push('<div class="col-xs-4 col-sm-3 graph-container"><h3 class="core-number">',
-                          i + 1, '</h3><div class="graph">', svgBase);
+                    i + 1, '</h3><div class="graph">', svgBase);
 
                 html.push('<path d="', this.coreGraph(array, i), '" />');
                 html.push(svgEnd, '</div><div class="text">', array[array.length - 1].coreUsage[i],
-                          '%</div></div>');
+                    '%</div></div>');
             }
 
         }

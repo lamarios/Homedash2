@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    initFullScreenWebsocket();
+    initSingleModuleWebSocket('full-screen');
 });
 
 function rootElement(moduleId) {

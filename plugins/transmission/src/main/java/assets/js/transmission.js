@@ -113,6 +113,17 @@ function transmission(moduleId) {
         }
     };
 
+    this.onMessage = function (size, command, message, extra) {
+        switch (size) {
+            case 'full-screen':
+                this.onmessage_fullScreen(command, message, extra);
+                break;
+            default:
+                this['onMessage_' + size](command, message, extra);
+                break;
+        }
+    }
+
     this.onMessage_3x2 = function (command, message, extra) {
         if (command == 'refresh') {
             this.processData(message);

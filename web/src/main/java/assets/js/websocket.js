@@ -36,42 +36,19 @@ function initWebsocket() {
     }
 }
 
-function initKioskWebsocket() {
-    ws = new WebSocket('ws://' + window.location.host + '/ws-kiosk');
+
+function initSingleModuleWebSocket(size) {
+    ws = new WebSocket('ws://' + window.location.host + '/ws-' + size);
     try {
-        ws.onmessage = function(event){
-            onMessageForSize(event, 'kiosk');
+
+
+        ws.onmessage = function (event) {
+            onMessageForSize(event, size);
         }
 
         ws.onopen = function (e) {
             MODULE.onConnect();
-            MODULE.documentReady('kiosk');
-            sendMessage(MODULE.moduleId, "setModule", "");
-
-        };
-
-        ws.onerror = function (error) {
-            console.error('There was an un-identified Web Socket error');
-        };
-
-        ws.onclose = showOfflineOverlay;
-    } catch (e) {
-        console.error('Sorry, the web socket at "%s" is un-available error', WS_ADDRESS);
-        console.log(e);
-    }
-}
-
-
-function initFullScreenWebsocket() {
-    ws = new WebSocket('ws://' + window.location.host + '/ws-full-screen');
-    try {
-        ws.onmessage = function(event){
-            onMessageForSize(event, 'fullScreen');
-        }
-
-        ws.onopen = function (e) {
-            MODULE.onConnect();
-            MODULE.documentReady('full-screen');
+            MODULE.documentReady(size);
             sendMessage(MODULE.moduleId, "setModule", "");
 
         };
@@ -118,7 +95,7 @@ function onMessage(event) {
     }
 
     var size = $('.gridster .module[data-module="' + json.id + '"]').attr('data-size');
-    MODULES[json.id]['onMessage_' + size](json.command, json.message, json.extra);
+    MODULES[json.id]['onMessage'](size, json.command, json.message, json.extra);
 
     //removing the loading overlay if it exists
     var loadingOverlay = $('.gridster-item[data-module="' + json.id + '"] .module-loading');
@@ -162,7 +139,7 @@ function onMessageForSize(event, size) {
 
     }
 
-    MODULE['onMessage_'+size](json.command, json.message, json.extra);
+    MODULE['onMessage'](size, json.command, json.message, json.extra);
 }
 
 

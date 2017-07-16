@@ -42,6 +42,18 @@ function portmapper(moduleId) {
 
     };
 
+
+    this.onMessage = function(size, command, message, extra){
+        switch(size){
+            case 'full-screen':
+                this.onmessage_fullScreen(command, message, extra);
+                break;
+            default:
+                this['onMessage_'+size](command, message, extra);
+                break;
+        }
+    }
+
     this.onMessage_5x5 = function (command, message, extra) {
         this.width = 5;
         this.processMessage(command, message);

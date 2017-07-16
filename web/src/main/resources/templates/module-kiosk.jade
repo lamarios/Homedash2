@@ -2,19 +2,33 @@ extends ./layout.jade
 
 block css
     link(href='/css/kiosk.css', rel='stylesheet')
-    link(href='/plugin/#{plugin.getId()}/css/#{plugin.getId()}.css', rel='stylesheet')
+    for plugin in filteredPlugins
+        link(href="/plugin/#{plugin.getId()}/css/#{plugin.getId()}.css", rel="stylesheet")
 block scripts
+
+
+    for plugin in filteredPlugins
+        script(src="/plugin/#{plugin.getId()}/js/#{plugin.getId()}.js")
+
+
+    script(type="text/javascript").
+        var MODULES = [];
+        var MODULE = new #{plugins.get(0).getId()}(#{plugins.get(0).getModule().getId()});
+
+    for plugin in plugins
+        script(type="text/javascript").
+            var moduleId = #{plugin.getModule().getId()}
+            MODULES['\''+moduleId+'\''] = new #{plugin.getId()}(moduleId);
+
+
+
     script(src="/js/websocket.js")
     script(src="/js/kiosk.js")
 
 
-    script(src='/plugin/#{plugin.getId()}/js/#{plugin.getId()}.js', type='text/javascript')
-    script(type="text/javascript").
-        var MODULE = new #{plugin.getId()}(#{plugin.getModule().getId()});
-
 block content
-
-    div(class="content size-kiosk #{plugin.getId()}")
+    #module-overlay
+    div(class="content size-kiosk #{plugins.get(0).getId()}")
         !{html}
 
 

@@ -6,4 +6,52 @@
   left: 0;
   right: 0;
   bottom: 0;
+
+  -webkit-transition: all 0.25s;
+  -moz-transition: all 0.25s;
+  -ms-transition: all 0.25s;
+  -o-transition: all 0.25s;
+  transition: all 0.25s;
+
+  transform-origin: center center;
+}
+
+.content.switching {
+  @scale: 0.9;
+
+  -webkit-transform: scale(@scale);
+  -moz-transform: scale(@scale);
+  -ms-transform: scale(@scale);
+  -o-transform: scale(@scale);
+  transform: scale(@scale);
+}
+
+#module-overlay {
+  -webkit-transition: all 0.25s;
+  -moz-transition: all 0.25s;
+  -ms-transition: all 0.25s;
+  -o-transition: all 0.25s;
+  transition: all 0.25s;
+
+  cursor: pointer;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  opacity: 0;
+  z-index: 10;
+}
+
+#module-overlay.showing {
+  opacity: 1;
+
+  @scale: 0.9;
+  -webkit-transform: scale(@scale);
+  -moz-transform: scale(@scale);
+  -ms-transform: scale(@scale);
+  -o-transform: scale(@scale);
+  transform: scale(@scale);
 }

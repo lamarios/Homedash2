@@ -1,6 +1,6 @@
 @background: rgb(10, 127, 116);
 @speed: 3s;
-.harddisk.size-2x1, .harddisk.size-1x1 {
+.harddisk.size-2x1, .harddisk.size-1x1, .harddisk.size-kiosk {
   background-color: @background;
   color: white;
   background-image: url("../files/images/disk.svg");
@@ -87,6 +87,24 @@
     left: 5px;
     width: 65px;
     bottom: 5px;
+  }
+
+}
+
+.harddisk.size-kiosk{
+  .hdd-svg{
+    height: 50vh!important;
+    width:auto !important;
+    margin-top:25vh;
+  }
+
+  p{
+    margin-top: 47vh;
+    font-size:10vh;
+  }
+
+  h4{
+    font-size:10vh;
   }
 
 }

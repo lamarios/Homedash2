@@ -33,30 +33,10 @@ function couchpotato(moduleId) {
         return rootElement(this.moduleId);
     };
 
-    this.onMessage_1x1 = function (command, message, extra) {
+    this.onMessage = function (size, command, message, extra){
         this.processData(command, message, extra);
-    };
+    }
 
-    this.onMessage_1x3 = function (command, message, extra) {
-        this.processData(command, message, extra);
-    };
-
-    this.onMessage_2x1 = function (command, message, extra) {
-        this.processData(command, message, extra);
-    };
-    this.onMessage_2x2 = function (command, message, extra) {
-        this.processData(command, message, extra);
-    };
-
-    this.onMessage_2x3 = function (command, message, extra) {
-        this.processData(command, message, extra);
-    };
-    this.onMessage_3x3 = function (command, message, extra) {
-        this.processData(command, message, extra);
-    };
-    this.onMessage_3x2 = function (command, message, extra) {
-        this.processData(command, message, extra);
-    };
 
     this.processData = function (command, message, extra) {
         if (command == 'refresh') {

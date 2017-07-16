@@ -14,13 +14,13 @@ function googlepubliccalendar(moduleId) {
         root.on('click', '.gcal-event', function (event) {
             var tr = $(this);
             var link = '<a href="' + tr.attr('data-href')
-                       + '" target="_blank">Link to the event</a>';
+                + '" target="_blank">Link to the event</a>';
 
             modal.find('.event-title').html(tr.attr('data-title'));
             modal.find('.event-date').html(tr.attr('data-date'));
             modal.find('.description')
                 .html(parent.url2link(parent.nl2br(tr.attr('data-description')))
-                      + '<br /><br />' + link);
+                    + '<br /><br />' + link);
 
             modal.modal('show');
         });
@@ -43,6 +43,17 @@ function googlepubliccalendar(moduleId) {
 
         return $(document).find('.modal[data-module="' + this.moduleId + '"]');
     };
+
+    this.onMessage = function (size, command, message, extra) {
+        switch (size) {
+            case '3x1':
+                this.onMessage_3x1(command, message, extra);
+                break;
+            case 'full-screen':
+                this.onMessage_fullScreen(command, message, extra);
+                break;
+        }
+    }
 
     this.onMessage_3x1 = function (command, message, extra) {
         var root = this.root();
@@ -97,8 +108,8 @@ function googlepubliccalendar(moduleId) {
             var html = [];
 
             html.push('<tr data-date="', event.startTime, '" data-title="', event.summary,
-                      '" data-description="', event.description, '" data-href="', event.link,
-                      '" class="gcal-event">');
+                '" data-description="', event.description, '" data-href="', event.link,
+                '" class="gcal-event">');
             html.push('<td>', event.startTime, '</td><td>', event.summary, '</td>');
             html.push('</tr>');
 

@@ -6,11 +6,13 @@ import com.ftpix.homedash.db.DB;
 import com.ftpix.homedash.jobs.BackgroundRefresh;
 import com.ftpix.homedash.models.*;
 import com.ftpix.homedash.plugins.Plugin;
+import com.ftpix.homedash.utils.Predicates;
 import com.google.gson.Gson;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import io.gsonfire.GsonFireBuilder;
+import javassist.bytecode.stackmap.BasicBlock;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.http.HttpStatus;
@@ -20,11 +22,12 @@ import spark.Response;
 import spark.Spark;
 import spark.template.jade.JadeTemplateEngine;
 
+import javax.swing.text.html.Option;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static com.ftpix.homedash.db.DB.MODULE_DAO;
 import static com.ftpix.homedash.db.DB.MODULE_SETTINGS_DAO;
@@ -90,7 +93,8 @@ public class ModuleController implements Controller<Module, Integer> {
 
 
         Spark.get("/module/:moduleId/full-screen", this::getFullScreenView, new JadeTemplateEngine());
-        Spark.get("/module/:moduleId/kiosk", this::getKioskView, new JadeTemplateEngine());
+        Spark.get("/kiosk/:moduleId", this::getKioskView, new JadeTemplateEngine());
+        Spark.get("/kiosk", this::getKioskView, new JadeTemplateEngine());
     }
 
 
@@ -104,13 +108,38 @@ public class ModuleController implements Controller<Module, Integer> {
      */
     private ModelAndView getKioskView(Request req, Response res) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
-        int id = Integer.parseInt(req.params("moduleId"));
+        List<Plugin> plugins = Optional.ofNullable(req.params("moduleId"))
+                .map(Integer::parseInt)
+                .map(i -> {
+                    try {
+                        return PluginModuleMaintainer.getInstance().getPluginForModule(i);
+                    } catch (Exception e) {
+                        return null;
+                    }
+                })
+                .map(Collections::singletonList)
+                .orElse(PluginModuleMaintainer
+                        .getInstance()
+                        .getAllPluginInstances()
+                        .stream()
+                        .filter(p -> Stream.of(p.getSizes()).anyMatch(s -> s.equalsIgnoreCase(ModuleLayout.KIOSK)))
+                        .collect(Collectors.toList())
+                );
 
-        Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(id);
-        map.put("plugin", plugin);
-        map.put("html", plugin.getView(ModuleLayout.KIOSK));
+        Object[] filteredPlugins = plugins.stream().filter(Predicates.distinctByKey(p -> p.getId())).toArray();
+
+        //We're only seeing a single module
+        map.put("plugins", plugins);
+        map.put("filteredPlugins", plugins);
+        if (plugins.isEmpty()) {
+            Spark.halt("No kiosk plugin available");
+        } else {
+            map.put("html", plugins.get(0).getView(ModuleLayout.KIOSK));
+        }
+
 
         return new ModelAndView(map, "module-kiosk");
+
     }
 
     /**
