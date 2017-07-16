@@ -90,6 +90,27 @@ public class ModuleController implements Controller<Module, Integer> {
 
 
         Spark.get("/module/:moduleId/full-screen", this::getFullScreenView, new JadeTemplateEngine());
+        Spark.get("/module/:moduleId/kiosk", this::getKioskView, new JadeTemplateEngine());
+    }
+
+
+    /**
+     * Gets the view for a kiosk plugin
+     *
+     * @param req A Spark Request
+     * @param res A Spark response
+     * @return
+     * @throws Exception
+     */
+    private ModelAndView getKioskView(Request req, Response res) throws Exception {
+        Map<String, Object> map = new HashMap<String, Object>();
+        int id = Integer.parseInt(req.params("moduleId"));
+
+        Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(id);
+        map.put("plugin", plugin);
+        map.put("html", plugin.getView(ModuleLayout.KIOSK));
+
+        return new ModelAndView(map, "module-kiosk");
     }
 
     /**

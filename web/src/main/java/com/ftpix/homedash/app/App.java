@@ -7,6 +7,8 @@ import com.ftpix.homedash.models.Layout;
 import com.ftpix.homedash.models.Page;
 import com.ftpix.homedash.plugins.SystemInfoPlugin;
 import com.ftpix.homedash.websocket.FullScreenWebSocket;
+import com.ftpix.homedash.websocket.KioskWebSocket;
+import com.ftpix.homedash.websocket.SingleModuleWebSocket;
 import com.ftpix.homedash.websocket.MainWebSocket;
 import com.google.common.io.Files;
 import org.apache.logging.log4j.LogManager;
@@ -58,6 +60,7 @@ public class App {
 
             webSocket("/ws", MainWebSocket.class);
             webSocket("/ws-full-screen", FullScreenWebSocket.class);
+            webSocket("/ws-kiosk", KioskWebSocket.class);
 
             //No cache policy, especially against Edge and IE
             before((req, res) -> {

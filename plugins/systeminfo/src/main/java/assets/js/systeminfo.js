@@ -24,6 +24,10 @@ function systeminfo(moduleId) {
         }
     };
 
+    this.onMessage_kiosk = function (command, message, extra) {
+        this.width = 2;
+        this.processData(message);
+    };
     this.onMessage_2x1 = function (command, message, extra) {
         this.width = 2;
         this.processData(message);

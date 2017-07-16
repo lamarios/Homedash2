@@ -117,14 +117,25 @@ function getSizes() {
         console.log(json);
 
         var html = [];
+        var hasKiosk = false;
         $.each(json, function (index, value) {
             var width = value.split('x')[0];
 
+
             //We hide the sizes bigger than current layout
-            if (width <= LAYOUT.maxGridWidth && value != "full-screen") {
+            if (width <= LAYOUT.maxGridWidth && value != "full-screen" && value != 'kiosk') {
                 html.push('<p class="resize-size" data-size="', value, '"><a>', value, '</a></p>');
+            } else if (value === 'kiosk') {
+                hasKiosk = true;
             }
         });
+
+
+        if (hasKiosk) {
+            html.push('<hr />');
+            html.push('<p><a href="/module/' + moduleId + '/kiosk"><i class="fa fa-television" aria-hidden="true"></i> View in kiosk mode </a></p>');
+        }
+
         sizes.siblings('.resize-size').remove();
         sizes.after(html.join(''));
     });

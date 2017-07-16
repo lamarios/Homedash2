@@ -36,10 +36,38 @@ function initWebsocket() {
     }
 }
 
+function initKioskWebsocket() {
+    ws = new WebSocket('ws://' + window.location.host + '/ws-kiosk');
+    try {
+        ws.onmessage = function(event){
+            onMessageForSize(event, 'kiosk');
+        }
+
+        ws.onopen = function (e) {
+            MODULE.onConnect();
+            MODULE.documentReady('kiosk');
+            sendMessage(MODULE.moduleId, "setModule", "");
+
+        };
+
+        ws.onerror = function (error) {
+            console.error('There was an un-identified Web Socket error');
+        };
+
+        ws.onclose = showOfflineOverlay;
+    } catch (e) {
+        console.error('Sorry, the web socket at "%s" is un-available error', WS_ADDRESS);
+        console.log(e);
+    }
+}
+
+
 function initFullScreenWebsocket() {
     ws = new WebSocket('ws://' + window.location.host + '/ws-full-screen');
     try {
-        ws.onmessage = onFullScreenMessage;
+        ws.onmessage = function(event){
+            onMessageForSize(event, 'fullScreen');
+        }
 
         ws.onopen = function (e) {
             MODULE.onConnect();
@@ -109,7 +137,7 @@ function onMessage(event) {
  *
  * @param event
  */
-function onFullScreenMessage(event) {
+function onMessageForSize(event, size) {
     var json = JSON.parse(event.data);
 
     console.log(event.data);
@@ -134,7 +162,7 @@ function onFullScreenMessage(event) {
 
     }
 
-    MODULE['onMessage_fullScreen'](json.command, json.message, json.extra);
+    MODULE['onMessage_'+size](json.command, json.message, json.extra);
 }
 
 

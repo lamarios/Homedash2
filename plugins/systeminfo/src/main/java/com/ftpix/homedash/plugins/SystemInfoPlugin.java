@@ -101,7 +101,7 @@ public class SystemInfoPlugin extends Plugin {
 
     @Override
     public String[] getSizes() {
-        return new String[]{ModuleLayout.FULL_SCREEN, ModuleLayout.SIZE_2x1, ModuleLayout.SIZE_1x1};
+        return new String[]{ModuleLayout.FULL_SCREEN, ModuleLayout.SIZE_2x1, ModuleLayout.SIZE_1x1, ModuleLayout.KIOSK};
     }
 
     @Override

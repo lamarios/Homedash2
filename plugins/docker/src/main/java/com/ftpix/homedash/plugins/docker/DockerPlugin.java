@@ -316,6 +316,7 @@ public class DockerPlugin extends Plugin {
 
     private ContainerInfo getContainerDetails(String id) throws DockerException, InterruptedException {
         return client.inspectContainer(id);
+
     }
 
     private void removeContainer(String id) throws DockerException, InterruptedException {
