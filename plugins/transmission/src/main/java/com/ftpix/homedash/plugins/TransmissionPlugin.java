@@ -72,7 +72,7 @@ public class TransmissionPlugin extends Plugin {
 
     @Override
     public String[] getSizes() {
-        return new String[]{"3x2", "2x1", "2x2", ModuleLayout.FULL_SCREEN};
+        return new String[]{"3x2", "2x1", "2x2", ModuleLayout.FULL_SCREEN, ModuleLayout.KIOSK};
     }
 
     @Override

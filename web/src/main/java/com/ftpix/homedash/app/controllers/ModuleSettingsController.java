@@ -10,20 +10,10 @@ import java.util.List;
 /**
  * Created by gz on 04-Jun-16.
  */
-public class ModuleSettingsController implements Controller<ModuleSettings, Integer>{
+public enum ModuleSettingsController implements Controller<ModuleSettings, Integer>{
+INSTANCE;
 
-    ///Singleton
-    private static ModuleSettingsController controller;
 
-    private ModuleSettingsController(){}
-
-    public static ModuleSettingsController getInstance(){
-        if(controller == null){
-            controller = new ModuleSettingsController();
-        }
-        return controller;
-    }
-    // end of singleton
 
 
     @Override

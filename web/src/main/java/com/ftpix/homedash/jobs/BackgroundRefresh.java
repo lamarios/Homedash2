@@ -26,7 +26,7 @@ public class BackgroundRefresh implements Job {
         long time = TIME++;
 
         try {
-            PluginModuleMaintainer.getInstance().getAllPluginInstances()
+            PluginModuleMaintainer.INSTANCE.getAllPluginInstances()
                     .stream()
                     .filter(p -> p.getBackgroundRefreshRate() > Plugin.NEVER && time % p.getBackgroundRefreshRate() == 0 && p.getModule().getLocation() == ModuleLocation.LOCAL)
                     .forEach((plugin) -> {

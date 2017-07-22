@@ -28,6 +28,7 @@
         <module>mma</module>
         <module>dockercompose</module>
         <module>logreader</module>
+        <module>plex</module>
     </modules>
 
     <dependencies>

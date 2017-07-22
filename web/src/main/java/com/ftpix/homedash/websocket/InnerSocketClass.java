@@ -67,7 +67,7 @@ public class InnerSocketClass {
         WebSocketMessage response = new WebSocketMessage();
         Plugin plugin = null;
         try {
-            plugin = PluginModuleMaintainer.getInstance().getPluginForModule(message.getModuleId());
+            plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(message.getModuleId());
             response = plugin.processIncomingCommand(message.getCommand(), message.getMessage().toString(), message.getExtra());
         } catch (Exception e) {
             logger.error("Error while processing the command", e);
@@ -119,7 +119,7 @@ public class InnerSocketClass {
             }
 
             try {
-                Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(this.moduleId);
+                Plugin plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(this.moduleId);
                 Thread.sleep(plugin.getRefreshRate(SIZE) * 1000);
                 time += plugin.getRefreshRate(SIZE);
             } catch (Exception e) {
@@ -136,7 +136,7 @@ public class InnerSocketClass {
         //we will start refresh only if at least one of the clients has a page
         stopRefresh();
 
-        PluginModuleMaintainer.getInstance().getPluginForModule(moduleId).increaseClients();
+        PluginModuleMaintainer.INSTANCE.getPluginForModule(moduleId).increaseClients();
 
         logger.info("clients are ready");
 
@@ -167,7 +167,7 @@ public class InnerSocketClass {
                 exec = null;
                 time = 0;
 
-                PluginModuleMaintainer.getInstance().getPluginForModule(moduleId).decreaseClients();
+                PluginModuleMaintainer.INSTANCE.getPluginForModule(moduleId).decreaseClients();
 
             }
         } catch (Exception e) {

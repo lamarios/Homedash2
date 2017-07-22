@@ -28,7 +28,7 @@ public class ModuleTest {
     public void aModuleShouldHave2Settings() {
 
         try {
-            Module module = ModuleController.getInstance().get(1);
+            Module module = ModuleController.INSTANCE.get(1);
 
             assertTrue("Has 2 settings", module.getSettings().size() == 2);
 
@@ -43,16 +43,16 @@ public class ModuleTest {
     public void bModuleShouldHaveModuleLayout() {
 
         try {
-            Module module = ModuleController.getInstance().get(1);
+            Module module = ModuleController.INSTANCE.get(1);
 
-            Layout desktopLayout = LayoutController.getInstance().get(1);
-            Layout tabletLayout = LayoutController.getInstance().get(2);
-            Layout mobileLayout = LayoutController.getInstance().get(3);
+            Layout desktopLayout = LayoutController.INSTANCE.get(1);
+            Layout tabletLayout = LayoutController.INSTANCE.get(2);
+            Layout mobileLayout = LayoutController.INSTANCE.get(3);
 
 
-            assertNotNull("Has desktop layout", ModuleLayoutController.getInstance().getLayoutForModule(desktopLayout, module));
-            assertNotNull("Has tablet layout", ModuleLayoutController.getInstance().getLayoutForModule(tabletLayout, module));
-            assertNotNull("Has mobile layout", ModuleLayoutController.getInstance().getLayoutForModule(mobileLayout, module));
+            assertNotNull("Has desktop layout", ModuleLayoutController.INSTANCE.getLayoutForModule(desktopLayout, module));
+            assertNotNull("Has tablet layout", ModuleLayoutController.INSTANCE.getLayoutForModule(tabletLayout, module));
+            assertNotNull("Has mobile layout", ModuleLayoutController.INSTANCE.getLayoutForModule(mobileLayout, module));
 
 
         } catch (Exception e) {
@@ -65,20 +65,20 @@ public class ModuleTest {
     @Test
     public void zModuleDeleteShouldDeleteSettingsAndModuleLayout() {
         try {
-            Module module = ModuleController.getInstance().get(1);
+            Module module = ModuleController.INSTANCE.get(1);
 
-            Layout desktopLayout = LayoutController.getInstance().get(1);
-            Layout tabletLayout = LayoutController.getInstance().get(2);
-            Layout mobileLayout = LayoutController.getInstance().get(3);
+            Layout desktopLayout = LayoutController.INSTANCE.get(1);
+            Layout tabletLayout = LayoutController.INSTANCE.get(2);
+            Layout mobileLayout = LayoutController.INSTANCE.get(3);
 
 
             //This will create layout if it doesn't exist
-            ModuleLayoutController.getInstance().getLayoutForModule(desktopLayout, module);
-            ModuleLayoutController.getInstance().getLayoutForModule(tabletLayout, module);
-            ModuleLayoutController.getInstance().getLayoutForModule(mobileLayout, module);
+            ModuleLayoutController.INSTANCE.getLayoutForModule(desktopLayout, module);
+            ModuleLayoutController.INSTANCE.getLayoutForModule(tabletLayout, module);
+            ModuleLayoutController.INSTANCE.getLayoutForModule(mobileLayout, module);
 
 
-            ModuleController.getInstance().delete(module);
+            ModuleController.INSTANCE.delete(module);
 
             QueryBuilder<ModuleLayout, Integer> queryBuilder = DB.MODULE_LAYOUT_DAO.queryBuilder();
             Where<ModuleLayout, Integer> where = queryBuilder.where();
@@ -111,21 +111,21 @@ public class ModuleTest {
             Module module = new Module();
             module.setId(1);
             module.setPluginClass(DockerPlugin.class.getCanonicalName());
-            module.setPage(PageController.getInstance().get(1));
+            module.setPage(PageController.INSTANCE.get(1));
 
-            ModuleController.getInstance().create(module);
+            ModuleController.INSTANCE.create(module);
 
             ModuleSettings setting1 = new ModuleSettings();
             setting1.setName("Setting1");
             setting1.setValue("Yo");
             setting1.setModule(module);
-            ModuleSettingsController.getInstance().create(setting1);
+            ModuleSettingsController.INSTANCE.create(setting1);
 
             ModuleSettings setting2 = new ModuleSettings();
             setting1.setName("Setting2");
             setting1.setValue("Yo");
             setting2.setModule(module);
-            ModuleSettingsController.getInstance().create(setting2);
+            ModuleSettingsController.INSTANCE.create(setting2);
 
 
         } catch (Exception e) {

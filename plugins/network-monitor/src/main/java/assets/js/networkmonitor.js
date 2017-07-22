@@ -21,6 +21,11 @@ function networkmonitor(moduleId) {
         }
     }
 
+
+    this.onMessage_kiosk = function (command, message, extra) {
+        this.onMessage_3x2(command, message, extra);
+    };
+
     this.onMessage_2x1 = function (command, message, extra) {
         this.width = 2;
         this.processData(message);

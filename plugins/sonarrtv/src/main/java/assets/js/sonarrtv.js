@@ -6,6 +6,8 @@ function sonarrtv(moduleId) {
     this.timeout;
     this.currentIndex = 0;
 
+    this.onConnect = function(){}
+
     this.documentReady = function (size) {
 
         var parent = this;
@@ -34,26 +36,10 @@ function sonarrtv(moduleId) {
     this.onMessage = function (size, command, message, extra) {
         switch (size) {
             default:
-                this['onMessage_' + size](command, message, extra);
+                this.processData(message);
                 break;
         }
     }
-
-    this.onMessage_2x2 = function (command, message, extra) {
-        this.processData(message);
-    };
-
-    this.onMessage_3x3 = function (command, message, extra) {
-        this.processData(message);
-    };
-
-    this.onMessage_4x4 = function (command, message, extra) {
-        this.processData(message);
-    };
-
-    this.onMessage_3x1 = function (command, message, extra) {
-        this.processData(message);
-    };
 
     this.processData = function (message) {
         clearInterval(this.interval);
@@ -109,7 +95,7 @@ function sonarrtv(moduleId) {
      */
     this.showToHtml = function (show, index) {
         var html = [];
-        html.push('<div class="show" data-show="', index, '" style="background-image:url(',
+        html.push('<div class="show" data-show="', index, '" style="background-image:url(/',
             show.fanart, ')">');
         html.push('<div class="show-info">');
         html.push('<p>');

@@ -6,23 +6,16 @@ import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.api.SonarrApi;
 import com.ftpix.homedash.plugins.api.SonarrUnauthorizedException;
 import com.ftpix.homedash.plugins.api.models.SonarrCalendar;
-
 import com.google.common.io.Files;
 import org.apache.commons.io.FileUtils;
 import org.imgscalr.Scalr;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by gz on 06-Jun-16.
@@ -75,7 +68,7 @@ public class SonarrTvPlugin extends Plugin {
 
     @Override
     public String[] getSizes() {
-        return new String[]{ModuleLayout.SIZE_2x2, "3x3", "4x4", "3x1"};
+        return new String[]{ModuleLayout.SIZE_2x2, "3x3", "4x4", "3x1", ModuleLayout.KIOSK};
     }
 
     @Override
@@ -196,6 +189,7 @@ public class SonarrTvPlugin extends Plugin {
 
     /**
      * Will download and resize pictures
+     *
      * @param series
      */
     private void downloadFanArt(SonarrCalendar series) {

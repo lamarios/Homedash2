@@ -23,26 +23,12 @@ import java.util.Map;
 /**
  * Created by gz on 01-Jun-16.
  */
-public class SettingsController implements Controller<Settings, String> {
+public enum SettingsController implements Controller<Settings, String> {
+    INSTANCE;
+
     private Logger logger = LogManager.getLogger();
     private final String AUTH_KEY = "auth";
 
-
-    ///Singleton
-    private static SettingsController controller;
-
-    private SettingsController() {
-
-    }
-
-    public static SettingsController getInstance() {
-        if (controller == null) {
-            controller = new SettingsController();
-        }
-
-        return controller;
-    }
-    // end of singleton
 
     public void defineEndpoints() {
         /**
@@ -192,7 +178,7 @@ public class SettingsController implements Controller<Settings, String> {
 
         Map<String, Object> model = new HashMap<>();
         model.put("settings", map);
-        model.put("about", UpdateController.getInstance().getVersion());
+        model.put("about", UpdateController.INSTANCE.getVersion());
 
 
         return new ModelAndView(model, "settings");

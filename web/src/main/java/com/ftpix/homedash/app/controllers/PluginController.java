@@ -9,24 +9,9 @@ import org.reflections.Reflections;
 import java.io.IOException;
 import java.util.*;
 
-public class PluginController {
+public enum PluginController {
+    INSTANCE;
     private Logger logger = LogManager.getLogger();
-
-    ///Singleton
-    private static PluginController controller;
-
-    private PluginController() {
-    }
-
-    public static PluginController getInstance() {
-        if (controller == null) {
-            controller = new PluginController();
-        }
-
-        return controller;
-    }
-    //end of singleton
-
 
     public void defineEndpoints() {
 

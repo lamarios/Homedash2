@@ -6,13 +6,11 @@ import com.ftpix.homedash.db.DB;
 import com.ftpix.homedash.jobs.BackgroundRefresh;
 import com.ftpix.homedash.models.*;
 import com.ftpix.homedash.plugins.Plugin;
-import com.ftpix.homedash.utils.Predicates;
 import com.google.gson.Gson;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import io.gsonfire.GsonFireBuilder;
-import javassist.bytecode.stackmap.BasicBlock;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.http.HttpStatus;
@@ -22,37 +20,23 @@ import spark.Response;
 import spark.Spark;
 import spark.template.jade.JadeTemplateEngine;
 
-import javax.swing.text.html.Option;
 import java.sql.SQLException;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.ftpix.homedash.db.DB.MODULE_DAO;
 import static com.ftpix.homedash.db.DB.MODULE_SETTINGS_DAO;
 
-public class ModuleController implements Controller<Module, Integer> {
+public enum ModuleController implements Controller<Module, Integer> {
+    INSTANCE;
 
     private Logger logger = LogManager.getLogger();
 
     private final Gson gson = new GsonFireBuilder().enableExposeMethodResult().createGsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     public static final String SESSION_NEW_MODULE_PAGE = "new-module-page";
 
-
-    ///Singleton
-    private static ModuleController controller;
-
-    private ModuleController() {
-    }
-
-    public static ModuleController getInstance() {
-        if (controller == null) {
-            controller = new ModuleController();
-        }
-        return controller;
-    }
-    // end of singleton
 
     public void defineEndpoints() {
 
@@ -93,54 +77,8 @@ public class ModuleController implements Controller<Module, Integer> {
 
 
         Spark.get("/module/:moduleId/full-screen", this::getFullScreenView, new JadeTemplateEngine());
-        Spark.get("/kiosk/:moduleId", this::getKioskView, new JadeTemplateEngine());
-        Spark.get("/kiosk", this::getKioskView, new JadeTemplateEngine());
     }
 
-
-    /**
-     * Gets the view for a kiosk plugin
-     *
-     * @param req A Spark Request
-     * @param res A Spark response
-     * @return
-     * @throws Exception
-     */
-    private ModelAndView getKioskView(Request req, Response res) throws Exception {
-        Map<String, Object> map = new HashMap<String, Object>();
-        List<Plugin> plugins = Optional.ofNullable(req.params("moduleId"))
-                .map(Integer::parseInt)
-                .map(i -> {
-                    try {
-                        return PluginModuleMaintainer.getInstance().getPluginForModule(i);
-                    } catch (Exception e) {
-                        return null;
-                    }
-                })
-                .map(Collections::singletonList)
-                .orElse(PluginModuleMaintainer
-                        .getInstance()
-                        .getAllPluginInstances()
-                        .stream()
-                        .filter(p -> Stream.of(p.getSizes()).anyMatch(s -> s.equalsIgnoreCase(ModuleLayout.KIOSK)))
-                        .collect(Collectors.toList())
-                );
-
-        Object[] filteredPlugins = plugins.stream().filter(Predicates.distinctByKey(p -> p.getId())).toArray();
-
-        //We're only seeing a single module
-        map.put("plugins", plugins);
-        map.put("filteredPlugins", plugins);
-        if (plugins.isEmpty()) {
-            Spark.halt("No kiosk plugin available");
-        } else {
-            map.put("html", plugins.get(0).getView(ModuleLayout.KIOSK));
-        }
-
-
-        return new ModelAndView(map, "module-kiosk");
-
-    }
 
     /**
      * Gets the view for a full screen plugin
@@ -154,7 +92,7 @@ public class ModuleController implements Controller<Module, Integer> {
         Map<String, Object> map = new HashMap<String, Object>();
         int id = Integer.parseInt(req.params("moduleId"));
 
-        Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(id);
+        Plugin plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(id);
         map.put("plugin", plugin);
         map.put("html", plugin.getView(ModuleLayout.FULL_SCREEN));
 
@@ -198,7 +136,7 @@ public class ModuleController implements Controller<Module, Integer> {
         int moduleId = Integer.parseInt(req.params("id"));
         logger.info("/module/{}/availableSizes", moduleId);
 
-        return PluginController.getInstance().getPluginSizes(getModulePlugin(moduleId));
+        return PluginController.INSTANCE.getPluginSizes(getModulePlugin(moduleId));
     }
 
     /**
@@ -256,9 +194,9 @@ public class ModuleController implements Controller<Module, Integer> {
             boolean editing = false;
             if (flatSettings.containsKey("module_id")) {
                 editing = true;
-                plugin = PluginModuleMaintainer.getInstance().getPluginForModule(Integer.parseInt(flatSettings.get("module_id")));
+                plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(Integer.parseInt(flatSettings.get("module_id")));
             } else {
-                plugin = PluginController.getInstance().createPluginFromClass(req.queryParams("class"));
+                plugin = PluginController.INSTANCE.createPluginFromClass(req.queryParams("class"));
             }
 
 
@@ -275,7 +213,7 @@ public class ModuleController implements Controller<Module, Integer> {
                     map.put("pluginClass", plugin.getClass().getCanonicalName());
                 }
                 map.put("pluginName", plugin.getDisplayName());
-                map.put("settings", PluginController.getInstance().getPluginSettingsHtml(plugin, flatSettings));
+                map.put("settings", PluginController.INSTANCE.getPluginSettingsHtml(plugin, flatSettings));
                 map.put("errors", errors);
                 ((Map<String, String>) map.get("errors")).forEach((k, v) -> logger.info("error {} ->{}", k, v));
                 return new ModelAndView(map, "module-settings");
@@ -299,12 +237,12 @@ public class ModuleController implements Controller<Module, Integer> {
         int moduleId = Integer.parseInt(req.params("moduleId"));
         logger.info("/add-module/{}/settings");
         try {
-            Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(moduleId);
+            Plugin plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(moduleId);
 
             Map<String, Object> map = new HashMap<>();
             map.put("plugin", plugin);
             map.put("pluginName", plugin.getDisplayName());
-            map.put("settings", PluginController.getInstance().getPluginSettingsHtml(plugin));
+            map.put("settings", PluginController.INSTANCE.getPluginSettingsHtml(plugin));
             return new ModelAndView(map, "module-settings");
         } catch (Exception e) {
             logger.error("Couldn't get module settings", e);
@@ -330,7 +268,7 @@ public class ModuleController implements Controller<Module, Integer> {
         logger.info("/add-module/{}", plugin.getClass().getCanonicalName());
         try {
             Map<String, Object> map = new HashMap<>();
-            map.put("settings", PluginController.getInstance().getPluginSettingsHtml(plugin));
+            map.put("settings", PluginController.INSTANCE.getPluginSettingsHtml(plugin));
             map.put("pluginClass", plugin.getClass().getCanonicalName());
             map.put("pluginName", plugin.getDisplayName());
 
@@ -370,7 +308,7 @@ public class ModuleController implements Controller<Module, Integer> {
                 req.session().attribute(SESSION_NEW_MODULE_PAGE, p.getId());
 
                 Map<String, Object> map = new HashMap<>();
-                map.put("plugins", PluginController.getInstance().listAvailablePlugins());
+                map.put("plugins", PluginController.INSTANCE.listAvailablePlugins());
 
                 return new ModelAndView(map, "add-module");
             } else {
@@ -494,10 +432,10 @@ public class ModuleController implements Controller<Module, Integer> {
     public boolean deleteModuleLayoutAndSettings(Module module) throws Exception {
         logger.info("deleteModuleLayoutAndSettings({})", module.getId());
         if (module != null) {
-            ModuleLayoutController.getInstance().deleteMany(module.getLayouts());
-            ModuleSettingsController.getInstance().deleteMany(module.getSettings());
+            ModuleLayoutController.INSTANCE.deleteMany(module.getLayouts());
+            ModuleSettingsController.INSTANCE.deleteMany(module.getSettings());
 
-            PluginModuleMaintainer.getInstance().removeModule(module.getId());
+            PluginModuleMaintainer.INSTANCE.removeModule(module.getId());
             return true;
         } else {
             return false;

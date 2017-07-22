@@ -11,7 +11,11 @@
 
     <artifactId>updater</artifactId>
     <dependencies>
-
+        <dependency>
+            <groupId>com.ftpix.homedash</groupId>
+            <artifactId>models</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>

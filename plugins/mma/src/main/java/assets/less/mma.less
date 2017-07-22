@@ -96,7 +96,7 @@
 
 ///////// SLIDESHOW
 @transition-speed: 0.5s;
-.mma.size-3x2 {
+.mma.size-3x2, .mma.size-kiosk {
   background-color: #222;
 
   .event-container {
@@ -179,7 +179,9 @@
       top: 0;
       left: 0;
       bottom: 0;
-      right: 50%
+      right: 50%;
+      background-size: cover;
+      background-position: center top;
     }
 
     .event-fighter-2 {
@@ -187,6 +189,8 @@
       left: 50%;
       right: 0;
       bottom: 0;
+      background-size: cover;
+      background-position: center top;
     }
 
   }
@@ -202,6 +206,28 @@
       z-index: 5;
       font-size: 20px;
       margin: 0 10px;
+    }
+  }
+}
+
+.mma.size-kiosk {
+  .buttons {
+    display: none;
+  }
+
+  .event-info {
+    height: auto !important;
+
+    .event-title {
+      font-size: 5vh !important;
+    }
+
+    .event-date {
+      font-size: 3vh !important;
+    }
+
+    .event-link {
+      display: none;
     }
   }
 }

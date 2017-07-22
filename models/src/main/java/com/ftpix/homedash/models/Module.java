@@ -1,6 +1,7 @@
 package com.ftpix.homedash.models;
 
 import com.j256.ormlite.dao.ForeignCollection;
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -19,6 +20,9 @@ public class Module {
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
     private Page page;
+
+    @DatabaseField(dataType = DataType.BOOLEAN)
+    private boolean onKiosk;
 
     @ForeignCollectionField(eager = false, maxEagerLevel = 0)
     public ForeignCollection<ModuleSettings> settings;
@@ -85,4 +89,11 @@ public class Module {
         this.id = id;
     }
 
+    public boolean isOnKiosk() {
+        return onKiosk;
+    }
+
+    public void setOnKiosk(boolean onKiosk) {
+        this.onKiosk = onKiosk;
+    }
 }

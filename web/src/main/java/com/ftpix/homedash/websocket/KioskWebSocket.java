@@ -82,7 +82,7 @@ public class KioskWebSocket {
             this.session = session;
 
             try {
-                kioskPlugins = PluginModuleMaintainer.getInstance().getAllPluginInstances()
+                kioskPlugins = PluginModuleMaintainer.INSTANCE.getAllPluginInstances()
                         .stream()
                         .filter(p -> Stream.of(p.getSizes()).anyMatch(s -> s.equalsIgnoreCase(ModuleLayout.KIOSK)))
                         .collect(Collectors.toList());

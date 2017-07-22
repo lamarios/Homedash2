@@ -126,7 +126,7 @@
   }
 }
 
-.sonarrtv.size-3x3, .sonarrtv.size-4x4 {
+.sonarrtv.size-3x3, .sonarrtv.size-4x4 , .sonarrtv.size-kiosk{
   .show-info {
     bottom: 0;
     left: 0;
@@ -145,4 +145,20 @@
     }
   }
 
+}
+
+.sonarrtv.size-kiosk {
+  .buttons{
+    display: none;
+  }
+
+  .show-info{
+    .show-title{
+      font-size: 5vh !important;
+    }
+
+    .show-date{
+      font-size: 3vh !important;
+    }
+  }
 }

@@ -23,21 +23,17 @@ import java.util.*;
 /**
  * Created by gz on 22-Jun-16.
  */
-public class APIController {
+public enum APIController {
+    INSTANCE;
+
     private Logger logger = LogManager.getLogger();
 
-    private static final APIController instance = new APIController();
 
     public static final String HEADER_AUTHORIZATION = "Authorization";
 
     private Gson gson = new GsonBuilder().create();
 
-    private APIController() {
-    }
 
-    public static APIController getInstance() {
-        return instance;
-    }
 
     public void defineEndpoints() {
 
@@ -75,11 +71,11 @@ public class APIController {
 
         logger.info("API request : [{}]", req.pathInfo());
 
-        Settings useRemote = SettingsController.getInstance().get(Settings.USE_REMOTE);
+        Settings useRemote = SettingsController.INSTANCE.get(Settings.USE_REMOTE);
         if (useRemote != null && useRemote.getValue().equalsIgnoreCase("1")) {
             String clientKey = req.headers(HEADER_AUTHORIZATION);
 
-            Settings localKey = SettingsController.getInstance().get(Settings.REMOTE_API_KEY);
+            Settings localKey = SettingsController.INSTANCE.get(Settings.REMOTE_API_KEY);
             if (localKey == null) {
                 Spark.halt(401);
             } else if (!localKey.getValue().equalsIgnoreCase(clientKey)) {
@@ -112,10 +108,10 @@ public class APIController {
 
         Map<String, Object> response = new HashMap<String, Object>();
 
-        response.put("name", SettingsController.getInstance().get(Settings.REMOTE_NAME).getValue());
+        response.put("name", SettingsController.INSTANCE.get(Settings.REMOTE_NAME).getValue());
 
         List<ExposedModule> modules = new ArrayList<ExposedModule>();
-        PluginModuleMaintainer.getInstance().getAllPluginInstances().stream()
+        PluginModuleMaintainer.INSTANCE.getAllPluginInstances().stream()
                 .filter(p -> p.getModule().getLocation() == ModuleLocation.LOCAL)
                 .forEach((plugin) -> {
 
@@ -147,7 +143,7 @@ public class APIController {
 
         String size = req.params("size");
         Integer moduleId = Integer.parseInt(req.params("moduleId"));
-        Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(moduleId);
+        Plugin plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(moduleId);
 
         return plugin.refreshPlugin(size);
     }
@@ -162,7 +158,7 @@ public class APIController {
      */
     private WebSocketMessage processCommand(Request req, Response res) throws Exception {
         Integer moduleId = Integer.parseInt(req.params("moduleId"));
-        Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(moduleId);
+        Plugin plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(moduleId);
 
         String command = req.queryParams("command");
         String message = req.queryParams("message");

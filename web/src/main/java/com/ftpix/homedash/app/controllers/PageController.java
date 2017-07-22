@@ -17,26 +17,11 @@ import java.util.List;
 /**
  * Created by gz on 28-May-16.
  */
-public class PageController implements Controller<Page, Integer> {
-
+public enum PageController implements Controller<Page, Integer> {
+INSTANCE;
     private Logger logger = LogManager.getLogger();
 
     private final Gson gson = new GsonFireBuilder().enableExposeMethodResult().createGsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-
-
-    ///Singleton
-    private static PageController controller;
-
-    private PageController() {
-    }
-
-    public static PageController getInstance() {
-        if (controller == null) {
-            controller = new PageController();
-        }
-        return controller;
-    }
-    // end of singleton
 
 
     @Override
@@ -167,7 +152,7 @@ public class PageController implements Controller<Page, Integer> {
         page.getModules().forEach((module) -> {
 
             try {
-                ModuleController.getInstance().delete(module);
+                ModuleController.INSTANCE.delete(module);
             } catch (Exception e) {
                 e.printStackTrace();
             }

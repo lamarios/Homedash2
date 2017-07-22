@@ -72,13 +72,16 @@ function mma(moduleId) {
     };
 
 
-    this.onMessage = function(size, command, message, extra){
-        switch(size){
+    this.onMessage = function (size, command, message, extra) {
+        switch (size) {
             case 'full-screen':
                 this.onmessage_fullScreen(command, message, extra);
                 break;
+            case'kiosk':
+                this.onMessage_3x2(command, message, extra);
+                break;
             default:
-                this['onMessage_'+size](command, message, extra);
+                this['onMessage_' + size](command, message, extra);
                 break;
         }
     }
@@ -265,7 +268,7 @@ function mma(moduleId) {
     };
 
     this.onMessage_3x2 = function (command, message, extra) {
-        if(command === 'refresh') {
+        if (command === 'refresh') {
             clearInterval(this.interval);
             clearTimeout(this.timeout);
 
@@ -278,7 +281,7 @@ function mma(moduleId) {
 
             this.showEvent();
             this.playSlideShow();
-        }else{
+        } else {
             this.onMessage_4x4(command, message, extra);
         }
     };
@@ -327,7 +330,7 @@ function mma(moduleId) {
         html.push('<div class="event-fighter event-fighter-1" style="background-image: url(\'', event.mainEventPhoto1, '\')"></div>');
         html.push('<div class="event-fighter event-fighter-2" style="background-image: url(\'', event.mainEventPhoto2, '\')"></div>');
         html.push('<div class="event-info">');
-        html.push('<a class="event-link" data-url="', event.sherdogUrl,'"><i class="fa fa-info-circle" aria-hidden="true"></i></a>');
+        html.push('<a class="event-link" data-url="', event.sherdogUrl, '"><i class="fa fa-info-circle" aria-hidden="true"></i></a>');
         html.push('<p class="event-title">', event.name, '</p>');
         html.push('<p class="event-date">', event.date.dateTime.date.year, '-', event.date.dateTime.date.month,
             '-', event.date.dateTime.date.day, '</p>');

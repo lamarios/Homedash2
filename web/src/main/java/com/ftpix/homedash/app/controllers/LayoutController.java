@@ -21,25 +21,14 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 
-public class LayoutController implements Controller<Layout, Integer> {
+public enum LayoutController implements Controller<Layout, Integer> {
+    INSTANCE;
+
     private Logger logger = LogManager.getLogger();
     private final Gson gson = new GsonFireBuilder().enableExposeMethodResult().createGsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
 
-    ///Singleton
-    private static LayoutController controller;
 
-    private LayoutController() {
-    }
-
-    public static LayoutController getInstance() {
-        if (controller == null) {
-            controller = new LayoutController();
-        }
-
-        return controller;
-    }
-    // end of singleton
 
     public void defineEndpoints() {
 
@@ -243,9 +232,9 @@ public class LayoutController implements Controller<Layout, Integer> {
      * @throws SQLException
      */
     private boolean cleanLayout(Layout layout) throws SQLException {
-        List<ModuleLayout> moduleLayouts = ModuleLayoutController.getInstance().getModuleLayoutsForLayout(layout);
+        List<ModuleLayout> moduleLayouts = ModuleLayoutController.INSTANCE.getModuleLayoutsForLayout(layout);
 
-        return ModuleLayoutController.getInstance().deleteMany(moduleLayouts);
+        return ModuleLayoutController.INSTANCE.deleteMany(moduleLayouts);
 
     }
 
@@ -298,7 +287,7 @@ public class LayoutController implements Controller<Layout, Integer> {
      */
     public String getModuleContent(int moduleId, String size) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException, JadeException, IOException {
 
-        Module module = ModuleController.getInstance().get(moduleId);
+        Module module = ModuleController.INSTANCE.get(moduleId);
 
         Plugin plugin = (Plugin) Class.forName(module.getPluginClass()).newInstance();
         return plugin.getView(size);

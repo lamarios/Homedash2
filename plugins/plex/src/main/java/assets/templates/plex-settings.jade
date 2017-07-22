@@ -1,0 +1,16 @@
+.form-group
+    label(for="url") Plex server address
+    if settings && settings.containsKey("url")
+        input.form-control(type="text", id="url", name="url", placeholder="URL", value='#{settings.get("url")}')
+    else
+        input.form-control(type="text", id="url", name ="url", placeholder = "URL")
+
+.form-group
+    label(for="token")
+        | Authentication token (
+        a(href="https://support.plex.tv/hc/en-us/articles/204059436-Finding-an-authentication-token-X-Plex-Token") get authentication token
+        | )
+    if settings && settings.containsKey("token")
+        input.form-control(type="text", id="token", name="token", placeholder="Token", value='#{settings.get("token")}')
+    else
+        input.form-control(type="text", id="token", name ="token", placeholder = "Token")

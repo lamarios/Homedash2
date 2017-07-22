@@ -1,8 +1,13 @@
 package com.ftpix.homedash.app;
 
-import static spark.Spark.delete;
-import static spark.Spark.get;
-import static spark.Spark.post;
+import com.ftpix.homedash.app.controllers.*;
+import com.ftpix.homedash.plugins.Plugin;
+import com.ftpix.homedash.utils.Predicates;
+import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import spark.ModelAndView;
+import spark.template.jade.JadeTemplateEngine;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,16 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ftpix.homedash.app.controllers.*;
-import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import com.ftpix.homedash.plugins.Plugin;
-import com.ftpix.homedash.utils.Predicates;
-
-import spark.ModelAndView;
-import spark.template.jade.JadeTemplateEngine;
+import static spark.Spark.get;
 
 public class Endpoints {
     private static Logger logger = LogManager.getLogger();
@@ -31,17 +27,18 @@ public class Endpoints {
 
     public static void define() {
 
-        LayoutController.getInstance().defineEndpoints();
-        ModuleController.getInstance().defineEndpoints();
-        PageController.getInstance().defineEndpoints();
-        PluginController.getInstance().defineEndpoints();
-        SettingsController.getInstance().defineEndpoints();
-        ModuleLayoutController.getInstance().defineEndpoints();
-        ModuleSettingsController.getInstance().defineEndpoints();
-        RemoteController.getInstance().defineEndpoints();
-        APIController.getInstance().defineEndpoints();
-        UpdateController.getInstance().defineEndpoints();
-
+        LayoutController.INSTANCE.defineEndpoints();
+        ModuleController.INSTANCE.defineEndpoints();
+        PageController.INSTANCE.defineEndpoints();
+        PluginController.INSTANCE.defineEndpoints();
+        SettingsController.INSTANCE.defineEndpoints();
+        ModuleLayoutController.INSTANCE.defineEndpoints();
+        ModuleSettingsController.INSTANCE.defineEndpoints();
+        RemoteController.INSTANCE.defineEndpoints();
+        APIController.INSTANCE.defineEndpoints();
+        UpdateController.INSTANCE.defineEndpoints();
+        KioskController.INSTANCE.defineEndpoints();
+        ;
 
         /*
          * Main Page
@@ -50,7 +47,7 @@ public class Endpoints {
             Map<String, Object> model = new HashMap<>();
 
             try {
-                List<Plugin> plugins = PluginModuleMaintainer.getInstance().getAllPluginInstances();
+                List<Plugin> plugins = PluginModuleMaintainer.INSTANCE.getAllPluginInstances();
 
                 // we need to find all the cs and js files to load
                 logger.info("Finding all distinct plugins to load distinct JS files and CSS");

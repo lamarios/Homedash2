@@ -16,24 +16,11 @@ import com.ftpix.homedash.plugins.Plugin;
 
 import javassist.NotFoundException;
 
-public class PluginModuleMaintainer implements PluginListener {
-
+public enum PluginModuleMaintainer implements PluginListener {
+INSTANCE;
     public final Map<Integer, Plugin> PLUGIN_INSTANCES = new HashMap<>();
     private Logger logger = LogManager.getLogger();
 
-    private static PluginModuleMaintainer pluginModuleMaintainer;
-
-    private PluginModuleMaintainer() {
-    }
-
-    public static PluginModuleMaintainer getInstance() {
-
-        if (pluginModuleMaintainer == null) {
-            pluginModuleMaintainer = new PluginModuleMaintainer();
-        }
-
-        return pluginModuleMaintainer;
-    }
 
 
     /**
@@ -51,7 +38,7 @@ public class PluginModuleMaintainer implements PluginListener {
      */
     public Plugin getPluginForModule(int moduleId) throws Exception {
         logger.info("Looking for module  {}", moduleId);
-        Module module = ModuleController.getInstance().get(moduleId);
+        Module module = ModuleController.INSTANCE.get(moduleId);
 
         if (module != null) {
             return getPluginForModule(module);
@@ -76,7 +63,7 @@ public class PluginModuleMaintainer implements PluginListener {
 
         } else {
             logger.info("Instance doesn't exist, recreating it");
-            plugin = PluginController.getInstance().createPluginFromClass(module.getPluginClass());
+            plugin = PluginController.INSTANCE.createPluginFromClass(module.getPluginClass());
             plugin.setCacheBase(Constants.CACHE_FOLDER);
         }
 
@@ -94,7 +81,7 @@ public class PluginModuleMaintainer implements PluginListener {
      * @throws SQLException
      */
     public List<Plugin> getAllPluginInstances() throws Exception {
-        return ModuleController.getInstance().getAll()
+        return ModuleController.INSTANCE.getAll()
                 .stream()
                 .map((module) -> {
                     try {
@@ -123,7 +110,7 @@ public class PluginModuleMaintainer implements PluginListener {
     @Override
     public void saveModuleData(ModuleData data) {
         try {
-            ModuleController.getInstance().saveModuleData(data);
+            ModuleController.INSTANCE.saveModuleData(data);
         } catch (Exception e) {
             logger.error("Error while saving data " + data.getName(), e);
         }
@@ -132,7 +119,7 @@ public class PluginModuleMaintainer implements PluginListener {
     @Override
     public void removeModuleData(ModuleData data) {
         try {
-            ModuleController.getInstance().deleteModuleData(data);
+            ModuleController.INSTANCE.deleteModuleData(data);
         } catch (Exception e) {
             logger.error("Error while saving data " + data.getName(), e);
         }

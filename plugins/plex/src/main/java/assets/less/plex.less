@@ -1,0 +1,35 @@
+.plex.size-1x1 {
+  background-color: #333;
+
+  .icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+
+    polygon {
+      fill: url('#plex-gradient');
+      transition: all 1s;
+      opacity: 0.1;
+    }
+
+    polygon.playing {
+      fill: url('#plex-gradient');
+
+      animation: plex-breath 4s infinite alternate;
+    }
+
+    @keyframes plex-breath {
+      0% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0.5;
+      }
+
+    }
+  }
+
+}

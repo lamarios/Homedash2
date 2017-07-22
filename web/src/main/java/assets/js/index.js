@@ -98,6 +98,24 @@ $(document).ready(function () {
         $('#settings').toggleClass('showing');
     });
 
+    /**
+     * Toggle kiosk rotation for a module
+     */
+    $(document).on('click', '.toggle-kiosk', function (event) {
+        var source = $(this);
+        $.get('/kiosk/' + source.attr('data-moduleId') + '/toggleRotation', function (json) {
+            var icon = source.find('a .fa');
+
+            if (json == 'true') {
+                icon.removeClass('fa-square-o');
+                icon.addClass('fa-check-square-o');
+            } else {
+                icon.removeClass('fa-check-square-o');
+                icon.addClass('fa-square-o');
+            }
+        });
+    });
+
 });
 
 // ///////////////////////////////////////////////
@@ -130,13 +148,32 @@ function getSizes() {
             }
         });
 
-
+        html.push('<div class="kiosk">');
         if (hasKiosk) {
             html.push('<hr />');
-            html.push('<p><a href="/module/' + moduleId + '/kiosk"><i class="fa fa-television" aria-hidden="true"></i> View in kiosk mode </a></p>');
+            html.push('<p><a href="/kiosk/' + moduleId + '"><i class="fa fa-television" aria-hidden="true"></i> View in kiosk mode </a></p>');
+            $.ajax({
+                async: false,
+                dataType: "json",
+                url: '/kiosk/' + moduleId + '/inRotation',
+                success: function (isKiosk) {
+
+                    if (isKiosk) {
+                        html.push('<p class="toggle-kiosk" data-moduleId="' + moduleId + '"><a><i class="fa fa-check-square-o"></i> <span>Show in kiosk rotation</span></a></p>');
+                    } else {
+                        html.push('<p class="toggle-kiosk" data-moduleId="' + moduleId + '"><a><i class="fa fa-square-o"></i> <span>Show in kiosk rotation</span></a></p>');
+                    }
+                }
+            });
+
+        } else {
+            html.push('<hr />');
+            html.push('<p>Plugin doest\'t support kiosk view</p>');
         }
+        html.push('</div>');
 
         sizes.siblings('.resize-size').remove();
+        sizes.siblings('.kiosk').remove();
         sizes.after(html.join(''));
     });
 }
@@ -255,6 +292,7 @@ function toggleLayoutEditMode() {
 function rootElement(moduleId) {
     return $('#layout .module[data-module="' + moduleId + '"] .content');
 }
+
 /**
  * Gets the current layout
  */

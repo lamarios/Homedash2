@@ -2,17 +2,14 @@ package com.ftpix.homedash.plugins.networkmonitor;
 
 import com.ftpix.homedash.Utils.ByteUtils;
 import com.ftpix.homedash.models.ModuleExposedData;
+import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.plugins.networkmonitor.models.NetworkInfo;
 import oshi.SystemInfo;
 import oshi.hardware.NetworkIF;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -51,7 +48,7 @@ public class NetworkMonitorPlugin extends Plugin {
 
     @Override
     public String[] getSizes() {
-        return new String[]{"2x1", "3x2"};
+        return new String[]{"2x1", "3x2", ModuleLayout.KIOSK};
     }
 
     @Override

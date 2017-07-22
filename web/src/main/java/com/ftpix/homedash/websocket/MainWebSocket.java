@@ -56,7 +56,7 @@ public class MainWebSocket {
             WebSocketSession newClient = new WebSocketSession();
             newClient.setSession(session);
             sessions.add(newClient);
-            PluginModuleMaintainer.getInstance().getAllPluginInstances().forEach(Plugin::increaseClients);
+            PluginModuleMaintainer.INSTANCE.getAllPluginInstances().forEach(Plugin::increaseClients);
             logger.info("New Client !, We now have {} clients", sessions.size());
 
         } else {
@@ -69,7 +69,7 @@ public class MainWebSocket {
         getClientFromSession(session).ifPresent(client -> {
             sessions.remove(client);
             try {
-                PluginModuleMaintainer.getInstance().getAllPluginInstances().forEach(Plugin::decreaseClients);
+                PluginModuleMaintainer.INSTANCE.getAllPluginInstances().forEach(Plugin::decreaseClients);
             } catch (Exception e) {
                 logger.error("Couldn't decrease the number of clients");
             }
@@ -133,7 +133,7 @@ public class MainWebSocket {
      */
     public static WebSocketMessage refreshSingleModule(int moduleId, String size) throws Exception {
 
-        Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(moduleId);
+        Plugin plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(moduleId);
         WebSocketMessage response = plugin.refreshPlugin(size);
 
         return response;
@@ -147,7 +147,7 @@ public class MainWebSocket {
         WebSocketMessage response = new WebSocketMessage();
         Plugin plugin = null;
         try {
-            plugin = PluginModuleMaintainer.getInstance().getPluginForModule(message.getModuleId());
+            plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(message.getModuleId());
 
             response = plugin.processIncomingCommand(message.getCommand(), message.getMessage().toString(), message.getExtra());
             response.setModuleId(plugin.getModule().getId());
@@ -185,7 +185,7 @@ public class MainWebSocket {
                 moduleLayouts.forEach(ml -> {
                     try {
                         // Getting the data to send
-                        Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(ml.getModule());
+                        Plugin plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(ml.getModule());
                         if (plugin.getRefreshRate(ml.getSize()) > Plugin.NEVER && time % plugin.getRefreshRate(ml.getSize()) == 0) {
 
                             // finding which clients to send to and sending
@@ -237,7 +237,7 @@ public class MainWebSocket {
                 .flatMap(s -> {
                     try {
                         logger.info("Getting module layout for settings page:[{}], Layout[{}]", s.getPage().getName(), s.getLayout().getName());
-                        return ModuleLayoutController.getInstance().generatePageLayout(s.getPage(), s.getLayout()).stream();
+                        return ModuleLayoutController.INSTANCE.generatePageLayout(s.getPage(), s.getLayout()).stream();
                     } catch (Exception e) {
                         logger.error("Can't get layouts for page:[" + s.getPage().getId() + "], layout [" + s.getLayout().getName() + "]", e);
                         return new ArrayList<ModuleLayout>().stream();
@@ -271,7 +271,7 @@ public class MainWebSocket {
             logger.info("Start refresh of modules");
             refresh = true;
 
-            exec = Executors.newFixedThreadPool(PluginModuleMaintainer.getInstance().getAllPluginInstances().size() + 1);
+            exec = Executors.newFixedThreadPool(PluginModuleMaintainer.INSTANCE.getAllPluginInstances().size() + 1);
 
             exec.execute(this::refreshModules);
         }

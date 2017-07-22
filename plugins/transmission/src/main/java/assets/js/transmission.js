@@ -115,6 +115,9 @@ function transmission(moduleId) {
 
     this.onMessage = function (size, command, message, extra) {
         switch (size) {
+            case 'kiosk':
+                this.onMessage_3x2(command, message, extra);
+                break;
             case 'full-screen':
                 this.onmessage_fullScreen(command, message, extra);
                 break;

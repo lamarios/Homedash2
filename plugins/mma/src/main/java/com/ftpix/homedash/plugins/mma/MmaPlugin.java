@@ -70,7 +70,7 @@ public class MmaPlugin extends Plugin {
 
     @Override
     public String[] getSizes() {
-        return new String[]{"3x2", "3x4", "4x4", ModuleLayout.FULL_SCREEN};
+        return new String[]{"3x2", "3x4", "4x4", ModuleLayout.FULL_SCREEN, ModuleLayout.KIOSK};
     }
 
     @Override

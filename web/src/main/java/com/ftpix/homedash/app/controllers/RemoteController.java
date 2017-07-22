@@ -22,19 +22,13 @@ import static com.ftpix.homedash.db.DB.REMOTE_FAVORITE_DAO;
 /**
  * Created by gz on 22-Jun-16.
  */
-public class RemoteController implements Controller<RemoteFavorite, Integer> {
+public enum RemoteController implements Controller<RemoteFavorite, Integer> {
+    INSTANCE;
+
     private Logger logger = LogManager.getLogger();
 
-    private static final RemoteController instance = new RemoteController();
-
-    private RemoteController() {
-    }
 
     private Gson gson = new GsonBuilder().create();
-
-    public static RemoteController getInstance() {
-        return instance;
-    }
 
     @Override
     public void defineEndpoints() {
@@ -124,7 +118,7 @@ public class RemoteController implements Controller<RemoteFavorite, Integer> {
         if (req.session().attribute(ModuleController.SESSION_NEW_MODULE_PAGE) != null) {
             pageId = req.session().attribute(ModuleController.SESSION_NEW_MODULE_PAGE);
         }
-        page = PageController.getInstance().get(pageId);
+        page = PageController.INSTANCE.get(pageId);
 
 
         return addRemoteModule(id, name, url, key, pluginClass, page);
@@ -255,17 +249,17 @@ public class RemoteController implements Controller<RemoteFavorite, Integer> {
         module.setPluginClass(pluginClass);
         module.setLocation(ModuleLocation.REMOTE);
 
-        ModuleController.getInstance().create(module);
+        ModuleController.INSTANCE.create(module);
 
         idSettings.setModule(module);
         nameSetting.setModule(module);
         urlSettings.setModule(module);
         keySettings.setModule(module);
 
-        ModuleSettingsController.getInstance().create(idSettings);
-        ModuleSettingsController.getInstance().create(nameSetting);
-        ModuleSettingsController.getInstance().create(urlSettings);
-        ModuleSettingsController.getInstance().create(keySettings);
+        ModuleSettingsController.INSTANCE.create(idSettings);
+        ModuleSettingsController.INSTANCE.create(nameSetting);
+        ModuleSettingsController.INSTANCE.create(urlSettings);
+        ModuleSettingsController.INSTANCE.create(keySettings);
 
         return true;
     }

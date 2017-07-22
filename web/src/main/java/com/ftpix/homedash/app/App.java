@@ -67,7 +67,7 @@ public class App {
                 res.header("Pragma", "no-cache"); // HTTP 1.0.
                 res.header("Expires", "0"); // Proxies.
                 logger.info("{} -> {}", req.requestMethod(), req.url());
-                if (!req.pathInfo().startsWith("/api") && !req.pathInfo().startsWith("/cache") && !req.pathInfo().equalsIgnoreCase("/login") && !SettingsController.getInstance().checkSession(req, res)) {
+                if (!req.pathInfo().startsWith("/api") && !req.pathInfo().startsWith("/cache") && !req.pathInfo().equalsIgnoreCase("/login") && !SettingsController.INSTANCE.checkSession(req, res)) {
                     res.redirect("/login");
                 }
             });
@@ -77,7 +77,7 @@ public class App {
 
 
             // set up the notifications
-            SettingsController.getInstance().updateNotificationProviders();
+            SettingsController.INSTANCE.updateNotificationProviders();
 
 //            enableDebugScreen();
 

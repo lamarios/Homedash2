@@ -26,23 +26,11 @@ import java.util.*;
 /**
  * Created by gz on 04-Jun-16.
  */
-public class ModuleLayoutController implements Controller<ModuleLayout, Integer> {
+public enum ModuleLayoutController implements Controller<ModuleLayout, Integer> {
+    INSTANCE;
+
     private Logger logger = LogManager.getLogger();
     private final Gson gson = new GsonFireBuilder().enableExposeMethodResult().createGsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-
-    ///Singleton
-    private static ModuleLayoutController controller;
-
-    private ModuleLayoutController() {
-    }
-
-    public static ModuleLayoutController getInstance() {
-        if (controller == null) {
-            controller = new ModuleLayoutController();
-        }
-        return controller;
-    }
-    // end of singleton
 
 
     @Override
@@ -76,7 +64,7 @@ public class ModuleLayoutController implements Controller<ModuleLayout, Integer>
         List<ModuleLayout> layouts = generatePageLayout(page, width);
         Map<String, Object> model = new HashMap<>();
         model.put("layouts", layouts);
-        model.put("plugins", PluginModuleMaintainer.getInstance().PLUGIN_INSTANCES);
+        model.put("plugins", PluginModuleMaintainer.INSTANCE.PLUGIN_INSTANCES);
 
 
         JadeTemplateEngine engine = new JadeTemplateEngine();
@@ -84,7 +72,7 @@ public class ModuleLayoutController implements Controller<ModuleLayout, Integer>
 
         Map<String, Object> toJson = new HashMap<String, Object>();
         toJson.put("html", html);
-        toJson.put("layout", LayoutController.getInstance().findClosestLayout(width));
+        toJson.put("layout", LayoutController.INSTANCE.findClosestLayout(width));
 
         return toJson;
     }
@@ -158,8 +146,8 @@ public class ModuleLayoutController implements Controller<ModuleLayout, Integer>
 
             // Getting the smallest available size for this plugin
             Plugin plugin = (Plugin) Class.forName(module.getPluginClass()).newInstance();
-            moduleLayout.setSize(PluginController.getInstance().getSmallestAvailableSize(plugin));
-            ModuleLayoutController.getInstance().create(moduleLayout);
+            moduleLayout.setSize(PluginController.INSTANCE.getSmallestAvailableSize(plugin));
+            ModuleLayoutController.INSTANCE.create(moduleLayout);
         } else {
             moduleLayout = moduleLayouts.get(0);
         }
@@ -184,7 +172,7 @@ public class ModuleLayoutController implements Controller<ModuleLayout, Integer>
     public boolean savePositions(int layoutId, String queryParams) throws Exception {
         logger.info("savePositions [{}] [{}]", layoutId, queryParams);
 
-        Layout layout = LayoutController.getInstance().get(layoutId);
+        Layout layout = LayoutController.INSTANCE.get(layoutId);
 
         String[] split = queryParams.split("-");
         for (String item : split) {
@@ -196,14 +184,14 @@ public class ModuleLayoutController implements Controller<ModuleLayout, Integer>
                 int y = Integer.parseInt(itemSplit[2]);
                 String size = itemSplit[3];
 
-                Module module = ModuleController.getInstance().get(moduleId);
+                Module module = ModuleController.INSTANCE.get(moduleId);
                 ModuleLayout ml = getLayoutForModule(layout, module);
                 ml.setX(x);
                 ml.setY(y);
 
-                Plugin plugin = PluginModuleMaintainer.getInstance().getPluginForModule(module);
+                Plugin plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(module);
 
-                String[] availableSizes = PluginController.getInstance().getPluginSizes(plugin);
+                String[] availableSizes = PluginController.INSTANCE.getPluginSizes(plugin);
 
                 //Checking if the size we're trying to save really exists (sometimes resizing can fail);
                 boolean contains = false;
@@ -243,7 +231,7 @@ public class ModuleLayoutController implements Controller<ModuleLayout, Integer>
      * @throws SQLException
      */
     public List<ModuleLayout> generatePageLayout(int page, int width) throws SQLException {
-        Layout closestLayout = LayoutController.getInstance().findClosestLayout(width);
+        Layout closestLayout = LayoutController.INSTANCE.findClosestLayout(width);
         Page pageObject = DB.PAGE_DAO.queryForId(page);
 
         return generatePageLayout(pageObject, closestLayout);
@@ -253,11 +241,11 @@ public class ModuleLayoutController implements Controller<ModuleLayout, Integer>
         logger.info("Generating layour for page [{}] and layout[{}]", page.getId(), layout.getName());
         List<ModuleLayout> layouts = new ArrayList<>();
 
-        List<Module> modules = ModuleController.getInstance().getModulesForPage(page);
+        List<Module> modules = ModuleController.INSTANCE.getModulesForPage(page);
 
         modules.forEach((module) -> {
             try {
-                layouts.add(ModuleLayoutController.getInstance().getLayoutForModule(layout, module));
+                layouts.add(ModuleLayoutController.INSTANCE.getLayoutForModule(layout, module));
             } catch (Exception e) {
                 logger.error("Error while trying to get layout for module", e);
             }
