@@ -58,7 +58,7 @@ function dynamicdns(moduleId) {
     };
 
 
-    this.onMessage = function (message, command, message, extra) {
+    this.onMessage = function (size, command, message, extra) {
         switch (size) {
             case '2x1':
                 this.onMessage_2x1(command, message, extra);

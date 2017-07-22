@@ -41,7 +41,7 @@ function docker(moduleId) {
     this.onMessage = function (size, command, message, extra) {
         switch (size) {
             case '1x1':
-                this.onMessage_1x1(commans, message, extra);
+                this.onMessage_1x1(command, message, extra);
                 break;
             case 'full-screen':
                 this.onMessage_fullScreen(command, message, extra);

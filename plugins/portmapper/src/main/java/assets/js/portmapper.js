@@ -46,7 +46,7 @@ function portmapper(moduleId) {
     this.onMessage = function(size, command, message, extra){
         switch(size){
             case 'full-screen':
-                this.onmessage_fullScreen(command, message, extra);
+                this.onMessage_fullScreen(command, message, extra);
                 break;
             default:
                 this['onMessage_'+size](command, message, extra);

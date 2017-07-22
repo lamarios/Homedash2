@@ -49,13 +49,13 @@ function dockercompose(moduleId) {
     this.onMessage = function (size, command, message, extra) {
         switch (size) {
             case '1x1':
-                this.onmessage_1x1(command, message, extra);
+                this.onMessage_1x1(command, message, extra);
                 break;
             case '2x1':
-                this.onmessage_2x1(command, message, extra)
+                this.onMessage_2x1(command, message, extra);
                 break;
             case 'full-screen':
-                this.onmessage_fullScreen(command, message, extra);
+                this.onMessage_fullScreen(command, message, extra);
                 break;
         }
     }

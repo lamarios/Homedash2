@@ -138,7 +138,8 @@ public class PlexPlugin extends Plugin {
         try {
             GetRequest get = Unirest.get(toCall)
                     .header(PLEX_HEADER_ACCEPT, PLEX_HEADER_ACCEPT_VALUE);
-            gson.fromJson(get.asString().getBody(), PlexSession.class);
+
+            PlexSession sessions = PlexResultParser.parseJson(get.asJson().getBody());
             return null;
         } catch (UnirestException e) {
             Map<String, String> errors = new HashMap<>();
@@ -193,66 +194,72 @@ public class PlexPlugin extends Plugin {
      * @param sessions
      */
     private void downloadSessionPictures(PlexSession sessions) {
-        ExecutorService exec = Executors.newFixedThreadPool(sessions.getMediaContainer().size * 3);
+        Optional.ofNullable(sessions.getMediaContainer())
+                .map(c -> c.size)
+                .filter(i -> i > 0)
+                .ifPresent(size -> {
+                    ExecutorService exec = Executors.newFixedThreadPool(size * 3);
 
-        try {
-            Optional.ofNullable(sessions.getMediaContainer())
-                    .map(c -> c.videos)
-                    .orElse(Collections.emptyList())
-                    .forEach(video -> {
+                    try {
+                        Optional.ofNullable(sessions.getMediaContainer())
+                                .map(c -> c.videos)
+                                .orElse(Collections.emptyList())
+                                .forEach(video -> {
 
-                        List<Callable<Void>> tasks = new ArrayList<>();
+                                    List<Callable<Void>> tasks = new ArrayList<>();
 
-                        tasks.add(() -> {
-                            video.grandparentThumb = Optional.ofNullable(video.grandparentThumb)
-                                    .map(this::downloadPicture)
-                                    .orElse("");
-                            return null;
-                        });
+                                    tasks.add(() -> {
+                                        video.grandparentThumb = Optional.ofNullable(video.grandparentThumb)
+                                                .map(this::downloadPicture)
+                                                .orElse("");
+                                        return null;
+                                    });
 
 
-                        tasks.add(() -> {
-                            video.grandparentArt = Optional.ofNullable(video.grandparentArt)
-                                    .map(this::downloadPicture)
-                                    .orElse("");
-                            return null;
-                        });
-                        tasks.add(() -> {
-                            video.parentThumb = Optional.ofNullable(video.parentThumb)
-                                    .map(this::downloadPicture)
-                                    .orElse("");
-                            return null;
-                        });
-                        tasks.add(() -> {
-                            video.parentArt = Optional.ofNullable(video.parentArt)
-                                    .map(this::downloadPicture)
-                                    .orElse("");
-                            return null;
-                        });
-                        tasks.add(() -> {
-                            video.thumb = Optional.ofNullable(video.thumb)
-                                    .map(this::downloadPicture)
-                                    .orElse("");
-                            return null;
-                        });
-                        tasks.add(() -> {
-                            video.art = Optional.ofNullable(video.art)
-                                    .map(this::downloadPicture)
-                                    .orElse("");
-                            return null;
-                        });
+                                    tasks.add(() -> {
+                                        video.grandparentArt = Optional.ofNullable(video.grandparentArt)
+                                                .map(this::downloadPicture)
+                                                .orElse("");
+                                        return null;
+                                    });
+                                    tasks.add(() -> {
+                                        video.parentThumb = Optional.ofNullable(video.parentThumb)
+                                                .map(this::downloadPicture)
+                                                .orElse("");
+                                        return null;
+                                    });
+                                    tasks.add(() -> {
+                                        video.parentArt = Optional.ofNullable(video.parentArt)
+                                                .map(this::downloadPicture)
+                                                .orElse("");
+                                        return null;
+                                    });
+                                    tasks.add(() -> {
+                                        video.thumb = Optional.ofNullable(video.thumb)
+                                                .map(this::downloadPicture)
+                                                .orElse("");
+                                        return null;
+                                    });
+                                    tasks.add(() -> {
+                                        video.art = Optional.ofNullable(video.art)
+                                                .map(this::downloadPicture)
+                                                .orElse("");
+                                        return null;
+                                    });
 
-                        try {
-                            exec.invokeAll(tasks);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
-        } catch (RuntimeException e) {
-            logger.error("Couldn't run in exec", e);
-        } finally {
-            exec.shutdown();
-        }
+                                    try {
+                                        exec.invokeAll(tasks);
+                                    } catch (InterruptedException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                });
+                    } catch (RuntimeException e) {
+                        logger.error("Couldn't run in exec", e);
+                    } finally {
+                        exec.shutdown();
+                    }
+
+                });
     }
 
 
