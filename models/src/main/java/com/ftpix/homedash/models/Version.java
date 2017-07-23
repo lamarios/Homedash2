@@ -7,7 +7,7 @@ import java.util.stream.Stream;
  * Created by gz on 7/22/17.
  */
 public class Version implements Comparable<Version>, Comparator<Version> {
-    private int major, minor, patch;
+    private int year = 0, month = 0, patch = 0;
 
 
     private final static String VERSION_PATTERN = "(\\d+)\\.(\\d+)\\.(\\d+)";
@@ -18,57 +18,49 @@ public class Version implements Comparable<Version>, Comparator<Version> {
 
             int[] ints = Stream.of(version.split("\\.")).mapToInt(Integer::valueOf).toArray();
 
-            major = ints[0];
-            minor = ints[1];
+            year = ints[0];
+            month = ints[1];
             patch = ints[2];
-
         }
     }
 
     public Version(int major, int minor, int patch) {
-        this.major = major;
-        this.minor = minor;
+        this.year = major;
+        this.month = minor;
         this.patch = patch;
     }
 
-    public int getMajor() {
-        return major;
+    public int getYear() {
+        return year;
     }
 
-    public void setMajor(int major) {
-        this.major = major;
+    public void setYear(int year) {
+        this.year = year;
     }
 
-    public int getMinor() {
-        return minor;
+    public int getMonth() {
+        return month;
     }
 
-    public void setMinor(int minor) {
-        this.minor = minor;
-    }
-
-    public int getPatch() {
-        return patch;
-    }
-
-    public void setPatch(int patch) {
-        this.patch = patch;
+    public void setMonth(int month) {
+        this.month = month;
     }
 
     @Override
     public int compareTo(Version version) {
 
-        int majorCompare = Integer.compare(major, version.getMajor());
-        int minorCompare = Integer.compare(minor, version.getMinor());
+        int yearCompare = Integer.compare(year, version.getYear());
+        int monthCompare = Integer.compare(month, version.getMonth());
         int patchCompare = Integer.compare(patch, version.getPatch());
-        if (majorCompare == 0) {
-            if (minorCompare == 0) {
+
+        if (yearCompare == 0) {
+            if (monthCompare == 0) {
                 return patchCompare;
             } else {
-                return minorCompare;
+                return monthCompare;
             }
         } else {
-            return majorCompare;
+            return yearCompare;
         }
     }
 
@@ -79,6 +71,10 @@ public class Version implements Comparable<Version>, Comparator<Version> {
 
     @Override
     public String toString() {
-        return major+"."+minor+"."+patch;
+        return year + "." + month + "." + patch;
+    }
+
+    public int getPatch() {
+        return patch;
     }
 }

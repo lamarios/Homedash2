@@ -119,7 +119,7 @@ function transmission(moduleId) {
                 this.onMessage_3x2(command, message, extra);
                 break;
             case 'full-screen':
-                this.onmessage_fullScreen(command, message, extra);
+                this.onMessage_fullScreen(command, message, extra);
                 break;
             default:
                 this['onMessage_' + size](command, message, extra);

@@ -49,10 +49,8 @@ function dockercompose(moduleId) {
     this.onMessage = function (size, command, message, extra) {
         switch (size) {
             case '1x1':
-                this.onMessage_1x1(command, message, extra);
-                break;
             case '2x1':
-                this.onMessage_2x1(command, message, extra);
+                this.onMessage_1x1(command, message, extra);
                 break;
             case 'full-screen':
                 this.onMessage_fullScreen(command, message, extra);
@@ -67,9 +65,6 @@ function dockercompose(moduleId) {
         root.find('.count').html(message.count);
         root.find('.folder').html(message.folder);
     };
-    this.onMessage_2x1 = function (command, message, extra) {
-        this.onMessage_1x1(command, message, extra);
-    }
 
 
     this.onMessage_fullScreen = function (command, message, extra) {

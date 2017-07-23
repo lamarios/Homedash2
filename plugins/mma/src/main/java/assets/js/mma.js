@@ -75,7 +75,7 @@ function mma(moduleId) {
     this.onMessage = function (size, command, message, extra) {
         switch (size) {
             case 'full-screen':
-                this.onmessage_fullScreen(command, message, extra);
+                this.onMessage_fullScreen(command, message, extra);
                 break;
             case'kiosk':
                 this.onMessage_3x2(command, message, extra);
