@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>2017.07.24</version>
+        <version>2017.07.25</version>
     </parent>
 
 
@@ -193,7 +193,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>2017.07.24</version>
+            <version>2017.07.25</version>
         </dependency>
 
         <dependency>
@@ -327,8 +327,7 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        Fix javascript for some modules after refactoring
-                        Fix Plex module that would fail if nothing is playing
+                        Fix PiHole settings that were crashing
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>
