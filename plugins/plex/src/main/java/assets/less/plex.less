@@ -1,35 +1,99 @@
-.plex.size-1x1 {
-  background-color: #333;
+.plex {
+  background: #333 url('../files/images/icon.svg');
+  background-size: cover;
+  background-position: center center;
 
-  .icon {
+  .now-playing {
     position: absolute;
     top: 0;
-    left: 0;
     bottom: 0;
+    left: 0;
     right: 0;
+    opacity: 1;
 
-    polygon {
-      fill: url('#plex-gradient');
-      transition: all 1s;
-      opacity: 0.1;
-    }
+    @speed: 0.75s;
+    -webkit-transition: all @speed;
+    -moz-transition: all @speed;
+    -ms-transition: all @speed;
+    -o-transition: all @speed;
+    transition: all @speed;
 
-    polygon.playing {
-      fill: url('#plex-gradient');
+    background-size: cover;
+    background-position: center center;
 
-      animation: plex-breath 4s infinite alternate;
-    }
+    .info {
+      background: rgba(0, 0, 0, 0.5);
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
 
-    @keyframes plex-breath {
-      0% {
-        opacity: 1;
+
+      .progress {
+        background: rgb(206, 125, 1);
+        height: 5px;
+        margin: 0;
+        
+        @progressSpeed:0.25s;
+        -webkit-transition: width @progressSpeed;
+        -moz-transition: width @progressSpeed;
+        -ms-transition: width @progressSpeed;
+        -o-transition: width @progressSpeed;
+        transition: width @progressSpeed;
       }
 
-      100% {
-        opacity: 0.5;
+      .name {
+        padding: 5px;
+        color:white;
+        font-size: 20px;
+      }
+
+      .player{
+        padding: 5px;
+        text-align: right;
+        color:white;
       }
 
     }
   }
 
+  .now-playing.nothing {
+    opacity: 0;
+  }
+}
+
+.plex.size-2x1{
+  .name{
+    font-size: 15px !important;
+  }
+
+  .player{
+    display: none;
+  }
+}
+
+.plex.size-1x1{
+  .info{
+    .name{
+      display: none;
+    }
+
+    .player{
+      display: none;
+    }
+  }
+}
+
+.plex.size-kiosk{
+  .progress{
+    height: 1vh !important;
+  }
+
+  .name{
+    font-size: 5vh !important;
+  }
+
+  .player{
+    font-size: 3vh !important;
+  }
 }

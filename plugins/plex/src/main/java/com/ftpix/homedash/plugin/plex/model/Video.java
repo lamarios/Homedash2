@@ -21,6 +21,7 @@ public class Video {
     public String parentArt;
     public String parentThumb;
     public String year;
+    public Player player;
 
     public static Video fromJson(JSONObject json) {
         Video video = new Video();
@@ -69,6 +70,11 @@ public class Video {
 
 
         try {
+            video.key = json.getString("key");
+        } catch (JSONException e) {
+        }
+
+        try {
             video.summary = json.getString("summary");
         } catch (JSONException e) {
         }
@@ -100,6 +106,13 @@ public class Video {
         try {
             video.year = json.getString("year");
         } catch (JSONException e) {
+        }
+
+        try {
+            JSONObject object = json.getJSONObject("Player");
+            video.player = Player.fromJson(object);
+        } catch (JSONException e) {
+e.printStackTrace();
         }
 
 

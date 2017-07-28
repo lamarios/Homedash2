@@ -1,36 +1,23 @@
 package com.ftpix.homedash.plugins;
 
+import com.ftpix.homedash.models.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import com.ftpix.homedash.models.Module;
-import com.ftpix.homedash.models.ModuleData;
-import com.ftpix.homedash.models.ModuleExposedData;
-import com.ftpix.homedash.models.ModuleLayout;
-import com.ftpix.homedash.models.ModuleLocation;
-import com.ftpix.homedash.models.WebSocketMessage;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
-
 import de.neuland.jade4j.JadeConfiguration;
 import de.neuland.jade4j.exceptions.JadeException;
 import de.neuland.jade4j.template.ClasspathTemplateLoader;
 import de.neuland.jade4j.template.JadeTemplate;
 import de.neuland.jade4j.template.TemplateLoader;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.channels.NotYetBoundException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -537,4 +524,17 @@ public abstract class Plugin {
         logger.info("[{}] has now {} clients", getId(), clients.get());
     }
 
+
+    /**
+     * Define endpoints that external parties can access.
+     * The url will start by /external/{moduleid}/{your endpoint}
+     * Follow sparkjava definition for parameters
+     *
+     * YOUR URL MUST START WITH /
+     *
+     * @return
+     */
+    public List<ExternalEndPointDefinition> defineExternalEndPoints(){
+       return null;
+    }
 }

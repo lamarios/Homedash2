@@ -1,6 +1,7 @@
 package com.ftpix.homedash.plugin.plex;
 
 import com.ftpix.homedash.models.ModuleExposedData;
+import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugin.plex.model.PlexSession;
 import com.ftpix.homedash.plugins.Plugin;
@@ -80,7 +81,7 @@ public class PlexPlugin extends Plugin {
 
     @Override
     public String[] getSizes() {
-        return new String[]{"1x1"};
+        return new String[]{"1x1", "2x1", "3x2", "3x3", "4x4", ModuleLayout.KIOSK};
     }
 
     @Override
@@ -102,14 +103,10 @@ public class PlexPlugin extends Plugin {
     protected Object refresh(String size) throws Exception {
 
         switch (size) {
-            case "1x1":
+            default:
                 return Optional.ofNullable(getPlexSessions())
                         .map(PlexSession::getMediaContainer)
-                        .map(c -> c.size)
-                        .filter(i -> i > 0)
-                        .orElse(0);
-            default:
-                return null;
+                        .get();
         }
     }
 
@@ -291,7 +288,7 @@ public class PlexPlugin extends Plugin {
             }
         }
 
-        return filePath;
+        return "/" + filePath;
 
     }
 

@@ -38,7 +38,7 @@ public class Endpoints {
         APIController.INSTANCE.defineEndpoints();
         UpdateController.INSTANCE.defineEndpoints();
         KioskController.INSTANCE.defineEndpoints();
-        ;
+        PluginUrlController.INSTANCE.defineEndPoints();
 
         /*
          * Main Page
