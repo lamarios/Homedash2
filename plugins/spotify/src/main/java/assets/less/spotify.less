@@ -1,8 +1,8 @@
-.plex {
-  background: #333 url('../files/images/icon.svg');
+.spotify {
+  background-color: #050A06;
+  background-image: url('../files/icon.svg');
   background-size: cover;
   background-position: center center;
-  background-repeat: no-repeat;
 
   .now-playing {
     position: absolute;
@@ -29,13 +29,12 @@
       left: 0;
       right: 0;
 
-
       .progress {
-        background: rgb(206, 125, 1);
+        background: #1DB954;
         height: 5px;
         margin: 0;
-        
-        @progressSpeed:0.25s;
+
+        @progressSpeed: 0.25s;
         -webkit-transition: width @progressSpeed;
         -moz-transition: width @progressSpeed;
         -ms-transition: width @progressSpeed;
@@ -44,57 +43,82 @@
       }
 
       .name {
+        text-align: center;
         padding: 5px;
-        color:white;
+        color: white;
         font-size: 20px;
       }
 
-      .player{
-        padding: 5px;
-        text-align: right;
-        color:white;
+      .artists {
+        text-align: center;
+        color: white;
+        margin-bottom: 5px;
+      }
+
+      .album {
+        text-align: center;
+        color: white;
       }
 
     }
+  }
+
+  .now-playing.paused {
+    transform: scale(0.9);
   }
 
   .now-playing.nothing {
     opacity: 0;
   }
-}
 
-.plex.size-2x1{
-  .name{
-    font-size: 15px !important;
+  .authentication {
+    display: none;
+    background-color: #050A06;
+
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    button {
+      background-color: #1DB954;
+      color: white;
+    }
   }
 
-  .player{
+  .authentication.needed {
+    display: block;
+  }
+}
+
+.spotify.size-1x1, .spotify.size-2x1 {
+  .name, .artists, .album {
     display: none;
   }
 }
 
-.plex.size-1x1{
-  .info{
-    .name{
-      display: none;
-    }
-
-    .player{
-      display: none;
-    }
+.spotify.size-2x2 {
+  .artists, .album {
+    display: none;
   }
+
+  .name {
+    font-size: 15px !important;
+  }
+
 }
 
-.plex.size-kiosk{
-  .progress{
-    height: 1vh !important;
-  }
-
-  .name{
+.spotify.size-kiosk {
+  .name {
     font-size: 5vh !important;
   }
 
-  .player{
+  .artists, .album {
     font-size: 3vh !important;
+  }
+
+  .progress{
+    height: 1vh!important;
   }
 }

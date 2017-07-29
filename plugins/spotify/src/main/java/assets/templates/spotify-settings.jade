@@ -1,0 +1,16 @@
+p
+    | Create your application and get your ID and secret&nbsp;
+    a(href="https://developer.spotify.com/my-applications") here.
+.form-group
+    label(for="client_id") Client ID
+    if settings && settings.containsKey("client_id")
+        input.form-control(type="text", id="client_id", name="client_id", placeholder="Client ID", value='#{settings.get("client_id")}')
+    else
+        input.form-control(type="text", id="client_id", name ="client_id", placeholder = "Client ID")
+
+.form-group
+    label(for="client_secret") Client secret
+    if settings && settings.containsKey("client_secret")
+        input.form-control(type="text", id="client_secret", name="client_secret", placeholder="Client Secret", value='#{settings.get("client_secret")}')
+    else
+        input.form-control(type="text", id="client_secret", name ="client_secret", placeholder = "Client Secret")

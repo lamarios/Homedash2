@@ -422,6 +422,13 @@ public enum ModuleController implements Controller<Module, Integer> {
 
         BackgroundRefresh.resetTimer();
 
+        //Initializing the modules endpoints if any;
+        try {
+            PluginUrlController.INSTANCE.definePluginEndpoints(PluginModuleMaintainer.INSTANCE.getPluginForModule(module.getId()));
+        } catch (Exception e) {
+            logger.error("Couldn't define endpoints for module {}", module.getId(), e);
+        }
+
         logger.info("Module saved, id:[{}]", module.getId());
         return module.getId();
     }
