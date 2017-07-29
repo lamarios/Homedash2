@@ -29,6 +29,7 @@
         <module>dockercompose</module>
         <module>logreader</module>
         <module>plex</module>
+        <module>spotify</module>
     </modules>
 
     <dependencies>
