@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>2017.07.27</version>
+        <version>2017.07.28</version>
     </parent>
 
 
@@ -193,7 +193,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>2017.07.27</version>
+            <version>2017.07.28</version>
         </dependency>
 
         <dependency>
@@ -333,7 +333,7 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        Add Spotify now playing module
+                        Adds pihole kiosk mode
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>
