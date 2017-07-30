@@ -1,5 +1,6 @@
 package com.ftpix.homedash.plugins.pihole;
 
+import com.ftpix.homedash.models.ModuleLayout;
 import com.google.gson.Gson;
 
 import com.ftpix.homedash.models.ModuleExposedData;
@@ -59,7 +60,7 @@ public class PiHolePlugin extends Plugin {
 
     @Override
     public String[] getSizes() {
-        return new String[]{"2x2", "1x1", "3x2", "4x2"};
+        return new String[]{"2x2", "1x1", "3x2", "4x2", ModuleLayout.KIOSK};
     }
 
     @Override

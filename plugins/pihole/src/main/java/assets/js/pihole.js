@@ -11,28 +11,8 @@ function pihole(moduleId) {
     };
 
     this.onMessage = function (size, command, message, extra) {
-        switch (size) {
-            default:
-                this['onMessage_' + size](command, message, extra);
-                break;
-        }
+        this.processData(message);
     }
-
-    this.onMessage_4x2 = function (command, message, extra) {
-        this.processData(message);
-    };
-
-    this.onMessage_1x1 = function (command, message, extra) {
-        this.processData(message);
-    };
-
-    this.onMessage_2x2 = function (command, message, extra) {
-        this.processData(message);
-    };
-
-    this.onMessage_3x2 = function (command, message, extra) {
-        this.processData(message);
-    };
 
     this.processData = function (message) {
 
