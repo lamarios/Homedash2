@@ -5,6 +5,7 @@ import com.ftpix.homedash.models.ModuleExposedData;
 import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
+import com.ftpix.homedash.plugins.spotify.models.Error;
 import com.ftpix.homedash.plugins.spotify.models.SpotifyNowPlaying;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -24,6 +25,7 @@ public class SpotifyPlugin extends Plugin {
     public static final String DATA_SPOTIFY_TOKEN = "spotifyToken";
     public static final String SPOTIFY_API_TOKEN = "https://accounts.spotify.com/api/token";
     public static final String SPOTIFY_CURRENTLY_PLAYING = "http://api.spotify.com/v1/me/player/currently-playing";
+    public static final String MESSAGE_TOKEN_EXPIRED = "The access token expired";
     private String clientSecret;
     private String clientID;
     private SpotifyToken token;
@@ -82,10 +84,16 @@ public class SpotifyPlugin extends Plugin {
         try {
             if (token != null) {
                 SpotifyNowPlaying nowPlaying = nowPlaying();
-                if (nowPlaying.error == null) {
+                Optional<Error> error = Optional.ofNullable(nowPlaying().error);
+                if (!error.isPresent()) {
                     return nowPlaying;
                 } else {
-                    return needAuth();
+                    if (error.get().message.equals(MESSAGE_TOKEN_EXPIRED)) {
+                        refreshToken();
+                        return refresh(size);
+                    } else {
+                        return needAuth();
+                    }
                 }
             } else {
                 return needAuth();
@@ -258,6 +266,8 @@ public class SpotifyPlugin extends Plugin {
                         logger.info("Getting token response with body [{}]", body);
                         Optional.ofNullable(gson.fromJson(body, SpotifyToken.class)).ifPresent(t -> {
                             token.access_token = t.access_token;
+                            setData(DATA_SPOTIFY_TOKEN, token);
+
                         });
                     } catch (UnirestException e) {
                         logger.error("couldn't get token via refresh token", e);
