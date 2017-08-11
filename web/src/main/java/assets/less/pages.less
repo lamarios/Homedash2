@@ -7,54 +7,38 @@
   color: @accentColor;
 }
 
-#pages-overlay, #pages {
-  -webkit-transition: all @transition-speed !important;
-  transition: all @transition-speed !important;
-
-  @angle: -90deg;
-  -webkit-transform: rotateY(@angle); /* Safari */
-  transform: rotateY(@angle);
-  z-index: 10;
-}
-
-#pages-overlay {
-  position: fixed;
-  top: 0;
-  left: @pages-width;
-  bottom: 0;
-  right: 0;
-
-  opacity: 0;
-
-  background-color: rgba(0, 0, 0, 0.5);
-  transform-origin: center right;
-
-}
-
 #pages {
-  background-color: @accentColor;
+  // the main positioning is in main.less
+  z-index: 10;
+  //background-color: @accentColor;
   color: @background;
 
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
   z-index: 10;
-  width: @pages-width;
-  transform-origin: center left;
 
   //z-index: 11;
   //position: fixed;
   height: 100%;
 
+  a:hover {
+    text-decoration: none;
+    opacity: 0.8;
+  }
+
   .icons {
     a {
-      position: absolute;
+      position: fixed;
       color: @background;
       font-size: 20px;
       display: block;
       cursor: pointer;
+
+      h1 {
+        margin-left: 30px;
+      }
+
+      transition: all 0.25s;
     }
+
 
     .close-panel {
       top: 10px;
@@ -63,12 +47,12 @@
 
     .add {
       bottom: 10px;
-      left: @pages-width - 80px;
+      left: 10px;
     }
 
     .edit {
       bottom: 10px;
-      left: @pages-width - 30px;
+      left: 50px;
     }
 
   }
@@ -79,7 +63,7 @@
 
   ul {
     list-style: none;
-    padding-top: 60px;
+    padding-top: 90px;
 
     li {
       color: @background;
@@ -100,17 +84,7 @@
   }
 }
 
-#pages-overlay.showing, #pages.showing {
-
-  @angle: 0deg;
-  -webkit-transform: rotateY(@angle); /* Safari */
-  transform: rotateY(@angle);
-
-  opacity: 1;
-
-}
-
-#pages.showing.editing {
+#pages.editing {
   .edit-icon {
     display: inline-block;
     margin: 0 10px;

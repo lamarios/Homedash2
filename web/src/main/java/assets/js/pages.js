@@ -2,7 +2,7 @@ $(document).ready(function () {
     getPages();
 
     $('#page-title, #pages .close-panel, #pages-overlay').click(function (event) {
-        $('#pages-overlay, #pages').toggleClass('showing');
+        $('body').toggleClass('pages');
     });
 
     $('#pages .icons .edit').click(function (event) {
@@ -61,7 +61,7 @@ function changePage(id) {
     sendMessage(-1, 'changePage', PAGE);
     getLayout();
     getPages();
-    $('#pages-overlay, #pages').removeClass('showing');
+    $('body').removeClass('pages');
 
     //finding which page we are
     if (typeof(Storage) !== "undefined") {
