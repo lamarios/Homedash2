@@ -2,31 +2,27 @@ package com.ftpix.homedash.plugins.harddisk;
 
 
 import com.ftpix.homedash.Utils.ByteUtils;
-import com.ftpix.homedash.models.ExternalEndPointDefinition;
 import com.ftpix.homedash.models.ModuleExposedData;
 import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
+import oshi.SystemInfo;
+import oshi.software.os.OSFileStore;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
-import java.nio.file.attribute.AttributeView;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.apache.commons.codec.binary.*;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.util.Strings;
-import oshi.SystemInfo;
-import oshi.hardware.HWDiskStore;
-import oshi.hardware.HWPartition;
-import oshi.software.os.OSFileStore;
-
-import javax.xml.bind.DatatypeConverter;
 
 /**
  * Created by gz on 06-Jun-16.
@@ -34,6 +30,7 @@ import javax.xml.bind.DatatypeConverter;
 public class HarddiskPlugin extends Plugin {
     private final static String MOUNT = "mount", COMMAND_BROWSE = "browse", COMMAND_DELETE = "delete", COMMAND_RENAME = "rename", COMMAND_MOVE = "move", COMMAND_COPY = "copy", COMMAND_NEW_FOLDER = "newFolder", COMMAND_UPLOAD_FILE = "uploadFile";
     private final static int MAX_DATA = 100;
+    public static final String COMMAND_CALCULATE = "calculate";
     private SystemInfo systemInfo = new SystemInfo();
     private Path mountPoint;
 
@@ -116,6 +113,10 @@ public class HarddiskPlugin extends Plugin {
                     uploadFile(gson.fromJson(message, FileOperation.class));
                     webSocketMessage.setCommand(WebSocketMessage.COMMAND_SUCCESS);
                     webSocketMessage.setMessage("File uploaded successfully");
+                    break;
+                case COMMAND_CALCULATE:
+                    webSocketMessage.setCommand(command);
+                    webSocketMessage.setMessage(folderSize(message));
             }
         } catch (Exception e) {
             logger.error("Error while processing message", e);
@@ -239,6 +240,15 @@ public class HarddiskPlugin extends Plugin {
             DiskFile file = new DiskFile();
             file.name = path.getFileName().toString();
             file.folder = Files.isDirectory(path);
+            file.hash = DigestUtils.md5Hex(path.toAbsolutePath().toString());
+
+            if (!file.folder) {
+                try {
+                    file.size = ByteUtils.humanReadableByteCount(Files.size(path), true);
+                } catch (IOException e) {
+                    logger.info("Couldn't read file size", e);
+                }
+            }
 
             return file;
         }).sorted(order).collect(Collectors.toList());
@@ -476,7 +486,7 @@ public class HarddiskPlugin extends Plugin {
      */
     private void uploadFile(FileOperation fileOperation) throws IOException {
         String partSeparator = ",";
-        if(fileOperation.getDestination().contains(partSeparator)) {
+        if (fileOperation.getDestination().contains(partSeparator)) {
             Path fullPath = mountPoint.resolve(fileOperation.getSource());
             byte[] base64 = java.util.Base64.getDecoder().decode(fileOperation.getDestination().split(partSeparator)[1].getBytes(StandardCharsets.UTF_8));
             logger.info("Creating file: [{}]", fullPath);
@@ -486,5 +496,25 @@ public class HarddiskPlugin extends Plugin {
 
             logger.info("File written");
         }
+    }
+
+    /**
+     * Calculates the size of a single folder
+     *
+     * @param path of the folder to process
+     * @return
+     */
+    private Map<String, String> folderSize(String path) {
+        Map<String, String> results = new HashMap<>();
+        try {
+            Path fullPath = mountPoint.resolve(path).toAbsolutePath();
+            results.put("hash", DigestUtils.md5Hex(fullPath.toString()));
+            if (Files.exists(fullPath) && Files.isDirectory(fullPath)) {
+                results.put("size", ByteUtils.humanReadableByteCount(FileUtils.sizeOfDirectory(fullPath.toFile()), true));
+            }
+        } catch (Exception e) {
+            logger.error("Error while calculating folder {} size", path, e);
+        }
+        return results;
     }
 }

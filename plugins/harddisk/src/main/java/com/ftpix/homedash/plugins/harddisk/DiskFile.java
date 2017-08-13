@@ -5,6 +5,6 @@ package com.ftpix.homedash.plugins.harddisk;
  */
 public class DiskFile {
 
-    public String name;
+    public String name, hash, size;
     public boolean folder;
 }

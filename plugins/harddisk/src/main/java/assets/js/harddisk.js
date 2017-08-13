@@ -66,6 +66,12 @@ function harddisk(moduleId) {
                 }
             });
 
+            $('.files').on('click', '.calculate-size', function () {
+                var source = self.path.join('/') + '/' + $(this).attr('data-name');
+                sendMessage(self.moduleId, 'calculate', source);
+
+            });
+
             $('body').on('click', '.action-copy', function () {
                 var path = $(this).attr('data-path');
                 var data = {
@@ -184,6 +190,10 @@ function harddisk(moduleId) {
 
             $('#upload-file').html('Upload file');
             $('#upload-file').removeAttr('disabled');
+        } else if (command === 'calculate') {
+            var target = $('td[data-hash="' + message.hash + '"]');
+            target.html('');
+            target.html(message.size.replace(' ', '&nbsp;'));
         }
 
     }
@@ -315,7 +325,13 @@ function harddisk(moduleId) {
             }
 
             html.push('<td data-name="', value.name, '">', icon, '&nbsp;', value.name, '</td>');
-
+            if (value.folder === true) {
+                html.push('<td data-hash="', value.hash, '"><a data-name="', value.name, '" class="calculate-size"><i class="fa fa-calculator" aria-hidden="true"></i></td>');
+            } else if (value.size !== undefined) {
+                html.push('<td>', value.size.replace(' ', '&nbsp;'), '</td>');
+            } else {
+                html.push('<td></td>');
+            }
             html.push('<td><div class="dropdown">');
             html.push('<button class="btn btn-primary btn-sm" id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">');
             html.push('<i class="fa fa-ellipsis-v" aria-hidden="true"></i>');
