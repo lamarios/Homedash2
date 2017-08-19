@@ -59,7 +59,7 @@ public class TransmissionPlugin extends Plugin {
 
     @Override
     protected void init() {
-        logger.info("Initiating Transmission plugin.");
+        logger().info("Initiating Transmission plugin.");
 
 
         this.client = createClient(settings);
@@ -67,7 +67,7 @@ public class TransmissionPlugin extends Plugin {
         autoDelete = settings.getOrDefault(SETTING_AUTO_DELETE, "0").equalsIgnoreCase("1");
         autoRemoveFile = settings.getOrDefault(SETTING_AUTO_REMOVE_FILE, "0").equalsIgnoreCase("1");
 
-        logger.info("Transmission client ready !");
+        logger().info("Transmission client ready !");
     }
 
     @Override
@@ -86,7 +86,7 @@ public class TransmissionPlugin extends Plugin {
 
     @Override
     public WebSocketMessage processCommand(String command, String message, Object extra) {
-        logger.info("[Transmission] Received command [{}], message [{}]", command, message);
+        logger().info("[Transmission] Received command [{}], message [{}]", command, message);
 
         WebSocketMessage response = new WebSocketMessage();
 
@@ -110,7 +110,7 @@ public class TransmissionPlugin extends Plugin {
     @Override
     public void doInBackground() {
         if (autoDelete) {
-            logger.info("Looking for torrents to delete");
+            logger().info("Looking for torrents to delete");
             TorrentSession torrentSession = fullScreenRefresh();
             List<TorrentObject> torrents = torrentSession.torrents;
 
@@ -133,10 +133,10 @@ public class TransmissionPlugin extends Plugin {
                     .collect(Collectors.toList()).toArray();
 
             try {
-                logger.info("Deleting torrents {}", ids);
+                logger().info("Deleting torrents {}", ids);
                 client.removeTorrents(ids, autoRemoveFile);
             } catch (IOException e) {
-                logger.error("Couldn't delete torrents", e);
+                logger().error("Couldn't delete torrents", e);
             }
         }
     }
@@ -150,7 +150,7 @@ public class TransmissionPlugin extends Plugin {
                 return getSessionStats();
             }
         } catch (Exception e) {
-            logger.error("Error while refreshing transmission", e);
+            logger().error("Error while refreshing transmission", e);
             return false;
         }
     }
@@ -197,7 +197,7 @@ public class TransmissionPlugin extends Plugin {
             data.addText("UL: " + ByteUtils.humanReadableByteCount(session.status.getUploadSpeed(), true) + "/s");
             return data;
         } catch (Exception e) {
-            logger.error("Couldn't get transmission exposed data", e);
+            logger().error("Couldn't get transmission exposed data", e);
             return null;
         }
     }
@@ -236,7 +236,7 @@ public class TransmissionPlugin extends Plugin {
             TorrentStatus.TorrentField[] fields = new TorrentStatus.TorrentField[]{TorrentStatus.TorrentField.name, TorrentStatus.TorrentField.rateDownload, TorrentStatus.TorrentField.rateUpload, TorrentStatus.TorrentField.percentDone, TorrentStatus.TorrentField.id, TorrentStatus.TorrentField.status,
                     TorrentStatus.TorrentField.downloadedEver, TorrentStatus.TorrentField.uploadedEver, TorrentStatus.TorrentField.totalSize, TorrentStatus.TorrentField.seedRatioLimit};
 
-            logger.info("" + obj.rpcVersion);
+            logger().info("" + obj.rpcVersion);
             obj.torrents = new ArrayList<TorrentObject>();
             for (TorrentStatus torrent : client.getAllTorrents(fields)) {
                 TorrentObject t = new TorrentObject();
@@ -245,7 +245,7 @@ public class TransmissionPlugin extends Plugin {
                 obj.torrents.add(t);
             }
         } catch (Exception e) {
-            logger.error("error while getting torrents", e);
+            logger().error("error while getting torrents", e);
         }
 
         return obj;
@@ -255,10 +255,10 @@ public class TransmissionPlugin extends Plugin {
     private TransmissionClient createClient(Map<String, String> settings) {
         TransmissionClient client;
         if (settings.get(SETTING_USERNAME).equalsIgnoreCase("") || settings.get(SETTING_PASSWORD).equalsIgnoreCase("")) {
-            logger.info("Connecting to [{}] No username and password.", settings.get(SETTING_URL) + ":" + settings.get(SETTING_PORT));
+            logger().info("Connecting to [{}] No username and password.", settings.get(SETTING_URL) + ":" + settings.get(SETTING_PORT));
             client = new TransmissionClient(settings.get(SETTING_URL), Integer.parseInt(settings.get(SETTING_PORT)));
         } else {
-            logger.info("Connecting to [{}] Using username [{}] and password.", settings.get(SETTING_URL) + ":" + settings.get(SETTING_PORT), settings.get(SETTING_USERNAME));
+            logger().info("Connecting to [{}] Using username [{}] and password.", settings.get(SETTING_URL) + ":" + settings.get(SETTING_PORT), settings.get(SETTING_USERNAME));
             client = new TransmissionClient(settings.get(SETTING_URL), Integer.parseInt(settings.get(SETTING_PORT)), settings.get(SETTING_USERNAME), settings.get(SETTING_PASSWORD));
         }
 

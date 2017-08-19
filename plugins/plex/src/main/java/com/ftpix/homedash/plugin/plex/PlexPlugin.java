@@ -130,7 +130,7 @@ public class PlexPlugin extends Plugin {
 
         String toCall = String.format(PLEX_SESSIONS_URL, url, token);
 
-        logger.info("Testing setting with url:[{}]", toCall);
+        logger().info("Testing setting with url:[{}]", toCall);
 
         try {
             GetRequest get = Unirest.get(toCall)
@@ -251,7 +251,7 @@ public class PlexPlugin extends Plugin {
                                     }
                                 });
                     } catch (RuntimeException e) {
-                        logger.error("Couldn't run in exec", e);
+                        logger().error("Couldn't run in exec", e);
                     } finally {
                         exec.shutdown();
                     }
@@ -272,7 +272,7 @@ public class PlexPlugin extends Plugin {
                 String pictureUrl = String.format(PLEX_ART_URL, url.substring(0, url.length() - 1), plexPath, token);
 
 
-                logger.info("Download from: {}", pictureUrl);
+                logger().info("Download from: {}", pictureUrl);
 
                 FileUtils.copyURLToFile(new URL(pictureUrl), f);
 
@@ -284,7 +284,7 @@ public class PlexPlugin extends Plugin {
 
 
             } catch (Exception e) {
-                logger.error("Couldn't get poster from path [{}]", plexPath, e);
+                logger().error("Couldn't get poster from path [{}]", plexPath, e);
             }
         }
 

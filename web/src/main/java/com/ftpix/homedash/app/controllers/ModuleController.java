@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static com.ftpix.homedash.db.DB.MODULE_DAO;
 import static com.ftpix.homedash.db.DB.MODULE_SETTINGS_DAO;
@@ -77,6 +78,42 @@ public enum ModuleController implements Controller<Module, Integer> {
 
 
         Spark.get("/module/:moduleId/full-screen", this::getFullScreenView, new JadeTemplateEngine());
+
+        Spark.post("/module/getNextAvailableSize", this::getNextAvailableSize);
+    }
+
+    /**
+     * Gets the next available size for a module for resize purpose.
+     *
+     * @param request
+     * @param response
+     * @return
+     */
+    private Object getNextAvailableSize(Request request, Response response) throws Exception {
+        Optional<String> currentSize = Optional.ofNullable(request.queryParams("currentSize"));
+        Optional<Integer> moduleId = Optional.ofNullable(request.queryParams("moduleId")).map(s -> Integer.parseInt(s));
+        Optional<Integer> availableWidth = Optional.ofNullable(request.queryParams("availableWidth")).map(s -> Integer.parseInt(s));
+
+        if (currentSize.isPresent() && moduleId.isPresent() && availableWidth.isPresent()) {
+
+            String[] sizes = PluginModuleMaintainer.INSTANCE.getPluginForModule(moduleId.get()).getSizes();
+
+            return Stream.of(sizes)
+                    .filter(s -> !s.equalsIgnoreCase(ModuleLayout.FULL_SCREEN))
+                    .filter(s -> !s.equalsIgnoreCase(ModuleLayout.KIOSK))
+                    .filter(s -> Integer.parseInt(String.valueOf(s.charAt(0))) <= availableWidth.get())
+                    .sorted()
+                    .filter(s -> s.compareTo(currentSize.get()) == 1)
+                    .peek(System.out::println)
+                    .findFirst()
+                    .orElse(sizes[0]);
+
+
+        }else{
+            Spark.halt(404);
+            return "Missing paramters";
+        }
+
     }
 
 

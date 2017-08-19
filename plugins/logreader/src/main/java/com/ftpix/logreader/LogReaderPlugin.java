@@ -88,10 +88,10 @@ public class LogReaderPlugin extends Plugin implements TailerListener {
                 while (lines.size() > maxLines) {
                     lines.remove();
                 }
-                logger.info("fetched {} lines from {}", lines.size(), settings.get(SETTINGS_PATH));
+                logger().info("fetched {} lines from {}", lines.size(), settings.get(SETTINGS_PATH));
 
             } catch (IOException e) {
-                logger.info("Couldn't read file {}", settings.get(SETTINGS_PATH), e);
+                logger().info("Couldn't read file {}", settings.get(SETTINGS_PATH), e);
             }
         }
     }
@@ -165,7 +165,7 @@ public class LogReaderPlugin extends Plugin implements TailerListener {
 
     @Override
     protected void onLastClientDisconnect() {
-        logger.info("Stopping to tail {}", settings.get(SETTINGS_PATH));
+        logger().info("Stopping to tail {}", settings.get(SETTINGS_PATH));
         tailer.stop();
         tailerRunning = false;
     }

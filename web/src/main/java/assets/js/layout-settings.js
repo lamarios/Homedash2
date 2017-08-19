@@ -30,11 +30,11 @@ $(document).ready(function () {
     $('#add-layout').click(addLayout);
 });
 
-function deleteLayout(layoutElement){
+function deleteLayout(layoutElement) {
     var id = layoutElement.attr('data-id');
 
-    if(confirm("Delete Layout ?")){
-        $.getJSON('/layout/' + id + '/delete', function(){
+    if (confirm("Delete Layout ?")) {
+        $.getJSON('/layout/' + id + '/delete', function () {
             alert('Layout deleted');
             layoutElement.remove();
         });
@@ -52,7 +52,7 @@ function renameLayout(layoutElement) {
     var name = prompt('New name');
 
     if (name != undefined && $.trim(name).length > 0) {
-        $.post('/layout/' + id + '/rename', {name: name}, function(){
+        $.post('/layout/' + id + '/rename', {name: name}, function () {
             layoutElement.find('.name').html(name);
         }, "json");
     }
@@ -63,13 +63,12 @@ function renameLayout(layoutElement) {
  */
 function generateLayout() {
     $('.layout-display').each(function () {
-        for (var i = 0; i < $(this).attr('data-max'); i++) {
-            $(this).append('<div class="grid item"></div>');
-        }
 
+        var size = $(this).attr('data-max');
+
+        $(this).html(generateSvg(size, 0));
 
         displayLayoutInfo($(this).parents('.layout'));
-        resizeItems($(this));
     });
 }
 
@@ -77,7 +76,7 @@ function generateLayout() {
  * Will display the minimum screen width and grid length here
  */
 function displayLayoutInfo(layoutElement) {
-    var itemsLength = layoutElement.find('.grid.item').length;
+    var itemsLength = layoutElement.find('.layout-display').attr('data-max');
     layoutElement.find('.grid-width').html(itemsLength);
     layoutElement.find('.screen-width').html((itemsLength * 102) + 'px');
 
@@ -88,35 +87,79 @@ function displayLayoutInfo(layoutElement) {
  * @param element
  */
 function removeItem(element) {
-    if (element.find('.grid.item').length > 1) {
-        element.find('.grid.item:last-of-type').remove();
+    var layout = element.find('.layout-display');
+
+    var currentSize = layout.attr('data-max');
+    if (currentSize > 1) {
+        layout.attr('data-max', --currentSize);
+
+        layout.html(generateSvg(currentSize, 1));
+
         validateAndSave(element);
-        resizeItems(element);
         displayLayoutInfo(element);
     }
 }
 
+/**
+ * Generates the svg
+ * @param size which size we want to draw
+ * @param animate -1 to remove, 0 for default, 1 to add
+ * @returns {string}
+ */
+function generateSvg(size, animate) {
+
+    var svgViewBox = size * 105;
+
+
+    var svg = '<svg viewBox="0 0 ' + svgViewBox + ' 210" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"><g class="surfaces">';
+
+
+    svg +='<defs>\n' +
+        '    <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">' +
+        '      <stop offset="0%" stop-color="'+$($('hr')[0]).css('border-color')+'" />' +
+        '      <stop offset="50%" stop-color="#FFFFFF" />' +
+        '    </linearGradient>' +
+        '    <linearGradient id="gradient-invalid" x1="0%" y1="0%" x2="0%" y2="100%">' +
+        '      <stop offset="0%" stop-color="red" />' +
+        '      <stop offset="50%" stop-color="#FFFFFF" />' +
+        '    </linearGradient>' +
+        '  </defs>';
+
+    for (var i = 0; i < size; i++) {
+        var animation = '';
+        //we add the animation class
+        if (animate === 0) {
+            //we animate all
+            animation = "pop-up"
+        } else if (animate === 1 && i === size - 1) {
+            //we only animate the last one otherwise
+            animation = "pop-up";
+        }
+
+        svg += '<rect class="' + animation + '" x="' + (i * 105) + '" y="0"width="100" height="100" />';
+        svg += '<rect class="' + animation + ' bottom" x="' + (i * 105) + '" y="105"width="100" height="100" />';
+
+    }
+
+    svg += '</g></svg>';
+
+    return svg;
+}
 
 /**
  * Add an item
  * @param element
  */
 function addItem(element) {
-    element.find('.grid.item:last-of-type').after('<div class="grid item"></div>');
-    validateAndSave(element);
-    resizeItems(element);
-    displayLayoutInfo(element);
-}
+    var layout = element.find('.layout-display');
 
-/**
- * Resize the grid items accordingly
- * @param parent
- */
-function resizeItems(parent) {
-    var elements = parent.find('.grid.item');
-    var size = 100 / elements.length;
-    elements.css('width', (size - 1) + '%');
-    elements.css('height', $(elements[0]).width());
+    var currentSize = layout.attr('data-max');
+    layout.attr('data-max', ++currentSize);
+
+    layout.html(generateSvg(currentSize, 1));
+
+    validateAndSave(element);
+    displayLayoutInfo(element);
 }
 
 /**
@@ -124,27 +167,30 @@ function resizeItems(parent) {
  * @param element
  */
 function validateAndSave(element) {
-    var grid = element.find('.grid.item');
 
-    console.log(grid);
+
+    var size = element.find('.layout-display').attr('data-max');
 
     var valid = true;
+    console.log('classes', element.attr('class'));
+    console.log('size', size);
 
     $('.layout').each(function () {
         var e = $(this);
+        var layout = e.find('.layout-display');
+
 
         if (e.attr('data-id') != element.attr('data-id')) {
-            if (e.find('.grid.item').length == grid.length) {
+            if (layout.attr('data-max') == size) {
                 valid = false;
             }
         }
     });
+
     if (valid) {
-
         element.removeClass('invalid');
-        $.get('/layout/' + element.attr('data-id') + '/set-size/' + grid.length);
+        $.get('/layout/' + element.attr('data-id') + '/set-size/' + size);
     } else {
-
         element.addClass('invalid');
 
     }

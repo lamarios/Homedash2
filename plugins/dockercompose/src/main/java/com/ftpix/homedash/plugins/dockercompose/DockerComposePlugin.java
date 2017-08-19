@@ -51,7 +51,7 @@ public class DockerComposePlugin extends Plugin {
     protected void init() {
         dockerComposeFolder = Paths.get(settings.get(SETTINGS_PATH)).toAbsolutePath();
         dockerComposeFile = dockerComposeFolder.resolve(DOCKER_COMPOSE_FILE_NAME).toAbsolutePath();
-        logger.info("Docker compose initiated with compose file :[{}]", dockerComposeFile.toString());
+        logger().info("Docker compose initiated with compose file :[{}]", dockerComposeFile.toString());
     }
 
     @Override
@@ -140,7 +140,7 @@ public class DockerComposePlugin extends Plugin {
             pathString = pathString.replace(DOCKER_COMPOSE_FILE_NAME, "");
         }
 
-        logger.info("Checking path [{}] for docker compose file", pathString);
+        logger().info("Checking path [{}] for docker compose file", pathString);
 
         Path path = Paths.get(pathString).toAbsolutePath().resolve(DOCKER_COMPOSE_FILE_NAME);
         if (!Files.exists(path)) {
@@ -278,7 +278,7 @@ public class DockerComposePlugin extends Plugin {
 
         List<String> outputStr = new ArrayList<>();
         List<String> errorOutput = new ArrayList<>();
-        logger.info("Executing command: {}", pb.command().stream().collect(Collectors.joining(" ")));
+        logger().info("Executing command: {}", pb.command().stream().collect(Collectors.joining(" ")));
 
 
         try (InputStream is = process.getInputStream();
@@ -308,7 +308,7 @@ public class DockerComposePlugin extends Plugin {
 
         output.setReturnCode(process.exitValue());
 
-        logger.info("Command finished with code [{}]", output.getReturnCode());
+        logger().info("Command finished with code [{}]", output.getReturnCode());
         return output;
     }
 }

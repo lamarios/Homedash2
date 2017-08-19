@@ -160,21 +160,21 @@ public class NetworkMonitorPlugin extends Plugin {
                 long oldTime = old.map(o -> o.time).orElse(0l);
 
                 if (oldTotalUp > 0 && oldTotalDown > 0) {
-                    logger.info("[Network info] We have history, lets calculate the speed since last refresh");
+                    logger().info("[Network info] We have history, lets calculate the speed since last refresh");
                     long transferredUp = currentTotalUp - oldTotalUp;
                     long transferredDown = currentTotalDown - oldTotalDown;
                     double duration = (currentTime - oldTime) / 1000; // from
                     if (duration == 0) duration = duration + 0.1;
                     // millisecond
                     // to seconds
-                    logger.info("[Network info] Uploaded [{}] Downloaded [{}] in [{}]s", transferredUp, transferredDown, duration);
+                    logger().info("[Network info] Uploaded [{}] Downloaded [{}] in [{}]s", transferredUp, transferredDown, duration);
 
                     networkInfo.down = (long) Math.ceil(transferredDown / duration);
                     networkInfo.up = (long) Math.ceil(transferredUp / duration);
 
                     networkInfo.readableDown = ByteUtils.humanReadableByteCount(networkInfo.down, true) + "/s";
                     networkInfo.readableUp = ByteUtils.humanReadableByteCount(networkInfo.up, true) + "/s";
-                    logger.info("[Network Info] Upload: {}. download: {}", networkInfo.readableUp, networkInfo.readableDown);
+                    logger().info("[Network Info] Upload: {}. download: {}", networkInfo.readableUp, networkInfo.readableDown);
                 }
 
 

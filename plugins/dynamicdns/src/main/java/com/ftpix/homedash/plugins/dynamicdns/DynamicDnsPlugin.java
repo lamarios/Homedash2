@@ -99,11 +99,11 @@ public class DynamicDnsPlugin extends Plugin {
 
                     providers.add(provider);
                 } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                    logger.info("[DynDNS] Can't create provider of class: [{}]", saved.providerClass);
+                    logger().info("[DynDNS] Can't create provider of class: [{}]", saved.providerClass);
                 }
             });
 
-            logger.info("[DynDNS] Providers loaded size: [{}]", providers.size());
+            logger().info("[DynDNS] Providers loaded size: [{}]", providers.size());
 
 
         });
@@ -163,7 +163,7 @@ public class DynamicDnsPlugin extends Plugin {
                     response.setMessage("Refresh complete");
                     response.setExtra(formatProviders());
                 } catch (Exception e) {
-                    logger.error("[DynDNS] Error while refreshing providers", e);
+                    logger().error("[DynDNS] Error while refreshing providers", e);
                     response.setCommand(WebSocketMessage.COMMAND_ERROR);
                     response.setMessage("Error while refreshing IP: " + e.getMessage());
                 }
@@ -182,19 +182,19 @@ public class DynamicDnsPlugin extends Plugin {
                 if ((this.ip == null || this.ip.getAddress() == null || (pattern.matcher(ip.getAddress()).matches() && !this.ip.getAddress().equalsIgnoreCase(ip.getAddress())))) {
                     ip.setDate(new Date());
                     this.ip = ip;
-                    logger.info("[DynDNS] New IP [{}] updating providers", ip.getAddress());
+                    logger().info("[DynDNS] New IP [{}] updating providers", ip.getAddress());
                     setData(DATA_IP, this.ip);
                     refreshProviders();
 
                 } else {
                     this.ip = ip;
-                    logger.info("[DynDNS] IP[{}] is the same or not valid, nothing to do", ip);
+                    logger().info("[DynDNS] IP[{}] is the same or not valid, nothing to do", ip);
                 }
             } else {
-                logger.info("[DynDNS] no IP key in ip map");
+                logger().info("[DynDNS] no IP key in ip map");
             }
         } catch (Exception e) {
-            logger.error("[DynDNS] Can't get external IP", e);
+            logger().error("[DynDNS] Can't get external IP", e);
         }
     }
 
@@ -272,14 +272,14 @@ public class DynamicDnsPlugin extends Plugin {
             GatewayDevice router = null;
             Ip result = new Ip();
 
-            logger.info("[DynDNS] Trying to get external IP via router (more reliable)");
+            logger().info("[DynDNS] Trying to get external IP via router (more reliable)");
             GatewayDiscover gatewayDiscover = new GatewayDiscover();
             Map<InetAddress, GatewayDevice> gateways = gatewayDiscover.discover();
             router = gatewayDiscover.getValidGateway();
 
             if (router != null) {
                 String ip = router.getExternalIPAddress();
-                logger.info("[DynDNS] IP Found via router UPnP {}", ip);
+                logger().info("[DynDNS] IP Found via router UPnP {}", ip);
                 result.setMethod("router - UPnP");
                 result.setAddress(ip);
             }else{
@@ -303,7 +303,7 @@ public class DynamicDnsPlugin extends Plugin {
         HttpResponse<String> response = Unirest.get("https://api.ipify.org/?format=json")
                 .asString();
         IpFromWeb ipFromWeb = gson.fromJson(response.getBody(), IpFromWeb.class);
-        logger.info("Getting Ip from web:{}", ipFromWeb.getIp());
+        logger().info("Getting Ip from web:{}", ipFromWeb.getIp());
 
         Ip ip = new Ip();
         ip.setAddress(ipFromWeb.getIp());
@@ -337,7 +337,7 @@ public class DynamicDnsPlugin extends Plugin {
      */
     private boolean addProvider(String command) {
         try {
-            logger.info("[DynDNS] Adding provider from data:\n {}", command);
+            logger().info("[DynDNS] Adding provider from data:\n {}", command);
             Type listType = new TypeToken<ArrayList<InputWrapper>>() {
             }.getType();
 
@@ -368,7 +368,7 @@ public class DynamicDnsPlugin extends Plugin {
             if (provider != null) {
                 provider.setData(data);
                 providers.add(provider);
-                logger.info("Saving providers: {}", providers.size());
+                logger().info("Saving providers: {}", providers.size());
 
                 saveProviders();
             }
@@ -378,7 +378,7 @@ public class DynamicDnsPlugin extends Plugin {
             }
             return true;
         } catch (Exception e) {
-            logger.error("Error while saving provider", e);
+            logger().error("Error while saving provider", e);
             return false;
         }
     }
@@ -411,13 +411,13 @@ public class DynamicDnsPlugin extends Plugin {
         StringBuilder builder = new StringBuilder();
         builder.append("IP:" + this.ip.getAddress() + "\n\n");
         builder.append("Update report:\n\n");
-        logger.info("[DynDNS] Getting external IP...");
+        logger().info("[DynDNS] Getting external IP...");
         this.ip = getIP();
-        logger.info("[DynDNS] IP:{}, updating providers", ip);
+        logger().info("[DynDNS] IP:{}, updating providers", ip);
 
         for (DynDNSProvider provider : providers) {
             boolean update = provider.updateIP(this.ip.getAddress());
-            logger.info("[DynDNS] Updating [{} - {}], success ? [{}]", provider.getName(), provider.getHostname(), update);
+            logger().info("[DynDNS] Updating [{} - {}], success ? [{}]", provider.getName(), provider.getHostname(), update);
             builder.append("[" + provider.getName() + " - " + provider.getHostname() + "], success ? [" + update + "]\n");
         }
 

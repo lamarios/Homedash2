@@ -11,19 +11,40 @@
                 <Pattern>%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Pattern>
             </PatternLayout>
             <Policies>
-                <TimeBasedTriggeringPolicy interval="1" />
+                <TimeBasedTriggeringPolicy interval="1"/>
             </Policies>
         </RollingFile>
 
+        <Routing name="RoutingAppender">
+            <Routes pattern="${ctx:logFile}">
+                <Route>
+                    <RollingFile name="Rolling-${ctx:logFile}"
+                                 fileName="${log-path}/plugins/${ctx:logFile}"
+                                 filePattern="${log-path}/plugins/${ctx:logFile}-%d{yyyy-MM-dd}.log">
+                        <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+                        <TimeBasedTriggeringPolicy interval="1"/>
+                    </RollingFile>
+                </Route>
+
+                <!-- By having this set to ${ctx:logFileName} it will match when filename
+                     is not set in the context -->
+                <Route ref="file-log" key="${ctx:logFile}"/>
+            </Routes>
+        </Routing>
+
+
         <Console name="console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %X{logFile} [%t] %-5level %logger{36} - %msg%n"/>
         </Console>
     </Appenders>
     <Loggers>
+        <!--<Logger name="com.ftpix.homedash" level="info">-->
+            <!--<AppenderRef ref="file-log" level="info"/>-->
+        <!--</Logger>-->
         <Logger name="com.ftpix.homedash" level="info">
-            <AppenderRef ref="file-log" level="info"/>
+            <AppenderRef ref="RoutingAppender" level="all"/>
         </Logger>
-        <Root  level="all">
+        <Root level="all">
             <AppenderRef ref="console"/>
         </Root>
     </Loggers>

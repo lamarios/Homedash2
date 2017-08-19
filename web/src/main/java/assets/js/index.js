@@ -85,6 +85,9 @@ $(document).ready(function () {
         $('.settings-overlay').removeClass('drag-box');
         $(this).parents('.gridster-item').addClass('selected');
         $(this).addClass('drag-box');
+
+        var parent = $(this).parent('.module');
+        updateResizeButton(parent);
     });
 
     $('#add-module').click(function () {
@@ -114,6 +117,10 @@ $(document).ready(function () {
                 icon.addClass('fa-square-o');
             }
         });
+    });
+
+    $(document).on('click', '.module-resize-icon', function(){
+        changeSize($(this).attr('data-id'), $(this).attr('data-size'));
     });
 
 });
@@ -197,6 +204,8 @@ function changeSize(moduleId, size) {
         savePositions();
         getModuleContent(moduleElem.attr('data-module'), moduleElem.attr('data-size'));
         $('#module-modal').modal('hide');
+
+        updateResizeButton(moduleElem);
     });
 }
 
@@ -351,3 +360,74 @@ function updateLayoutInfo(layoutJson) {
 
 
 }
+
+/**
+ * Will find the next size for an item based on the current position
+ * and availabloe space
+ * @param parent div of class .module
+ */
+function updateResizeButton(parent) {
+
+    var availableWidth = LAYOUT.maxGridWidth - parent.parent('.gridster-item').attr('data-col') + 1;
+
+    if (availableWidth > 0) {
+        var payLoad = {
+            currentSize: parent.attr('data-size'),
+            moduleId: parent.attr('data-module'),
+            availableWidth: availableWidth
+        }
+
+
+        $.post('/module/getNextAvailableSize', payLoad, function (nextSize) {
+            console.log('nextSize', nextSize);
+            var split = nextSize.split('x');
+            console.log(split);
+            var newWidth = parseInt(split[0]);
+            var newHeight = parseInt(split[1]);
+
+            split = payLoad.currentSize.split('x');
+            var currentWidth = parseInt(split[0]);
+            var currentHeight = parseInt(split[1]);
+
+            var widthDiff = (newWidth > currentWidth) ? 1 : (newWidth === currentWidth) ? 0 : -1;
+            var heightDiff = (newHeight > currentHeight) ? 1 : (newHeight === currentHeight) ? 0 : -1;
+
+            var angle = 0;
+
+            //base chevron direction is left (so already 90 degres set)
+            if (widthDiff == 1 && heightDiff == 1) {
+                angle = 45;
+            } else if (widthDiff == 0 && heightDiff == 1) {
+                angle = 90;
+            } else if (widthDiff == 0 && heightDiff == -1) {
+                angle = -90;
+            } else if (widthDiff == -1 && heightDiff == 0) {
+                angle = 180;
+            } else if (widthDiff == 1 && heightDiff == 0) {
+                angle = 0;
+            } else if (widthDiff == -1 && heightDiff == -1) {
+                angle = 225
+            } else if (widthDiff == 1) {
+                angle = 0;
+            } else if (widthDiff == -1) {
+                angle = 180;
+            } else if (heightDiff == 1) {
+                angle = 90;
+            } else if (heightDiff == -1) {
+                angle - 90;
+            }
+
+            console.log(newWidth, currentWidth, newHeight, currentHeight);
+            console.log(widthDiff, heightDiff, angle);
+            var button = $('.module-resize-icon[data-id="' + payLoad.moduleId + '"]');
+            button.css('transform', 'rotate(' + angle + 'deg)');
+            button.attr('data-size', nextSize);
+
+        });
+        console.log(payLoad);
+
+    }
+
+
+}
+

@@ -196,7 +196,33 @@ body.pages {
           position: absolute;
           top: -@module-icon-size/2;
           right: -@module-icon-size/2;
+          cursor: pointer;
         }
+
+        .module-resize-icon {
+          padding-top: 5px;
+          display: block;
+          width: @module-icon-size;
+          height: @module-icon-size;
+          background-color: white;
+          border-radius: 50%;
+          border: 1px solid #eee;
+          color: #333;
+          text-align: center;
+          z-index: 100;
+          position: absolute;
+          bottom: -@module-icon-size/2;
+          right: -@module-icon-size/2;
+          cursor: pointer;
+
+          -webkit-transition: all @transition-speed;
+          -moz-transition: all @transition-speed;
+          -ms-transition: all @transition-speed;
+          -o-transition: all @transition-speed;
+          transition: all @transition-speed;
+
+        }
+
 
         .dropdown-menu {
           top: 0;

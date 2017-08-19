@@ -61,7 +61,7 @@ public class PortMapperPlugin extends Plugin {
         });
 
         forcedPorts = ports;
-        logger.info("Init with [{}] ports", ports.size());
+        logger().info("Init with [{}] ports", ports.size());
     }
 
     @Override
@@ -151,12 +151,12 @@ public class PortMapperPlugin extends Plugin {
 
     @Override
     public void doInBackground() {
-        logger.info("Doing in background");
+        logger().info("Doing in background");
         try {
             getRouter();
             getMappings();
         } catch (IOException | SAXException e) {
-            logger.error("Error while refreshing ports", e);
+            logger().error("Error while refreshing ports", e);
         }
     }
 
@@ -172,7 +172,7 @@ public class PortMapperPlugin extends Plugin {
             }
 
         } catch (Exception e) {
-            logger.info("Can't get router info");
+            logger().info("Can't get router info");
         }
 
         returnValue.put("mappings", mappings);
@@ -200,7 +200,7 @@ public class PortMapperPlugin extends Plugin {
             }
             return null;
         } catch (Exception e) {
-            logger.error("Couldn't get port mapper exposed data", e);
+            logger().error("Couldn't get port mapper exposed data", e);
             return null;
         }
     }
@@ -230,7 +230,7 @@ public class PortMapperPlugin extends Plugin {
 
     private void removePort(String message) throws NumberFormatException, IOException, SAXException {
         if (router != null) {
-            logger.info("Removing port:{}", message);
+            logger().info("Removing port:{}", message);
             String split[] = message.split("\\|");
             router.deletePortMapping(Integer.parseInt(split[0]), split[1]);
             MappingObject mapping = new MappingObject();
@@ -239,7 +239,7 @@ public class PortMapperPlugin extends Plugin {
             mapping.forced = true;
 
             if (forcedPorts.contains(mapping)) {
-                logger.info("Port in saved list, removing it");
+                logger().info("Port in saved list, removing it");
                 forcedPorts.remove(mapping);
                 removeData(mapping.toString());
             }
@@ -247,7 +247,7 @@ public class PortMapperPlugin extends Plugin {
     }
 
     private void savePort(String message) {
-        logger.info("Saving port:{}", message);
+        logger().info("Saving port:{}", message);
         String split[] = message.split("\\|");
 
         MappingObject mapping = new MappingObject();
@@ -260,13 +260,13 @@ public class PortMapperPlugin extends Plugin {
 
         forcedPorts.add(mapping);
         setData(mapping.toString(), mapping);
-        logger.info("Added ports to forced ports. Size: {}", forcedPorts.size());
+        logger().info("Added ports to forced ports. Size: {}", forcedPorts.size());
 
     }
 
     private void addPort(String message, boolean forced) throws NumberFormatException, IOException, SAXException {
         if (router != null) {
-            logger.info("Adding port:{}", message);
+            logger().info("Adding port:{}", message);
             String[] split = message.split("\\|");
             router.addPortMapping(Integer.parseInt(split[2]), Integer.parseInt(split[3]), split[4], split[1], split[0]);
 
@@ -280,7 +280,7 @@ public class PortMapperPlugin extends Plugin {
                 obj.forced = true;
                 if (!forcedPorts.contains(obj)) {
                     forcedPorts.add(obj);
-                    logger.info("Added ports to forced ports. Size: {}", forcedPorts.size());
+                    logger().info("Added ports to forced ports. Size: {}", forcedPorts.size());
                     setData(obj.toString(), obj);
                 }
             }
@@ -289,7 +289,7 @@ public class PortMapperPlugin extends Plugin {
 
 
     private List<MappingObject> getMappings() throws IOException, SAXException {
-        logger.info("Refreshing Mapping");
+        logger().info("Refreshing Mapping");
         List<MappingObject> result = new ArrayList<MappingObject>();
         if (router != null) {
             // Integer portMapCount = router.getPortMappingNumberOfEntries();
@@ -298,7 +298,7 @@ public class PortMapperPlugin extends Plugin {
             int pmCount = 0;
             do {
                 if (router.getGenericPortMappingEntry(pmCount, portMapping)) {
-                    logger.info("Portmapping #" + pmCount + " successfully retrieved (" + portMapping.getPortMappingDescription() + ":" + portMapping.getExternalPort() + ")");
+                    logger().info("Portmapping #" + pmCount + " successfully retrieved (" + portMapping.getPortMappingDescription() + ":" + portMapping.getExternalPort() + ")");
                     MappingObject object = new MappingObject();
                     object.externalPort = portMapping.getExternalPort();
                     object.internalPort = portMapping.getInternalPort();
@@ -309,7 +309,7 @@ public class PortMapperPlugin extends Plugin {
                     result.add(object);
                     // portMapping = new PortMappingEntry();
                 } else {
-                    logger.info("Portmapping #" + pmCount + " retrieval failed");
+                    logger().info("Portmapping #" + pmCount + " retrieval failed");
                     break;
                 }
                 pmCount++;
@@ -318,7 +318,7 @@ public class PortMapperPlugin extends Plugin {
             // Checking against forced ports
             for (MappingObject mapping : forcedPorts) {
                 if (!result.contains(mapping)) {
-                    logger.info("Mapping {} on port {} missing", mapping.protocol, mapping.externalPort);
+                    logger().info("Mapping {} on port {} missing", mapping.protocol, mapping.externalPort);
                     router.addPortMapping(mapping.externalPort, mapping.internalPort, mapping.internalIp, mapping.protocol, mapping.name);
                     result.add(mapping);
                 } else {
@@ -327,7 +327,7 @@ public class PortMapperPlugin extends Plugin {
                 }
             }
         } else {
-            logger.info("No router yet");
+            logger().info("No router yet");
 
         }
 
@@ -350,7 +350,7 @@ public class PortMapperPlugin extends Plugin {
                 this.router = router;
             }
         } catch (IOException | SAXException | ParserConfigurationException e) {
-            logger.error("Error while getting router", e);
+            logger().error("Error while getting router", e);
         }
     }
 

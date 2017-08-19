@@ -177,7 +177,7 @@ public class DockerPlugin extends Plugin {
         Map<String, String> errors = new HashMap<>();
         String url = settings.get(DOCKER_URL);
 
-        logger.info("Testing docker container for url {}", url);
+        logger().info("Testing docker container for url {}", url);
 
         try {
             DockerClient testClient;
@@ -234,7 +234,7 @@ public class DockerPlugin extends Plugin {
             Map<String, Object> model = new HashMap<>();
             model.put(ENV_DOCKER_HOST, dockerHost);
 
-            logger.info("Docker environment variable found {} = {}", ENV_DOCKER_HOST, dockerHost);
+            logger().info("Docker environment variable found {} = {}", ENV_DOCKER_HOST, dockerHost);
 
             return model;
         } else {
@@ -283,7 +283,7 @@ public class DockerPlugin extends Plugin {
      * @throws InterruptedException
      */
     private List<DockerInfo> getContainersInfo() throws DockerException, InterruptedException {
-        logger.info("Getting container stats for all containers");
+        logger().info("Getting container stats for all containers");
         List<DockerInfo> containers = client.listContainers(DockerClient.ListContainersParam.allContainers())
                 .stream()
                 .map(DockerInfo::new)
@@ -296,7 +296,7 @@ public class DockerPlugin extends Plugin {
                     ContainerStats stats = client.stats(c.id);
                     c.setStats(stats);
                 } catch (Exception e) {
-                    logger.info("Error while setting stats", e);
+                    logger().info("Error while setting stats", e);
                 }
                 return null;
             };
@@ -304,9 +304,9 @@ public class DockerPlugin extends Plugin {
 
         ExecutorService exec = Executors.newFixedThreadPool(containers.size());
         try {
-            logger.info("Getting all stats");
+            logger().info("Getting all stats");
             exec.invokeAll(statsTasks);
-            logger.info("All stats finish");
+            logger().info("All stats finish");
         } finally {
             exec.shutdown();
         }
@@ -320,27 +320,27 @@ public class DockerPlugin extends Plugin {
     }
 
     private void removeContainer(String id) throws DockerException, InterruptedException {
-        logger.info("Removing container #{}", id);
+        logger().info("Removing container #{}", id);
         client.removeContainer(id);
     }
 
     private void killContainer(String id) throws DockerException, InterruptedException {
-        logger.info("Killing container #{}", id);
+        logger().info("Killing container #{}", id);
         client.killContainer(id);
     }
 
     private void stopContainer(String id) throws DockerException, InterruptedException {
-        logger.info("Stopping container #{}", id);
+        logger().info("Stopping container #{}", id);
         client.stopContainer(id, 0);
     }
 
     private void restartContainer(String id) throws DockerException, InterruptedException {
-        logger.info("Restarting container #{}", id);
+        logger().info("Restarting container #{}", id);
         client.restartContainer(id);
     }
 
     private void startContainer(String containerId) throws DockerException, InterruptedException {
-        logger.info("Starting container #{}", containerId);
+        logger().info("Starting container #{}", containerId);
         client.startContainer(containerId);
     }
 }

@@ -133,7 +133,7 @@ public class PiHolePlugin extends Plugin {
 
             return data;
         } catch (UnirestException e) {
-            logger.error("Error while retreiving stats", e);
+            logger().error("Error while retreiving stats", e);
             return null;
         }
     }
@@ -166,7 +166,7 @@ public class PiHolePlugin extends Plugin {
                 .post(this.url + "api.php")
                 .header("cache-control", "no-cache").asString();
 
-        logger.info("[PiHole] Query result: {} for url:[{}]",
+        logger().info("[PiHole] Query result: {} for url:[{}]",
                 response.getBody(), this.url);
         return gson.fromJson(response.getBody(), PiHoleStats.class);
 

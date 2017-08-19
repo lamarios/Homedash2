@@ -74,7 +74,7 @@ public class HarddiskPlugin extends Plugin {
     public WebSocketMessage processCommand(String command, String message, Object extra) {
         WebSocketMessage webSocketMessage = new WebSocketMessage();
         webSocketMessage.setCommand(command);
-        logger.info("Message: {}", message);
+        logger().info("Message: {}", message);
         try {
             switch (command) {
                 case COMMAND_BROWSE:
@@ -119,7 +119,7 @@ public class HarddiskPlugin extends Plugin {
                     webSocketMessage.setMessage(folderSize(message));
             }
         } catch (Exception e) {
-            logger.error("Error while processing message", e);
+            logger().error("Error while processing message", e);
             webSocketMessage.setCommand(WebSocketMessage.COMMAND_ERROR);
             webSocketMessage.setMessage(e.getMessage());
         }
@@ -246,7 +246,7 @@ public class HarddiskPlugin extends Plugin {
                 try {
                     file.size = ByteUtils.humanReadableByteCount(Files.size(path), true);
                 } catch (IOException e) {
-                    logger.info("Couldn't read file size", e);
+                    logger().info("Couldn't read file size", e);
                 }
             }
 
@@ -272,7 +272,7 @@ public class HarddiskPlugin extends Plugin {
             throw new OperationException(destination.toString() + " already exists");
         }
 
-        logger.info("Attempting to rename {} to {}", source.toString(), destination.toString());
+        logger().info("Attempting to rename {} to {}", source.toString(), destination.toString());
 
         //if it is a folder, Files.copy will only create an empty folder so we need to copy the files inside as well.
         if (Files.isDirectory(source)) {
@@ -313,7 +313,7 @@ public class HarddiskPlugin extends Plugin {
             throw new OperationException(destination.toString() + " already exists");
         }
 
-        logger.info("Attempting to move {} to {}", source.toString(), destination.toString());
+        logger().info("Attempting to move {} to {}", source.toString(), destination.toString());
 
         //if it is a folder, Files.copy will only create an empty folder so we need to copy the files inside as well.
         if (Files.isDirectory(source)) {
@@ -379,7 +379,7 @@ public class HarddiskPlugin extends Plugin {
             throw new OperationException(destination.toString() + " already exists");
         }
 
-        logger.info("Attempting to copy {} to {}", source.toString(), destination.toString());
+        logger().info("Attempting to copy {} to {}", source.toString(), destination.toString());
         Files.copy(source, destination);
 
         //if it is a folder, Files.copy will only create an empty folder so we need to copy the files inside as well.
@@ -398,7 +398,7 @@ public class HarddiskPlugin extends Plugin {
     private void copyFolder(Path source, Path destination) throws IOException {
         Files.list(source).forEach(path -> {
             try {
-                logger.info("Copying [" + path.toString() + "] to [" + destination.resolve(path.getFileName()).toString() + "]");
+                logger().info("Copying [" + path.toString() + "] to [" + destination.resolve(path.getFileName()).toString() + "]");
                 Files.copy(path, destination.resolve(path.getFileName()));
 
                 if (Files.isDirectory(path)) {
@@ -421,7 +421,7 @@ public class HarddiskPlugin extends Plugin {
     private void moveFolder(Path source, Path destination) throws IOException {
         Files.list(source).forEach(path -> {
             try {
-                logger.info("Copying [" + path.toString() + "] to [" + destination.resolve(path.getFileName()).toString() + "]");
+                logger().info("Copying [" + path.toString() + "] to [" + destination.resolve(path.getFileName()).toString() + "]");
 
                 if (Files.isDirectory(path)) {
                     moveFolder(path, destination.resolve(path.getFileName()));
@@ -443,7 +443,7 @@ public class HarddiskPlugin extends Plugin {
     private void clearFolder(Path folder) throws IOException {
         Files.list(folder).forEach(path -> {
             try {
-                logger.info("Deleting:" + path.toString());
+                logger().info("Deleting:" + path.toString());
                 if (Files.isDirectory(path)) {
                     clearFolder(path);
                 } else {
@@ -452,7 +452,7 @@ public class HarddiskPlugin extends Plugin {
 
 
             } catch (IOException e) {
-                logger.info("Error while deleteing" + path.toString());
+                logger().info("Error while deleteing" + path.toString());
                 e.printStackTrace();
                 return;
             }
@@ -489,12 +489,12 @@ public class HarddiskPlugin extends Plugin {
         if (fileOperation.getDestination().contains(partSeparator)) {
             Path fullPath = mountPoint.resolve(fileOperation.getSource());
             byte[] base64 = java.util.Base64.getDecoder().decode(fileOperation.getDestination().split(partSeparator)[1].getBytes(StandardCharsets.UTF_8));
-            logger.info("Creating file: [{}]", fullPath);
+            logger().info("Creating file: [{}]", fullPath);
             try (BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(fullPath.toFile()))) {
                 stream.write(base64);
             }
 
-            logger.info("File written");
+            logger().info("File written");
         }
     }
 
@@ -513,7 +513,7 @@ public class HarddiskPlugin extends Plugin {
                 results.put("size", ByteUtils.humanReadableByteCount(FileUtils.sizeOfDirectory(fullPath.toFile()), true));
             }
         } catch (Exception e) {
-            logger.error("Error while calculating folder {} size", path, e);
+            logger().error("Error while calculating folder {} size", path, e);
         }
         return results;
     }

@@ -67,7 +67,7 @@ public class GooglePublicCalendarPlugin extends Plugin {
             url = URL.replace("[ID]", URLEncoder.encode(calendarId, "UTF-8")).replace("[APIKEY]", apiKey).replace("[TIMEZONE]", URLEncoder.encode(timeZone, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
-            logger.error("Error while encoding calendar id", e);
+            logger().error("Error while encoding calendar id", e);
         }
     }
 
@@ -99,7 +99,7 @@ public class GooglePublicCalendarPlugin extends Plugin {
             return getCalendar();
 
         } catch (Exception e) {
-            logger.info("Error while parsing calendar");
+            logger().info("Error while parsing calendar");
         }
 
         return null;
@@ -149,7 +149,7 @@ public class GooglePublicCalendarPlugin extends Plugin {
 
             return null;
         } catch (Exception e) {
-            logger.error("Couldn't expose google calendar data", e);
+            logger().error("Couldn't expose google calendar data", e);
             return null;
         }
     }
@@ -175,7 +175,7 @@ public class GooglePublicCalendarPlugin extends Plugin {
                 result.put("Calendar", StringEscapeUtils.escapeHtml4(json.getString("summary")));
 
             } catch (Exception e) {
-                logger.error("Can't expose settings for goolge calendar", e);
+                logger().error("Can't expose settings for goolge calendar", e);
             }
 
             return result;

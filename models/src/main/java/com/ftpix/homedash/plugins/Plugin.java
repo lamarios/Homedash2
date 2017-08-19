@@ -13,6 +13,7 @@ import de.neuland.jade4j.template.JadeTemplate;
 import de.neuland.jade4j.template.TemplateLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 
 public abstract class Plugin {
 
-    protected Logger logger = LogManager.getLogger();
+    private Logger logger = LogManager.getLogger();
 
     public static int NEVER = 0, ONE_SECOND = 1, ONE_MINUTE = 60, ONE_HOUR = 60 * ONE_MINUTE;
 
@@ -163,8 +164,8 @@ public abstract class Plugin {
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("module", module);
 
-        logger.info("id:[{}]", getId());
-        logger.info("size:[{}]", size);
+        logger().info("id:[{}]", getId());
+        logger().info("size:[{}]", size);
         JadeTemplate template = config.getTemplate("templates/" + getId() + "-" + size + ".jade");
 
         return config.renderTemplate(template, model);
@@ -190,7 +191,7 @@ public abstract class Plugin {
             }
 
         } catch (Exception e) {
-            logger.error("Error while refreshing module", e);
+            logger().error("Error while refreshing module", e);
             result.setCommand(WebSocketMessage.COMMAND_ERROR);
             result.setMessage("Can't refresh module:" + e.getMessage());
         }
@@ -235,7 +236,7 @@ public abstract class Plugin {
         try {
 
 
-            logger.info("Getting settings for [{}]", this.getId());
+            logger().info("Getting settings for [{}]", this.getId());
             JadeConfiguration config = new JadeConfiguration();
 
             TemplateLoader loader = new ClasspathTemplateLoader();
@@ -251,13 +252,13 @@ public abstract class Plugin {
             Optional.ofNullable(getSettingsModel()).ifPresent(pluginSettingsModel -> model.put("model", pluginSettingsModel));
 
             String templateFile = "templates/" + getId() + "-settings.jade";
-            logger.info("Looking for template: [{}]", templateFile);
+            logger().info("Looking for template: [{}]", templateFile);
             JadeTemplate template = config.getTemplate(templateFile);
 
-            logger.info("Found setting template, returning it");
+            logger().info("Found setting template, returning it");
             return config.renderTemplate(template, model);
         } catch (Exception e) {
-            logger.error("Error while getting settings template", e);
+            logger().error("Error while getting settings template", e);
             throw e;
         }
     }
@@ -350,7 +351,7 @@ public abstract class Plugin {
      * Sets data for a module
      */
     protected final void setData(String name, Object object) {
-        logger.info("Saving data for module");
+        logger().info("Saving data for module");
         ModuleData moduleData = new ModuleData();
         moduleData.setModule(module);
         moduleData.setName(name);
@@ -383,7 +384,7 @@ public abstract class Plugin {
                 return Optional.empty();
             }
         } catch (Exception e) {
-            logger.error("Error while getting the data", e);
+            logger().error("Error while getting the data", e);
             return Optional.empty();
         }
     }
@@ -401,7 +402,7 @@ public abstract class Plugin {
                 Object o = gson.fromJson(singleData.getJson(), clazz);
                 data.put(singleData.getName(), o);
             } catch (Exception e) {
-                logger.error("Error while getting module data [" + singleData.getName() + "]", e);
+                logger().error("Error while getting module data [" + singleData.getName() + "]", e);
             }
         });
 
@@ -435,7 +436,7 @@ public abstract class Plugin {
 
                 String jsonString = response.getBody().getObject().toString();
 
-                logger.info("Refreshing remote module, calling [{}], responseL [{}]", url, jsonString);
+                logger().info("Refreshing remote module, calling [{}], responseL [{}]", url, jsonString);
 
 
                 // replacing all the cache url calling by the remote one
@@ -447,7 +448,7 @@ public abstract class Plugin {
 
                 return result.getMessage();
             } catch (Exception e) {
-                logger.error("Couldn't get remote module [" + settings.get(REMOTE_MODULE_ID) + "] from url: [" + url + "]", e);
+                logger().error("Couldn't get remote module [" + settings.get(REMOTE_MODULE_ID) + "] from url: [" + url + "]", e);
                 return null;
             }
         } else {
@@ -474,7 +475,7 @@ public abstract class Plugin {
 
                 String jsonString = response.getBody().getObject().toString();
 
-                logger.info("Refreshing remote module, calling [{}], responseL [{}]", url, jsonString);
+                logger().info("Refreshing remote module, calling [{}], responseL [{}]", url, jsonString);
 
                 // replacing all the cache url calling by the remote one
                 jsonString = jsonString.replaceAll("cache/", settings.get(REMOTE_URL) + "cache/");
@@ -486,7 +487,7 @@ public abstract class Plugin {
 
                 return result;
             } catch (Exception e) {
-                logger.error("Couldn't get remote module [" + settings.get(REMOTE_MODULE_ID) + "] from url: [" + url + "]", e);
+                logger().error("Couldn't get remote module [" + settings.get(REMOTE_MODULE_ID) + "] from url: [" + url + "]", e);
                 WebSocketMessage result = new WebSocketMessage();
                 result.setCommand(WebSocketMessage.COMMAND_ERROR);
                 result.setMessage("Can't refresh module:" + e.getMessage());
@@ -505,11 +506,11 @@ public abstract class Plugin {
      */
     public void increaseClients() {
         if (clients.incrementAndGet() == 1) {
-            logger.info("[{}] onFirstClientConnect()", getId());
+            logger().info("[{}] onFirstClientConnect()", getId());
             onFirstClientConnect();
         }
 
-        logger.info("[{}] has now {} clients", getId(), clients.get());
+        logger().info("[{}] has now {} clients", getId(), clients.get());
     }
 
     /**
@@ -517,11 +518,16 @@ public abstract class Plugin {
      */
     public void decreaseClients(){
         if(clients.decrementAndGet() == 0){
-            logger.info("[{}] onLastClientDisconnect()", getId());
+            logger().info("[{}] onLastClientDisconnect()", getId());
             onLastClientDisconnect();
         }
 
-        logger.info("[{}] has now {} clients", getId(), clients.get());
+        logger().info("[{}] has now {} clients", getId(), clients.get());
+    }
+
+    protected Logger logger(){
+        ThreadContext.put("logFile", getId());
+        return logger;
     }
 
 

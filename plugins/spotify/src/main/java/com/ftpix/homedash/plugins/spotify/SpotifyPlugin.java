@@ -163,7 +163,7 @@ public class SpotifyPlugin extends Plugin {
      * @return
      */
     public Map<String, String> needAuth() {
-        logger.info("Couldn't get now playing songs");
+        logger().info("Couldn't get now playing songs");
         Map<String, String> noAuth = new HashMap<>();
         noAuth.put("clientID", clientID);
         return noAuth;
@@ -181,7 +181,7 @@ public class SpotifyPlugin extends Plugin {
                 .asString()
                 .getBody();
 
-        logger.info("Spotify now playing: {}", body);
+        logger().info("Spotify now playing: {}", body);
 
         SpotifyNowPlaying spotifyNowPlaying = Optional.ofNullable(gson.fromJson(body, SpotifyNowPlaying.class)).orElse(new SpotifyNowPlaying());
 
@@ -196,7 +196,7 @@ public class SpotifyPlugin extends Plugin {
      * @return
      */
     public String handleAuthorization(Request req, Response res) {
-        logger.info("Received authorization request");
+        logger().info("Received authorization request");
 
         Optional<String> error = Optional.ofNullable(req.queryParams("error"));
         Optional<String> code = Optional.ofNullable(req.queryParams("code")).filter(c -> c.length() > 0);
@@ -210,7 +210,7 @@ public class SpotifyPlugin extends Plugin {
             //We have a code we need to get the token
             getToken(c, state.orElse("")).ifPresent(spotifyToken -> {
                 token = spotifyToken;
-                logger.info("Recieved token with refresh token [{}]", token.refresh_token);
+                logger().info("Recieved token with refresh token [{}]", token.refresh_token);
                 setData(DATA_SPOTIFY_TOKEN, token);
             });
 
@@ -230,7 +230,7 @@ public class SpotifyPlugin extends Plugin {
      */
     private Optional<SpotifyToken> getToken(String code, String url) {
         try {
-            logger.info("Getting token from code [{}] and state [{}]", code, url);
+            logger().info("Getting token from code [{}] and state [{}]", code, url);
             MultipartBody post = Unirest.post(SPOTIFY_API_TOKEN).header(HttpHeaders.AUTHORIZATION, "Basic " + getBase64Authorization())
                     .field("grant_type", "authorization_code")
                     .field("code", code)
@@ -238,11 +238,11 @@ public class SpotifyPlugin extends Plugin {
 
 
             String body = post.asString().getBody();
-            logger.info("Getting token response with body [{}]", body);
+            logger().info("Getting token response with body [{}]", body);
 
             return Optional.ofNullable(gson.fromJson(body, SpotifyToken.class));
         } catch (UnirestException e) {
-            logger.error("Couldn't get Spotify token", e);
+            logger().error("Couldn't get Spotify token", e);
             return Optional.empty();
         }
     }
@@ -263,21 +263,21 @@ public class SpotifyPlugin extends Plugin {
                     String body = null;
                     try {
                         body = post.asString().getBody();
-                        logger.info("Getting token response with body [{}]", body);
+                        logger().info("Getting token response with body [{}]", body);
                         Optional.ofNullable(gson.fromJson(body, SpotifyToken.class)).ifPresent(t -> {
                             token.access_token = t.access_token;
                             setData(DATA_SPOTIFY_TOKEN, token);
 
                         });
                     } catch (UnirestException e) {
-                        logger.error("couldn't get token via refresh token", e);
+                        logger().error("couldn't get token via refresh token", e);
                     }
 
                 });
     }
 
     public String getBase64Authorization() {
-        logger.info("Client id [{}], client secret [{}]", clientID, clientSecret);
+        logger().info("Client id [{}], client secret [{}]", clientID, clientSecret);
         return Base64.encodeBase64String((clientID + ":" + clientSecret).getBytes());
     }
 }

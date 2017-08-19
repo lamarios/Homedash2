@@ -51,7 +51,7 @@ public class SonarrTvPlugin extends Plugin {
 
     @Override
     protected void init() {
-        logger.info("Initiating Sonarr plugin.");
+        logger().info("Initiating Sonarr plugin.");
         url = settings.get(URL);
 
         apiKey = settings.get(API_KEY);
@@ -108,7 +108,7 @@ public class SonarrTvPlugin extends Plugin {
     public Map<String, String> validateSettings(Map<String, String> settings) {
         Map<String, String> errors = new HashMap<>();
 
-        logger.info("Initiating Sonarr plugin for settings validation.");
+        logger().info("Initiating Sonarr plugin for settings validation.");
         String url = settings.get(URL);
 
         String apiKey = settings.get(API_KEY);
@@ -124,7 +124,7 @@ public class SonarrTvPlugin extends Plugin {
         }
 
 
-        logger.info("Sonnarr Settings erorr size: {}", errors.size());
+        logger().info("Sonnarr Settings erorr size: {}", errors.size());
         return errors;
     }
 
@@ -195,14 +195,14 @@ public class SonarrTvPlugin extends Plugin {
     private void downloadFanArt(SonarrCalendar series) {
         File f = new File(getImagePath() + series.getSeriesId() + "-fanart.jpg");
 
-        logger.info("Series: \n {}", series.toString());
+        logger().info("Series: \n {}", series.toString());
 
         if (!f.exists()) {
             for (int i = 1; i <= 10; i++) {
                 try {
 
                     String poster = series.getFanart();
-                    logger.info("Download from: {}", poster);
+                    logger().info("Download from: {}", poster);
 
                     FileUtils.copyURLToFile(new URL(poster), f);
 
@@ -214,10 +214,10 @@ public class SonarrTvPlugin extends Plugin {
 
                     break;
                 } catch (Exception e) {
-                    logger.info(". Path: {}", new File(".").getAbsolutePath());
-                    logger.info("FULL_PNG Path: {} Writable ? {}", f.getAbsolutePath(), f.canWrite());
-                    logger.info("f Path: {}", f.getAbsolutePath());
-                    logger.error("Couldn't get poster for show [" + series.getSeriesId() + "]", e);
+                    logger().info(". Path: {}", new File(".").getAbsolutePath());
+                    logger().info("FULL_PNG Path: {} Writable ? {}", f.getAbsolutePath(), f.canWrite());
+                    logger().info("f Path: {}", f.getAbsolutePath());
+                    logger().error("Couldn't get poster for show [" + series.getSeriesId() + "]", e);
                 }
             }
         }

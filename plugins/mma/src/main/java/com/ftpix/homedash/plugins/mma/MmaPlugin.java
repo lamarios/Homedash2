@@ -98,7 +98,7 @@ public class MmaPlugin extends Plugin {
                     break;
             }
         } catch (Exception e) {
-            logger.error("Error while getting event or fight", e);
+            logger().error("Error while getting event or fight", e);
             response.setCommand(WebSocketMessage.COMMAND_ERROR);
             response.setMessage(e.getMessage());
         }
@@ -107,13 +107,13 @@ public class MmaPlugin extends Plugin {
 
     @Override
     public void doInBackground() {
-        logger.info("Getting organization...");
+        logger().info("Getting organization...");
         try {
             Organization org = sherdog.getOrganization(organizationUrl);
             organization = new HomeDashOrganization(org);
 
 
-            logger.info("Found {} with [{}] events", organization.getName(), organization.getEvents().size());
+            logger().info("Found {} with [{}] events", organization.getName(), organization.getEvents().size());
 
 
             //Checking if we need to send notification
@@ -160,11 +160,11 @@ public class MmaPlugin extends Plugin {
                                     Fight fight = fullEvent.getFights().get(0);
                                     hdEvent.setMainEventPhoto1("/" + sherdog.getFighter(fight.getFighter1().getSherdogUrl()).getPicture());
                                     hdEvent.setMainEventPhoto2("/" + sherdog.getFighter(fight.getFighter2().getSherdogUrl()).getPicture());
-                                    logger.info("Main event pictures {}, {}", hdEvent.getMainEventPhoto1(), hdEvent.getMainEventPhoto2());
+                                    logger().info("Main event pictures {}, {}", hdEvent.getMainEventPhoto1(), hdEvent.getMainEventPhoto2());
                                 }
                                 return hdEvent;
                             } catch (Exception e) {
-                                logger.error("Couldn't retrieve fighter picture", e);
+                                logger().error("Couldn't retrieve fighter picture", e);
 
                             }
                         }
@@ -172,7 +172,7 @@ public class MmaPlugin extends Plugin {
                         return new HomeDashEvent(event);
                     }).collect(Collectors.toList()));
         } catch (Exception e) {
-            logger.error("Error while trying to get the organization");
+            logger().error("Error while trying to get the organization");
         }
     }
 

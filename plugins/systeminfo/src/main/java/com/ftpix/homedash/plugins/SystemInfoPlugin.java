@@ -151,13 +151,13 @@ public class SystemInfoPlugin extends Plugin {
                 RamInfo oldRam = ramInfo.get(ramInfo.size() - 1);
 
                 if ((oldCpu.cpuUsage < WARNING_THRESHOLD && cpu.cpuUsage >= WARNING_THRESHOLD) || (oldRam.percentageUsed < WARNING_THRESHOLD && ram.percentageUsed >= WARNING_THRESHOLD)) {
-                    logger.debug("Sending high load warning");
+                    logger().debug("Sending high load warning");
                     //Notifications.send("Warning",
                     //		"CPU load (" + nf.format(cpu.cpuUsage) + "%) or Ram load (" + nf.format(ram.percentageUsed) + "%)  became over " + WARNING_THRESHOLD + "%.\n Date: " + new Date());
                 }
             }
 
-            logger.info("CPU load:{}%, RAM load:{}%", cpu.cpuUsage, ram.percentageUsed);
+            logger().info("CPU load:{}%, RAM load:{}%", cpu.cpuUsage, ram.percentageUsed);
             cpuInfo.add(cpu);
             ramInfo.add(ram);
 
@@ -172,7 +172,7 @@ public class SystemInfoPlugin extends Plugin {
             mapProcesses();
 
         } catch (Exception e) {
-            logger.error("[SystemInfo] Error while getting system info", e);
+            logger().error("[SystemInfo] Error while getting system info", e);
         }
     }
 
@@ -321,7 +321,7 @@ public class SystemInfoPlugin extends Plugin {
             info.temperature = sensors.getCpuTemperature();
             info.voltage = sensors.getCpuVoltage();
         } catch (Exception e) {
-            logger.error("Couldn't read sensors", e);
+            logger().error("Couldn't read sensors", e);
         }
 
         return info;

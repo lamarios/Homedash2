@@ -18,25 +18,30 @@ block content
 
             .layout-name.col-sm-4
                 p
-                    strong.name #{layout.getName()}
+                    strong.name #{layout.getName()}&nbsp;
                     if layout.getId() > 3
                         a(class="rename")
-                            i.fa.fa-pencil
+                            button.btn.btn-xs.btn-primary
+                                i.fa.fa-pencil
                         a(class="delete")
-                            i.fa.fa-times
+                            button.btn.btn-xs.btn-primary
+                                i.fa.fa-times
 
                 p
-                    | Grid Width:
+                    | Grid Width:&nbsp;
                     span.grid-width
                 p
-                    | Min. window width:
+                    | Min. window width:&nbsp;
                     span.screen-width
                 if layout.getId() > 3
                     p
                         a(class="remove")
-                            i.fa.fa-minus
+                            button.btn.btn-primary
+                                i.fa.fa-minus
                         a(class="add")
-                            i.fa.fa-plus
+                            button.btn.btn-primary
+                                i.fa.fa-plus
+        hr
 
     button#add-layout.btn.btn-primary
         i.fa.fa-plus

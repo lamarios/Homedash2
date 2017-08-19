@@ -68,7 +68,7 @@ public class CouchPotatoPlugin extends Plugin {
 
     @Override
     protected void init() {
-        logger.info("Initiating Couchpotato plugin.");
+        logger().info("Initiating Couchpotato plugin.");
 
         url = settings.get(URL);
 
@@ -84,7 +84,7 @@ public class CouchPotatoPlugin extends Plugin {
         apiKey = settings.get(API_KEY);
 
         url += "api/" + apiKey;
-        logger.info("Couchpotato URL:{}", url);
+        logger().info("Couchpotato URL:{}", url);
 
         File f = new File(getImagePath());
         if (!f.exists()) {
@@ -111,7 +111,7 @@ public class CouchPotatoPlugin extends Plugin {
                 response.setMessage(searchMovie(message));
                 response.setCommand(METHOD_MOVIE_LIST);
             } catch (Exception e) {
-                logger.error("Error while searching movie", e);
+                logger().error("Error while searching movie", e);
                 response.setCommand(WebSocketMessage.COMMAND_ERROR);
                 response.setMessage("Error while searching movie.");
             }
@@ -123,7 +123,7 @@ public class CouchPotatoPlugin extends Plugin {
                 response.setCommand(WebSocketMessage.COMMAND_SUCCESS);
                 response.setMessage("Movie added successfully !");
             } catch (Exception e) {
-                logger.error("Error while searching movie", e);
+                logger().error("Error while searching movie", e);
                 response.setCommand(WebSocketMessage.COMMAND_ERROR);
                 response.setMessage("Error while Adding movie.");
             }
@@ -162,7 +162,7 @@ public class CouchPotatoPlugin extends Plugin {
                             }
                             poster = getImagePath() + movieInfo.getString("imdb") + ".jpg";
                         } catch (Exception e) {
-                            logger.error("Can't get movie poster:", e);
+                            logger().error("Can't get movie poster:", e);
                         }
 
                     }
@@ -192,7 +192,7 @@ public class CouchPotatoPlugin extends Plugin {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            logger.info("Can't access Couchpotato at URL [{}]", url);
+            logger().info("Can't access Couchpotato at URL [{}]", url);
             errors.put("Unavailable", "Couch potato is not available at this URL: " + url);
         }
 
@@ -260,7 +260,7 @@ public class CouchPotatoPlugin extends Plugin {
         String queryUrl = url + API_MOVIE_SEARCH + URLEncoder.encode(query, "UTF-8");
 
         String response = Unirest.get(queryUrl).asString().getBody();
-        logger.info("Search query:[{}] response:{}", queryUrl, response);
+        logger().info("Search query:[{}] response:{}", queryUrl, response);
 
         List<Callable<Void>> pictureDownload = new ArrayList<>();
 
@@ -296,7 +296,7 @@ public class CouchPotatoPlugin extends Plugin {
                         movieObject.poster = getImagePath() + movieObject.imdbId + ".jpg";
                     }
                 } catch (Exception e) {
-                    logger.error("Error while parsing JSON");
+                    logger().error("Error while parsing JSON");
                     //skipping for this item
                     continue;
                 }
@@ -319,7 +319,7 @@ public class CouchPotatoPlugin extends Plugin {
 
             }
         } catch (Exception e) {
-            logger.info("No movies found");
+            logger().info("No movies found");
         }
 
 
