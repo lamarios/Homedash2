@@ -24,6 +24,22 @@ body.pages {
     transform: translate(0, 0);
   }
 
+  #page-select-overlay {
+    display: block;
+    cursor: pointer;
+  }
+
+}
+
+#page-select-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  display: none;
+  z-index: 999;
 }
 
 .container {
@@ -187,9 +203,9 @@ body.pages {
           display: block;
           width: @module-icon-size;
           height: @module-icon-size;
-          background-color: white;
+          background-color: @accentColor;
+          color: white !important;
           border-radius: 50%;
-          border: 1px solid #eee;
           color: #333;
           text-align: center;
           z-index: 100;
@@ -204,9 +220,9 @@ body.pages {
           display: block;
           width: @module-icon-size;
           height: @module-icon-size;
-          background-color: white;
+          background-color: @accentColor;
+          color: white !important;
           border-radius: 50%;
-          border: 1px solid #eee;
           color: #333;
           text-align: center;
           z-index: 100;
@@ -215,14 +231,36 @@ body.pages {
           right: -@module-icon-size/2;
           cursor: pointer;
 
+          opacity: 0;
+
           -webkit-transition: all @transition-speed;
           -moz-transition: all @transition-speed;
           -ms-transition: all @transition-speed;
           -o-transition: all @transition-speed;
           transition: all @transition-speed;
 
+          -webkit-transform: scale(0.5);
+          -moz-transform: scale(0.5);
+          -ms-transform: scale(0.5);
+          -o-transform: scale(0.5);
+          transform: scale(0.5);
+          pointer-events: none;
         }
 
+        .module-resize-icon.showing {
+          opacity: 1;
+          -webkit-transform: scale(1);
+          -moz-transform: scale(1);
+          -ms-transform: scale(1);
+          -o-transform: scale(1);
+          transform: scale(1);
+          pointer-events: auto;
+        }
+
+        .module-resize-icon.disabled {
+          pointer-events: none;
+          opacity:0.5;
+        }
 
         .dropdown-menu {
           top: 0;
@@ -276,7 +314,8 @@ body.pages {
 
 #layout.layout-edit {
   .gridster {
-    background-color: fadeout(darken(@accentColor, 10%), 10%);
+    //background-color: fadeout(darken(@accentColor, 10%), 10%);
+    border: 1px dashed @accentColor;
     .gridster-item {
       @scale-size: 0.8;
       -ms-transform: scale(@scale-size); /* IE 9 */

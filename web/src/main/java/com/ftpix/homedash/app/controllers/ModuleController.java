@@ -21,10 +21,8 @@ import spark.Spark;
 import spark.template.jade.JadeTemplateEngine;
 
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.ftpix.homedash.db.DB.MODULE_DAO;
@@ -97,19 +95,22 @@ public enum ModuleController implements Controller<Module, Integer> {
         if (currentSize.isPresent() && moduleId.isPresent() && availableWidth.isPresent()) {
 
             String[] sizes = PluginModuleMaintainer.INSTANCE.getPluginForModule(moduleId.get()).getSizes();
-
-            return Stream.of(sizes)
+            Arrays.sort(sizes);
+            List<String> filteredSizes = Stream.of(sizes)
                     .filter(s -> !s.equalsIgnoreCase(ModuleLayout.FULL_SCREEN))
                     .filter(s -> !s.equalsIgnoreCase(ModuleLayout.KIOSK))
                     .filter(s -> Integer.parseInt(String.valueOf(s.charAt(0))) <= availableWidth.get())
-                    .sorted()
-                    .filter(s -> s.compareTo(currentSize.get()) == 1)
-                    .peek(System.out::println)
-                    .findFirst()
-                    .orElse(sizes[0]);
+                    .collect(Collectors.toList());
+
+            int newIndex = filteredSizes.indexOf(currentSize.get()) + 1;
+            if (newIndex < filteredSizes.size()) {
+                return filteredSizes.get(newIndex);
+            } else {
+                return filteredSizes.get(0);
+            }
 
 
-        }else{
+        } else {
             Spark.halt(404);
             return "Missing paramters";
         }

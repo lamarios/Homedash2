@@ -5,6 +5,11 @@ $(document).ready(function () {
         $('body').toggleClass('pages');
     });
 
+    $('#page-select-overlay').click(function(event){
+        $('body').toggleClass('pages');
+        event.stopPropagation();
+    });
+
     $('#pages .icons .edit').click(function (event) {
         $('#pages').toggleClass('editing');
         event.stopPropagation();

@@ -119,7 +119,7 @@ $(document).ready(function () {
         });
     });
 
-    $(document).on('click', '.module-resize-icon', function(){
+    $(document).on('click', '.module-resize-icon', function () {
         changeSize($(this).attr('data-id'), $(this).attr('data-size'));
     });
 
@@ -200,12 +200,13 @@ function changeSize(moduleId, size) {
     var height = size[1];
     moduleElem.attr('data-size', width + 'x' + height);
 
-    gridster.resize_widget(gridsterElem, width, height, function () {
+    gridster.resize_widget(gridsterElem, width, height,  function () {
         savePositions();
         getModuleContent(moduleElem.attr('data-module'), moduleElem.attr('data-size'));
         $('#module-modal').modal('hide');
 
         updateResizeButton(moduleElem);
+        gridster.init();
     });
 }
 
@@ -274,7 +275,10 @@ function initGridster() {
             handle: '.settings-overlay.drag-box'
         }
     }).data('gridster');
-    gridster.recalculate_faux_grid();
+    // gridster.recalculate_faux_grid();
+    console.log('reloading gridster');
+
+
 }
 
 /**
@@ -377,11 +381,13 @@ function updateResizeButton(parent) {
             availableWidth: availableWidth
         }
 
+        var button = $('.module-resize-icon[data-id="' + payLoad.moduleId + '"]');
+
+        button.addClass('disabled');
 
         $.post('/module/getNextAvailableSize', payLoad, function (nextSize) {
-            console.log('nextSize', nextSize);
+            button.removeClass('disabled');
             var split = nextSize.split('x');
-            console.log(split);
             var newWidth = parseInt(split[0]);
             var newHeight = parseInt(split[1]);
 
@@ -394,35 +400,42 @@ function updateResizeButton(parent) {
 
             var angle = 0;
 
-            //base chevron direction is left (so already 90 degres set)
-            if (widthDiff == 1 && heightDiff == 1) {
-                angle = 45;
-            } else if (widthDiff == 0 && heightDiff == 1) {
-                angle = 90;
-            } else if (widthDiff == 0 && heightDiff == -1) {
-                angle = -90;
-            } else if (widthDiff == -1 && heightDiff == 0) {
-                angle = 180;
-            } else if (widthDiff == 1 && heightDiff == 0) {
-                angle = 0;
-            } else if (widthDiff == -1 && heightDiff == -1) {
-                angle = 225
-            } else if (widthDiff == 1) {
-                angle = 0;
-            } else if (widthDiff == -1) {
-                angle = 180;
-            } else if (heightDiff == 1) {
-                angle = 90;
-            } else if (heightDiff == -1) {
-                angle - 90;
-            }
+            //base chevron direction is right (so already 90 degrees set)
+            if (widthDiff === 0 && heightDiff === 0) {
+                button.removeClass('showing');
+            } else {
+                button.addClass('showing');
+                if (widthDiff === 1) {
+                    if (heightDiff === 1) {
+                        angle = 45;
+                    } else if (heightDiff === 0) {
+                        angle = 0;
+                    } else if (heightDiff === -1) {
+                        angle = -45;
+                    }
+                } else if (widthDiff === 0) {
+                    if (heightDiff === 1) {
+                        angle = 90;
+                    } else if (heightDiff === 0) {
+                        angle = 0;
+                    } else if (heightDiff === -1) {
+                        angle = -90;
+                    }
 
-            console.log(newWidth, currentWidth, newHeight, currentHeight);
-            console.log(widthDiff, heightDiff, angle);
-            var button = $('.module-resize-icon[data-id="' + payLoad.moduleId + '"]');
+                } else if (widthDiff === -1) {
+                    if (heightDiff === 1) {
+                        angle = 135;
+                    } else if (heightDiff === 0) {
+                        angle = 180;
+                    } else if (heightDiff === -1) {
+                        angle = 225;
+                    }
+
+                }
+
+            }
             button.css('transform', 'rotate(' + angle + 'deg)');
             button.attr('data-size', nextSize);
-
         });
         console.log(payLoad);
 
