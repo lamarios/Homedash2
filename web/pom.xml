@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>2017.08.2</version>
+        <version>2017.08.3</version>
     </parent>
 
 
@@ -193,7 +193,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>2017.08.2</version>
+            <version>2017.08.3</version>
         </dependency>
 
         <dependency>
@@ -333,7 +333,12 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        Folder size calculation for the hard disk plugin
+                        fix gridster after resize bug
+                        update gridster to latest
+                        update to jquery 3.x
+                        new icon for pages
+                        better logging
+                        refinement on the overall UI
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>
