@@ -1,0 +1,33 @@
+.head{
+    width: 100%;
+    height: 60vh;
+    background-color: #333;
+    overflow: hidden;
+    padding-top:30px;
+    text-align: center;
+    /*background-image: url('logo.svg');*/
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: 50px 50px;
+    box-shadow: inset 0 -10px 10px -10px #000000;
+}
+
+.head img{
+    display: block;
+    margin:auto;
+    box-shadow: black 0 0 50px ;
+}
+
+.gif{
+    height: 200px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+.responsive-image{
+    background-image: url("images/responsive.gif");
+}
+
+.layout-image{
+    background-image: url("images/layout.gif");
+}
