@@ -20,7 +20,15 @@ public class Constants {
     static {
 
         logger.info("Loading conf file");
-        ResourceBundle rs = ResourceBundle.getBundle("homedash");
+        ResourceBundle rs = null;
+        try {
+            rs = ResourceBundle.getBundle("homedash");
+        }catch (Exception e){
+            logger.info("couldn't find file homedash.properties, checking if the default file exists");
+
+            logger.info("Please copy homedash.properties.default to homedash.properties");
+            System.exit(-1);
+        }
 
         String path = rs.getString("cache_path");
         if (!path.endsWith("/")) {
