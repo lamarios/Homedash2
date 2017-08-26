@@ -10,37 +10,277 @@
           integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
 
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 </head>
 <body>
 <div class="head">
-    <img src="images/screen-mobile.png"/>
 </div>
 
 <div class="container">
-    <h1>HomeDash</h1>
-    <div class="row">
-        hello home dash
+    <div class="jumbotron">
+        <h1 class="display-3">HomeDash</h1>
+        <p class="lead">
+            HomeDash is a simple dashboard that allows to monitor and interact with many different services in order to
+            have a single entry point for one's dedicated server.
+            It's easy to install, setup and use.
+        </p>
     </div>
 
+    <hr/>
 
-    <h2>Customize layout</h2>
     <div class="row">
         <div class="col-sm-6">
-
+            <h2>Customisable</h2>
+            <p>The dashboard plugins can be arranged and resized in any way. The mobile, tablet, desktop layouts and
+                your custom ones have their own arrangement so each screen is really tailor-made.</p>
         </div>
         <div class="gif layout-image col-sm-6">
-
         </div>
     </div>
-    <h2>Responsive</h2>
+    <hr/>
     <div class="row">
+        <div class="col-sm-6">
+            <h2>Responsive</h2>
+            <p>
+                HomeDash is fully responsive, it will adapt to any device, from mobile to desktop.
+                Custom sizes of layouts can be created so it can really fit any device devices.
+                A kiosk mode is also available so it can be displayed full screen on TVs or Raspberry Pis with small screens.
+            </p>
+        </div>
         <div class="gif responsive-image col-sm-6">
         </div>
+    </div>
+    <hr/>
+    <div class="row">
         <div class="col-sm-6">
+            <h2>Many</h2>
             <p>
-                HomeDash is fully responsive, it will adapt to any of your devices, from mobile to desktop. You can also create your own size of layout so it can fit any of your favourite devices.
-                A kiosk mode is also available so it can be displayed on TVs or Raspberry Pis with small screens.
+                HomeDash allows to have multiple boards so plugins can be categorized to avoid having a cluttered
+                dashboard.
             </p>
+        </div>
+        <div class="gif boards-image col-sm-6">
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col-sm-12">
+            <h2>Plugins</h2>
+            <p>
+                Homedash has many different plugins to connect and interact with many services.
+            </p>
+            <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                <a class="carousel-control-prev carousel-control" href="#myCarousel" role="button" data-slide="prev">
+                    &lt;
+                </a>
+                <a class="carousel-control-next carousel-control" href="#myCarousel" role="button" data-slide="next">
+                    &gt;
+                </a>
+
+                <ol class="carousel-indicators">
+                    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                    <li data-target="#myCarousel" data-slide-to="1"></li>
+                    <li data-target="#myCarousel" data-slide-to="2"></li>
+                    <li data-target="#myCarousel" data-slide-to="3"></li>
+                    <li data-target="#myCarousel" data-slide-to="4"></li>
+                    <li data-target="#myCarousel" data-slide-to="5"></li>
+                    <li data-target="#myCarousel" data-slide-to="6"></li>
+                    <li data-target="#myCarousel" data-slide-to="7"></li>
+                    <li data-target="#myCarousel" data-slide-to="8"></li>
+                    <li data-target="#myCarousel" data-slide-to="9"></li>
+                    <li data-target="#myCarousel" data-slide-to="10"></li>
+                    <li data-target="#myCarousel" data-slide-to="11"></li>
+                    <li data-target="#myCarousel" data-slide-to="12"></li>
+                    <li data-target="#myCarousel" data-slide-to="13"></li>
+                </ol>
+
+                <div class="carousel-inner">
+                   <!-- System info -->
+                    <div class="carousel-item active">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <img src="images/plugins/systeminfo.png" />
+                            </div>
+                            <div class="col-sm-8">
+                                <h3>System Info</h3>
+                                <p>Monitor the CPU and Ram of the server hosting HomeDash.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Hard Drive-->
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <img src="images/plugins/harddrive.png" />
+                            </div>
+                            <div class="col-sm-8">
+                                <h3>Hard Drive</h3>
+                                <p>Monitor a hard drive size.</p>
+                                <p><strong>Full screen:</strong> Browse, create folders, upload, copy/cut paste files throughout the selected drive.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Network monitor-->
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <img src="images/plugins/network.png" />
+                            </div>
+                            <div class="col-sm-8">
+                                <h3>Network Monitor</h3>
+                                <p>Monitor a network interface of the server hosting HomeDash</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!--Transmission-->
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <img src="images/plugins/transmission.png" />
+                            </div>
+                            <div class="col-sm-8">
+                                <h3>Transmission</h3>
+                                <p>Monitor Download and Upload speed of a Transmission instance. Throttle speed and add torrents easily.</p>
+                                <p><strong>Full screen:</strong> Manage all torrents of the instance.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CouchPotato-->
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <img src="images/plugins/couchpotato.png" />
+                            </div>
+                            <div class="col-sm-8">
+                                <h3>CouchPotato</h3>
+                                <p>Easily add movies to a CouchPotato instance wanted list.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pi Hole-->
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <img src="images/plugins/pihole.png" />
+                            </div>
+                            <div class="col-sm-8">
+                                <h3>PiHole</h3>
+                                <p>Monitor the ad-blocking software PiHole</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Docker-->
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <img src="images/plugins/docker.png" />
+                            </div>
+                            <div class="col-sm-8">
+                                <h3>Docker</h3>
+                                <p>Shows the amount of running containers</p>
+                                <p><strong>Full screen:</strong> Manage containers and images</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Docker compose-->
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <img src="images/plugins/docker-compose.png" />
+                            </div>
+                            <div class="col-sm-8">
+                                <h3>Docker Compose</h3>
+                                <p>Shows the amount of running containers of a docker compose stack</p>
+                                <p><strong>Full screen:</strong> Show all the containers details, edit the docker-compose file and run docker-compose commands</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic DNS-->
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <img src="images/plugins/ddns.png" />
+                            </div>
+                            <div class="col-sm-8">
+                                <h3>Dynamic DNS</h3>
+                                <p>Refreshes a dynamic DNS IP whenever the server's IP changes. Dynamic DNS providers supported: OVH, no-ip.org, dyn.com</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!--logs-->
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <img src="images/plugins/logs.png" />
+                            </div>
+                            <div class="col-sm-8">
+                                <h3>Logs</h3>
+                                <p>Shows the level of activity on a log file</p>
+                                <p><strong>Full screen:</strong> Follows the log file content</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Spotify-->
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <img src="images/plugins/spotify.png" />
+                            </div>
+                            <div class="col-sm-8">
+                                <h3>Spotify</h3>
+                                <p>Shows the currently playing song on a Spotify Account</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Plex-->
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <img src="images/plugins/plex.png" />
+                            </div>
+                            <div class="col-sm-8">
+                                <h3>Plex</h3>
+                                <p>Displays currently playing Videos on a Plex server</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sonarr-->
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <img src="images/plugins/sonarr.png" />
+                            </div>
+                            <div class="col-sm-8">
+                                <h3>Sonarr</h3>
+                                <p>Displays the upcoming TV shows from a Sonarr installation</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--mma-->
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <img src="images/plugins/mma.png" />
+                            </div>
+                            <div class="col-sm-8">
+                                <h3>MMA</h3>
+                                <p>Get updated on the upcoming Mixed Martial Arts events and browse fighter records</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
