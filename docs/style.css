@@ -95,6 +95,13 @@ body {
     text-align: right;
 }
 
+@media(max-width: 575px){
+    .carousel-item .col-sm-4 {
+        text-align: center;
+    }
+
+}
+
 .container {
     margin: 0;
     padding: 0;
