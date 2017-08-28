@@ -11,7 +11,8 @@ $(document).ready(function () {
 
 
 function initWebsocket() {
-    ws = new WebSocket('ws://' + window.location.host + '/ws');
+    var protocol = (location.protocol === 'https:') ? 'wss://' : 'ws://';
+    ws = new WebSocket(protocol + window.location.host + '/ws');
     try {
         ws.onmessage = onMessage;
 
