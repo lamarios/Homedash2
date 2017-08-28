@@ -39,7 +39,8 @@ function initWebsocket() {
 
 
 function initSingleModuleWebSocket(size) {
-    ws = new WebSocket('ws://' + window.location.host + '/ws-' + size);
+    var protocol = (location.protocol === 'https:') ? 'wss://' : 'ws://';
+    ws = new WebSocket(protocol + window.location.host + '/ws-' + size);
     try {
 
 
