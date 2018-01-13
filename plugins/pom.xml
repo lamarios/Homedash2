@@ -6,7 +6,7 @@
     <parent>
         <artifactId>homedash</artifactId>
         <groupId>com.ftpix.homedash</groupId>
-        <version>2017.8.4</version>
+        <version>2018.1.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -30,6 +30,7 @@
         <module>logreader</module>
         <module>plex</module>
         <module>spotify</module>
+        <module>kvm</module>
     </modules>
 
     <dependencies>

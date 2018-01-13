@@ -1,0 +1,7 @@
+.form-group
+    label(for="url") KVM/Qemu connection string (ex: qemu+ssh://localhost/system)
+    if settings && settings.containsKey("url")
+        input.form-control(type="text", id="url", name="url", placeholder="URL", value='#{settings.get("url")}')
+    else
+        input.form-control(type="text", id="url", name ="url", placeholder = "URL")
+
