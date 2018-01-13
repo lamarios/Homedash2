@@ -5,8 +5,7 @@ public class VMInfo {
     public String status;
     public int id;
 
-
-    public int getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 }

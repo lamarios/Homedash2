@@ -194,6 +194,7 @@ public class KvmPlugin extends Plugin {
 
         Connect connect = connectToKVM(settings.get(SETTINGS_URL));
         try {
+            //Getting list of running VMs
             Stream<Domain> runningVms = IntStream.of(connect.listDomains())
                     .mapToObj(s -> {
                         try {
@@ -204,6 +205,8 @@ public class KvmPlugin extends Plugin {
                         }
                     }).filter(Objects::nonNull);
 
+
+            //Getting the other ones
             Stream<Domain> definedVMs = Stream.of(connect.listDefinedDomains())
                     .map(s -> {
                         try {
@@ -215,6 +218,7 @@ public class KvmPlugin extends Plugin {
                     })
                     .filter(Objects::nonNull);
 
+            //Merging everything
             return Stream.concat(definedVMs, runningVms)
                     .map(d -> {
                         try {
@@ -252,7 +256,7 @@ public class KvmPlugin extends Plugin {
                         }
                     })
                     .filter(Objects::nonNull)
-                    .sorted(Comparator.comparingInt(VMInfo::getId))
+                    .sorted(Comparator.comparing(VMInfo::getName))
                     .collect(Collectors.toList());
         } finally {
             connect.close();
