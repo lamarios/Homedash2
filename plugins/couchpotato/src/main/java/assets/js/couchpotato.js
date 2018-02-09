@@ -1,6 +1,7 @@
 function couchpotato(moduleId) {
 
     this.moduleId = moduleId;
+    this.movies = [];
 
     this.documentReady = function (size) {
         var self = this;
@@ -9,6 +10,8 @@ function couchpotato(moduleId) {
         root.find('.modal').attr('data-module', this.moduleId);
 
         root.find(".show-search").click(function () {
+            sendMessage(self.moduleId, 'qualities', '');
+            sendMessage(self.moduleId, 'folders', '');
             self.modal().appendTo(".modal-dump").modal('show');
         });
 
@@ -18,9 +21,8 @@ function couchpotato(moduleId) {
 
         this.modal().on('click', ".movie", function (event) {
 
-            var movieName = $(this).attr("data-title");
-            var imdb = $(this).attr("data-imdb");
-            self.addMovie(movieName, imdb);
+            var movie = self.movies[$(this).attr("data-index")];
+            self.addMovie(movie);
 
         });
     };
@@ -33,19 +35,43 @@ function couchpotato(moduleId) {
         return rootElement(this.moduleId);
     };
 
-    this.onMessage = function (size, command, message, extra){
+    this.onMessage = function (size, command, message, extra) {
         this.processData(command, message, extra);
     }
 
 
     this.processData = function (command, message, extra) {
-        if (command == 'refresh') {
+        if (command === 'refresh') {
             this.refresh(message);
-        } else if (command == 'movieList') {
+        } else if (command === 'movieList') {
             this.populateMovieList(message);
-        } else if (command == 'error') {
+        } else if (command === 'error') {
             this.modal().modal('hide');
+        } else if (command === 'folders') {
+            this.populatesFolders(message);
+        } else if (command === 'qualities') {
+            this.populateQualities(message);
         }
+    };
+
+    this.populateQualities = function (qualities) {
+
+        var qualitySelect = this.modal().find('.quality');
+        var qualitiesStr = '';
+        $.each(qualities, function (i, quality) {
+            qualitiesStr += '<option value="' + quality.id + '">' + quality.name + '</option>';
+        });
+        qualitySelect.html(qualitiesStr);
+    };
+
+    this.populatesFolders = function (folders) {
+
+        var folderSelect = this.modal().find('.folder');
+        var foldersStr = '';
+        $.each(folders, function (i, folder) {
+            foldersStr += '<option value="' + folder.id + '">' + folder.name + '</option>';
+        });
+        folderSelect.html(foldersStr);
     };
 
     this.searchMovie = function () {
@@ -65,19 +91,21 @@ function couchpotato(moduleId) {
 
     };
 
-    this.addMovie = function (movieName, imdb) {
+    this.addMovie = function (movie) {
 
-        sendMessage(this.moduleId, 'addMovie', movieName + '___' + imdb);
+        sendMessage(this.moduleId, 'addMovie', JSON.stringify(movie));
         this.modal().modal('hide');
     };
+
 
     this.populateMovieList = function (message) {
         var parent = this;
         var movieList = parent.modal().find('.couchpotato-movie-list');
         movieList.html('');
+        this.movies = message;
         if (message.length > 0) {
             $.each(message, function (index, value) {
-                movieList.append(parent.movieToHtml(value));
+                movieList.append(parent.movieToHtml(index, value));
                 //$("#cp" + parent.moduleId + "-movieList").append('<hr style="border-color: black;
                 // margin:0"/>');
             });
@@ -87,12 +115,11 @@ function couchpotato(moduleId) {
 
     };
 
-    this.movieToHtml = function (movie) {
+    this.movieToHtml = function (index, movie) {
         var html = [];
-        html.push('<div class="movie" data-imdb="', movie.imdbId, '" data-title="',
-                  movie.originalTitle, '">');
+        html.push('<div class="movie" data-index="'+index+'">');
         html.push('<div class="movie-poster" style="background-image:url(', movie.poster,
-                  ');"></div>');
+            ');"></div>');
         html.push('<p class="movie-name"><strong>', movie.originalTitle, ' </strong>');
 
         if (movie.wanted) {

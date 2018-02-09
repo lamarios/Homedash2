@@ -1,5 +1,14 @@
 .form-group
-    label(for="url") Couchpotato address
+    label(for="type") API Type
+    select(name="type", id="type")
+        each type, index in {'COUCHPOTATO':'CouchPotato', 'RADARR':'Radarr'}
+            if settings && settings.containsKey("type") && settings.get("type").equalsIgnoreCase(index)
+                option(value=index, selected=true)= type
+            else
+                option(value=index)= type
+
+.form-group
+    label(for="url") Couchpotato/Radarr URL address
     if settings && settings.containsKey("url")
         input.form-control(type="text", id="url", name="url", placeholder="Enter URL", value='#{settings.get("url")}')
     else

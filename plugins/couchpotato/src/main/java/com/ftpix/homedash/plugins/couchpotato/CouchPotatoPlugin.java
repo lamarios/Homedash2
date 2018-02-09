@@ -3,7 +3,10 @@ package com.ftpix.homedash.plugins.couchpotato;
 import com.ftpix.homedash.models.ModuleExposedData;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
+import com.ftpix.homedash.plugins.couchpotato.apis.MovieProviderAPI;
+import com.ftpix.homedash.plugins.couchpotato.models.ImagePath;
 import com.ftpix.homedash.plugins.couchpotato.models.MovieObject;
+import com.ftpix.homedash.plugins.couchpotato.models.Type;
 import com.google.common.io.Files;
 import com.mashape.unirest.http.Unirest;
 
@@ -33,17 +36,14 @@ import java.util.concurrent.Executors;
  * Created by gz on 22-Jun-16.
  */
 public class CouchPotatoPlugin extends Plugin {
-    public static final String URL = "url", API_KEY = "apiKey";
-    private static final int THUMB_SIZE = 500;
-    public String url, apiKey, baseUrl;
+    public static final String URL = "url", API_KEY = "apiKey", TYPE = "type";
+    public static final int THUMB_SIZE = 500;
 
-    public static final String METHOD_SEARCH_MOVIE = "searchMovie", METHOD_MOVIE_LIST = "movieList", METHOD_ADD_MOVIE = "addMovie";
+    public static final String METHOD_SEARCH_MOVIE = "searchMovie", METHOD_MOVIE_LIST = "movieList", METHOD_ADD_MOVIE = "addMovie", METHOD_GET_QUALITIES="qualities", METHOD_GET_FOLDERS="folders";
 
-    private final String API_MOVIE_SEARCH = "/movie.search/?q=";
-    private final String API_ADD_MOVIE = "/movie.add/?title=[TITLE]&identifier=[IMDB]";
-    private final String API_AVAILABLE = "/app.available";
-    private final String API_MOVIE_LIST = "/movie.list/?status=active";
     private final String IMAGE_PATH = "images/";
+    private final ImagePath imagePath = () -> getCacheFolder() + IMAGE_PATH;
+    private MovieProviderAPI movieAPI = null;
 
 
     @Override
@@ -53,40 +53,26 @@ public class CouchPotatoPlugin extends Plugin {
 
     @Override
     public String getDisplayName() {
-        return "CouchPotato";
+        return "CouchPotato/Radarr";
     }
 
     @Override
     public String getDescription() {
-        return "Add movies to your CouchPotato wanted list";
+        return "Add movies to your CouchPotato/Radarr wanted list";
     }
 
     @Override
     public String getExternalLink() {
-        return baseUrl;
+        return movieAPI.getBaseUrl();
     }
 
     @Override
     protected void init() {
         logger().info("Initiating Couchpotato plugin.");
 
-        url = settings.get(URL);
+        movieAPI = createMovieProviderApiFromSettings(settings);
 
-        if (!url.endsWith("/")) {
-            url += "/";
-        }
-
-        if (!url.startsWith("http")) {
-            url = "http://" + url;
-        }
-
-        baseUrl = url;
-        apiKey = settings.get(API_KEY);
-
-        url += "api/" + apiKey;
-        logger().info("Couchpotato URL:{}", url);
-
-        File f = new File(getImagePath());
+        File f = new File(imagePath.get());
         if (!f.exists()) {
             f.mkdirs();
         }
@@ -117,8 +103,8 @@ public class CouchPotatoPlugin extends Plugin {
             }
         } else if (command.equalsIgnoreCase(METHOD_ADD_MOVIE)) {
             try {
-                String[] split = message.split("___");
-                addMovie(split[1], split[0]);
+                MovieObject movieObject = gson.fromJson(message, MovieObject.class);
+                addMovie(movieObject);
 
                 response.setCommand(WebSocketMessage.COMMAND_SUCCESS);
                 response.setMessage("Movie added successfully !");
@@ -126,6 +112,24 @@ public class CouchPotatoPlugin extends Plugin {
                 logger().error("Error while searching movie", e);
                 response.setCommand(WebSocketMessage.COMMAND_ERROR);
                 response.setMessage("Error while Adding movie.");
+            }
+        }else if (command.equalsIgnoreCase(METHOD_GET_QUALITIES)){
+            try {
+                response.setMessage(movieAPI.getQualityProfiles());
+                response.setCommand(METHOD_GET_QUALITIES);
+            } catch (Exception e) {
+                logger().error("Error while getting qualities", e);
+                response.setCommand(WebSocketMessage.COMMAND_ERROR);
+                response.setMessage("Error while getting qualities.");
+            }
+        }else if (command.equalsIgnoreCase(METHOD_GET_FOLDERS)){
+            try {
+                response.setMessage(movieAPI.getMoviesRootFolder());
+                response.setCommand(METHOD_GET_FOLDERS);
+            } catch (Exception e) {
+                logger().error("Error while getting folders", e);
+                response.setCommand(WebSocketMessage.COMMAND_ERROR);
+                response.setMessage("Error while getting folders.");
             }
         }
         return response;
@@ -138,43 +142,7 @@ public class CouchPotatoPlugin extends Plugin {
 
     @Override
     protected Object refresh(String size) throws Exception {
-        try {
-            Unirest.get(url + API_AVAILABLE).asString();
-
-            JSONObject movieList = new JSONObject(Unirest.get(url + API_MOVIE_LIST).asString().getBody());
-            String poster = null;
-            if (movieList.getBoolean("success")) {
-                JSONArray movies = movieList.getJSONArray("movies");
-                for (int i = 0; i < movies.length() && poster == null; i++) {
-                    JSONObject movieInfo = movies.getJSONObject(new Random().nextInt(movies.length())).getJSONObject("info");
-                    JSONArray images = movieInfo.getJSONObject("images").getJSONArray("poster_original");
-                    if (images.length() != 0) {
-
-                        // poster = images.getString(new
-                        // Random().nextInt(images.length()));
-                        try {
-                            File f = new File(getImagePath() + movieInfo.getString("imdb") + ".jpg");
-                            if (!f.exists()) {
-                                FileUtils.copyURLToFile(new java.net.URL(images.getString(new Random().nextInt(images.length()))), f);
-                                BufferedImage image = ImageIO.read(f);
-                                BufferedImage resized = Scalr.resize(image, THUMB_SIZE);
-                                ImageIO.write(resized, Files.getFileExtension(f.getName()), f);
-                            }
-                            poster = getImagePath() + movieInfo.getString("imdb") + ".jpg";
-                        } catch (Exception e) {
-                            logger().error("Can't get movie poster:", e);
-                        }
-
-                    }
-                }
-            }
-
-            return poster;
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return false;
-        }
+        return movieAPI.getRandomWantedPoster();
     }
 
     @Override
@@ -184,19 +152,9 @@ public class CouchPotatoPlugin extends Plugin {
 
     @Override
     public Map<String, String> validateSettings(Map<String, String> settings) {
-
-        Map<String, String> errors = new Hashtable<String, String>();
-        String url = settings.get(URL) + API_AVAILABLE;
-        try {
-            Unirest.get(url).asString().getBody();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            logger().info("Can't access Couchpotato at URL [{}]", url);
-            errors.put("Unavailable", "Couch potato is not available at this URL: " + url);
-        }
-
-        return errors;
+        //TODO create new movie API
+        MovieProviderAPI movieAPI = createMovieProviderApiFromSettings(settings);
+        return movieAPI.validateSettings();
     }
 
     @Override
@@ -246,9 +204,8 @@ public class CouchPotatoPlugin extends Plugin {
     }
 
 
-    private void addMovie(String imdbId, String movieName) throws Exception {
-        String queryUrl = url + API_ADD_MOVIE.replace("[TITLE]", URLEncoder.encode(movieName, "UTF-8")).replace("[IMDB]", imdbId);
-        Unirest.get(queryUrl).asString().getBody();
+    private void addMovie(MovieObject movieObject) throws Exception {
+        movieAPI.addMovie(movieObject);
     }
 
 
@@ -256,80 +213,30 @@ public class CouchPotatoPlugin extends Plugin {
      * Search a movie from couchpotato instance
      */
     private List<MovieObject> searchMovie(String query) throws Exception {
-        List<MovieObject> result = new ArrayList<MovieObject>();
-        String queryUrl = url + API_MOVIE_SEARCH + URLEncoder.encode(query, "UTF-8");
+        return movieAPI.searchMovie(query);
+    }
 
-        String response = Unirest.get(queryUrl).asString().getBody();
-        logger().info("Search query:[{}] response:{}", queryUrl, response);
 
-        List<Callable<Void>> pictureDownload = new ArrayList<>();
+    /**
+     * Generates an API client based on the settings
+     *
+     * @param settings
+     * @return
+     */
+    private MovieProviderAPI createMovieProviderApiFromSettings(Map<String, String> settings) {
 
-        try {
-            JSONObject json = new JSONObject(response);
+        Type type = Type.valueOf(settings.get(TYPE));
 
-            JSONArray jsonarray = json.getJSONArray("movies");
+        String apiKey = settings.get(API_KEY);
+        String url = settings.get(URL);
 
-            for (int i = 0; i < jsonarray.length(); i++) {
-
-                JSONObject movie = jsonarray.getJSONObject(i);
-
-                MovieObject movieObject = new MovieObject();
-                try {
-                    movieObject.imdbId = movie.getString("imdb");
-
-                    JSONArray images = movie.getJSONObject("images").getJSONArray("poster_original");
-                    if (images.length() != 0) {
-                        File f = new File(getImagePath() + movieObject.imdbId + ".jpg");
-                        if (!f.exists()) {
-
-                            pictureDownload.add(() -> {
-                                FileUtils.copyURLToFile(new java.net.URL(images.getString(0)), f);
-
-                                BufferedImage image = ImageIO.read(f);
-                                BufferedImage resized = Scalr.resize(image, THUMB_SIZE);
-                                ImageIO.write(resized, Files.getFileExtension(f.getName()), f);
-
-                                return null;
-                            });
-
-                        }
-                        movieObject.poster = getImagePath() + movieObject.imdbId + ".jpg";
-                    }
-                } catch (Exception e) {
-                    logger().error("Error while parsing JSON");
-                    //skipping for this item
-                    continue;
-                }
-
-                try {
-                    movieObject.inLibrary = movie.getBoolean("in_library");
-                } catch (JSONException e) {
-                    movieObject.inLibrary = true;
-                }
-
-                movieObject.originalTitle = movie.getString("original_title");
-                try {
-                    movieObject.wanted = movie.getBoolean("in_wanted");
-                } catch (JSONException e) {
-                    movieObject.wanted = true;
-                }
-                movieObject.year = movie.getInt("year");
-
-                result.add(movieObject);
-
-            }
-        } catch (Exception e) {
-            logger().info("No movies found");
+        if (!url.endsWith("/")) {
+            url += "/";
         }
 
-
-        //downloading thumbnails
-        ExecutorService exec = Executors.newFixedThreadPool(result.size());
-        try{
-            exec.invokeAll(pictureDownload);
-        }finally{
-            exec.shutdown();
+        if (!url.startsWith("http")) {
+            url = "http://" + url;
         }
-        return result;
+        return type.getBuilder().build(url, apiKey, imagePath);
     }
 }

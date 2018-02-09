@@ -10,4 +10,5 @@ public class MovieObject {
     public boolean wanted;
     public String imdbId;
     public String poster;
+    public String rawJson;
 }
