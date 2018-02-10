@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>2018.1.1</version>
+        <version>2018.2.1</version>
     </parent>
 
 
@@ -199,7 +199,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>2018.1.1</version>
+            <version>2018.2.1</version>
         </dependency>
 
         <dependency>
@@ -339,7 +339,8 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        Add KVM/QEMU module to start/shutdown VMs
+                        Allow CouchPotato plugin to also catter for Radarr
+                        Add multithreading to the file plugin to be able to do more than one operation at a time
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>

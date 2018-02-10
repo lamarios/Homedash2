@@ -6,6 +6,7 @@ import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.plugins.couchpotato.apis.MovieProviderAPI;
 import com.ftpix.homedash.plugins.couchpotato.models.ImagePath;
 import com.ftpix.homedash.plugins.couchpotato.models.MovieObject;
+import com.ftpix.homedash.plugins.couchpotato.models.MovieRequest;
 import com.ftpix.homedash.plugins.couchpotato.models.Type;
 import com.google.common.io.Files;
 import com.mashape.unirest.http.Unirest;
@@ -21,13 +22,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -103,7 +98,7 @@ public class CouchPotatoPlugin extends Plugin {
             }
         } else if (command.equalsIgnoreCase(METHOD_ADD_MOVIE)) {
             try {
-                MovieObject movieObject = gson.fromJson(message, MovieObject.class);
+                MovieRequest movieObject = gson.fromJson(message, MovieRequest.class);
                 addMovie(movieObject);
 
                 response.setCommand(WebSocketMessage.COMMAND_SUCCESS);
@@ -142,7 +137,10 @@ public class CouchPotatoPlugin extends Plugin {
 
     @Override
     protected Object refresh(String size) throws Exception {
-        return movieAPI.getRandomWantedPoster();
+        Map<String, String> map = new HashMap<>();
+        map.put("poster", movieAPI.getRandomWantedPoster());
+        map.put("name", movieAPI.getName());
+        return map;
     }
 
     @Override
@@ -204,8 +202,8 @@ public class CouchPotatoPlugin extends Plugin {
     }
 
 
-    private void addMovie(MovieObject movieObject) throws Exception {
-        movieAPI.addMovie(movieObject);
+    private void addMovie(MovieRequest movieRequest) throws Exception {
+        movieAPI.addMovie(movieRequest);
     }
 
 

@@ -86,14 +86,28 @@ function couchpotato(moduleId) {
             this.root.find(".overlay").html('Couch potato is not available at the moment');
             this.root.find(".overlay").show();
         } else {
-            this.root().css('background-image', 'url(' + message + ')');
+            this.root().css('background-image', 'url(' + message.poster + ')');
+            this.root().find('.name').html(message.name);
         }
 
     };
 
     this.addMovie = function (movie) {
+        var qualitySelect = this.modal().find('.quality');
+        var folderSelect = this.modal().find('.folder');
 
-        sendMessage(this.moduleId, 'addMovie', JSON.stringify(movie));
+        var movieRequest = {
+            movie: movie,
+            quality: {
+                id: qualitySelect.val(),
+                name: qualitySelect.find('option:selected').text()
+            },
+            folder: {
+                id: folderSelect.val(),
+                name: folderSelect.find('option:selected').text()
+            }
+        }
+        sendMessage(this.moduleId, 'addMovie', JSON.stringify(movieRequest));
         this.modal().modal('hide');
     };
 
@@ -117,7 +131,7 @@ function couchpotato(moduleId) {
 
     this.movieToHtml = function (index, movie) {
         var html = [];
-        html.push('<div class="movie" data-index="'+index+'">');
+        html.push('<div class="movie" data-index="' + index + '">');
         html.push('<div class="movie-poster" style="background-image:url(', movie.poster,
             ');"></div>');
         html.push('<p class="movie-name"><strong>', movie.originalTitle, ' </strong>');

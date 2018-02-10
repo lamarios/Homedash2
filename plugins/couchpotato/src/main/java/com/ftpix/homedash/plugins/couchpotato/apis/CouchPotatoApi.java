@@ -1,9 +1,6 @@
 package com.ftpix.homedash.plugins.couchpotato.apis;
 
-import com.ftpix.homedash.plugins.couchpotato.models.ImagePath;
-import com.ftpix.homedash.plugins.couchpotato.models.MovieObject;
-import com.ftpix.homedash.plugins.couchpotato.models.MoviesRootFolder;
-import com.ftpix.homedash.plugins.couchpotato.models.QualityProfile;
+import com.ftpix.homedash.plugins.couchpotato.models.*;
 import com.google.common.io.Files;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -94,7 +91,8 @@ public class CouchPotatoApi extends MovieProviderAPI {
     }
 
     @Override
-    public void addMovie(MovieObject movie) throws UnsupportedEncodingException, UnirestException {
+    public void addMovie(MovieRequest request) throws UnsupportedEncodingException, UnirestException {
+        MovieObject movie = request.getMovie();
         String queryUrl = url + API_ADD_MOVIE.replace("[TITLE]", URLEncoder.encode(movie.originalTitle, "UTF-8")).replace("[IMDB]", movie.imdbId);
         Unirest.get(queryUrl).asString().getBody();
     }
@@ -191,5 +189,10 @@ public class CouchPotatoApi extends MovieProviderAPI {
     @Override
     public List<MoviesRootFolder> getMoviesRootFolder() throws Exception {
         return null;
+    }
+
+    @Override
+    public String getName() {
+        return "CouchPotato";
     }
 }

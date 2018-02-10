@@ -1,10 +1,9 @@
 package com.ftpix.homedash.plugins.couchpotato.apis;
 
-import com.ftpix.homedash.plugins.couchpotato.models.ImagePath;
-import com.ftpix.homedash.plugins.couchpotato.models.MovieObject;
-import com.ftpix.homedash.plugins.couchpotato.models.MoviesRootFolder;
-import com.ftpix.homedash.plugins.couchpotato.models.QualityProfile;
+import com.ftpix.homedash.plugins.couchpotato.apis.radarr.RadarrMovieRequest;
+import com.ftpix.homedash.plugins.couchpotato.models.*;
 import com.google.common.io.Files;
+import com.google.gson.Gson;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.apache.commons.io.FileUtils;
@@ -110,8 +109,18 @@ public class RadarrApi extends MovieProviderAPI {
     }
 
     @Override
-    public void addMovie(MovieObject movie) throws UnsupportedEncodingException, UnirestException {
+    public void addMovie(MovieRequest request) throws UnsupportedEncodingException, UnirestException {
+        Gson gson = new Gson();
+        RadarrMovieRequest radarrMovieRequest = gson.fromJson(request.getMovie().rawJson, RadarrMovieRequest.class);
+        radarrMovieRequest.setMonitored(true);
+        radarrMovieRequest.setQualityProfileId(request.getQuality().getId());
+        radarrMovieRequest.setRootFolderPath(request.getFolder().getName());
+        System.out.println(request);
 
+        Unirest.post(String.format(url, API_MOVIE_LIST))
+                .header("Content-Type", "application/json")
+                .body(gson.toJson(radarrMovieRequest))
+                .asString().getBody();
     }
 
     @Override
@@ -209,5 +218,10 @@ public class RadarrApi extends MovieProviderAPI {
         }
 
         return folders;
+    }
+
+    @Override
+    public String getName() {
+        return "Radarr";
     }
 }
