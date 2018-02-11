@@ -10,8 +10,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import oshi.SystemInfo;
 import oshi.software.os.OSFileStore;
-import pl.touk.throwing.ThrowingFunction;
-import pl.touk.throwing.ThrowingRunnable;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -22,9 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -38,7 +34,6 @@ public class HarddiskPlugin extends Plugin {
     public static final String COMMAND_CALCULATE = "calculate";
     private SystemInfo systemInfo = new SystemInfo();
     private Path mountPoint;
-    private ThreadPoolExecutor exec = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 
 
     @Override
@@ -84,81 +79,45 @@ public class HarddiskPlugin extends Plugin {
         try {
             switch (command) {
                 case COMMAND_BROWSE:
-                    List<DiskFile> diskFiles = exec.submit(() -> browse(message)).get();
+                    List<DiskFile> diskFiles = browse(message);
                     webSocketMessage.setMessage(diskFiles);
                     break;
                 case COMMAND_COPY:
                     FileOperation operation = gson.fromJson(message, FileOperation.class);
-                    exec.submit(() -> {
-                        try {
-                            copy(operation);
-                        } catch (OperationException | IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }).get();
+                    copy(operation);
                     webSocketMessage.setCommand(WebSocketMessage.COMMAND_SUCCESS);
                     webSocketMessage.setMessage("File copied successfully");
                     webSocketMessage.setExtra(operation);
                     break;
                 case COMMAND_DELETE:
-                    exec.submit(()-> {
-                        try {
-                            delete(message);
-                        } catch (OperationException | IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }).get();
+                    delete(message);
                     webSocketMessage.setCommand(WebSocketMessage.COMMAND_SUCCESS);
                     webSocketMessage.setMessage("File deleted successfully");
                     break;
                 case COMMAND_MOVE:
                     FileOperation fileOperation = gson.fromJson(message, FileOperation.class);
-                    exec.submit(()-> {
-                        try {
-                            move(fileOperation);
-                        } catch (IOException | OperationException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }).get();
+                    move(fileOperation);
                     webSocketMessage.setCommand(WebSocketMessage.COMMAND_SUCCESS);
                     webSocketMessage.setMessage("File moved successfully");
                     webSocketMessage.setExtra(fileOperation);
                     break;
                 case COMMAND_RENAME:
-                    exec.submit(()-> {
-                        try {
-                            rename(gson.fromJson(message, FileOperation.class));
-                        } catch (IOException | OperationException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }).get();
+                    rename(gson.fromJson(message, FileOperation.class));
                     webSocketMessage.setCommand(WebSocketMessage.COMMAND_SUCCESS);
                     webSocketMessage.setMessage("File renamed successfully");
                     break;
                 case COMMAND_NEW_FOLDER:
-                    exec.submit(()-> {
-                        try {
-                            createFolder(gson.fromJson(message, FileOperation.class));
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }).get();
+                    createFolder(gson.fromJson(message, FileOperation.class));
                     webSocketMessage.setCommand(WebSocketMessage.COMMAND_SUCCESS);
                     webSocketMessage.setMessage("Folder created successfully");
                     break;
                 case COMMAND_UPLOAD_FILE:
-                    exec.submit(()-> {
-                        try {
-                            uploadFile(gson.fromJson(message, FileOperation.class));
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }).get();
+                    uploadFile(gson.fromJson(message, FileOperation.class));
                     webSocketMessage.setCommand(WebSocketMessage.COMMAND_SUCCESS);
                     webSocketMessage.setMessage("File uploaded successfully");
                     break;
                 case COMMAND_CALCULATE:
-                    Map<String, String> size = exec.submit(() -> folderSize(message)).get();
+                    Map<String, String> size = folderSize(message);
                     webSocketMessage.setCommand(command);
                     webSocketMessage.setMessage(size);
             }

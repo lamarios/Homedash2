@@ -29,6 +29,8 @@ public class InnerSocketClass {
     private final String SIZE;
     private int moduleId;
 
+    private ExecutorService commandProcessor = Executors.newCachedThreadPool();
+
 
     InnerSocketClass(Session session, String size) {
         this.session = session;
@@ -36,28 +38,30 @@ public class InnerSocketClass {
     }
 
     public void processMessage(String message) {
-        try {
-            logger.info("Received Message [{}]", message);
+        commandProcessor.execute(() -> {
+            try {
+                logger.info("Received Message [{}]", message);
 
 
-            WebSocketMessage socketMessage = gson.fromJson(message, WebSocketMessage.class);
+                WebSocketMessage socketMessage = gson.fromJson(message, WebSocketMessage.class);
 
-            switch (socketMessage.getCommand()) {
-                case WebSocketMessage.COMMAND_REFRESH:
-                    WebSocketMessage response = MainWebSocket.refreshSingleModule(socketMessage.getModuleId(), (String) socketMessage.getMessage());
-                    final String jsonResponse = gson.toJson(response);
-                    session.getRemote().sendString(jsonResponse);
-                    break;
-                case WebSocketMessage.COMMAND_SET_MODULE:
-                    this.moduleId = socketMessage.getModuleId();
-                    startRefresh();
-                    break;
-                default: // send the command to the module concerned
-                    sendCommandToModule(socketMessage);
+                switch (socketMessage.getCommand()) {
+                    case WebSocketMessage.COMMAND_REFRESH:
+                        WebSocketMessage response = MainWebSocket.refreshSingleModule(socketMessage.getModuleId(), (String) socketMessage.getMessage());
+                        final String jsonResponse = gson.toJson(response);
+                        session.getRemote().sendString(jsonResponse);
+                        break;
+                    case WebSocketMessage.COMMAND_SET_MODULE:
+                        this.moduleId = socketMessage.getModuleId();
+                        startRefresh();
+                        break;
+                    default: // send the command to the module concerned
+                        sendCommandToModule(socketMessage);
+                }
+            } catch (Exception e) {
+                logger.error("Error while receiving command:", e);
             }
-        } catch (Exception e) {
-            logger.error("Error while receiving command:", e);
-        }
+        });
     }
 
     /**

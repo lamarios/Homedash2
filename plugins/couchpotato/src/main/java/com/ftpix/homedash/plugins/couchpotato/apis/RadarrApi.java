@@ -6,6 +6,7 @@ import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.sun.javafx.scene.control.skin.VirtualFlow;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,6 +24,7 @@ import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Function;
 
 import static com.ftpix.homedash.plugins.couchpotato.CouchPotatoPlugin.THUMB_SIZE;
 
@@ -131,9 +133,7 @@ public class RadarrApi extends MovieProviderAPI {
         List<MovieObject> moviesResults = new ArrayList<>();
         List<String> postersToDownload = new ArrayList<>();
 
-
-        for (int i = 0; i < movies.length(); i++) {
-            JSONObject movie = movies.getJSONObject(i);
+        Function<JSONObject, MovieObject> toMovieObject = (movie) -> {
             MovieObject movieObject = new MovieObject();
             movieObject.rawJson = movie.toString();
             Optional.ofNullable(movie.getString("title")).ifPresent(s -> movieObject.originalTitle = s);
@@ -151,12 +151,41 @@ public class RadarrApi extends MovieProviderAPI {
                     break;
                 }
             }
+            return movieObject;
+        };
 
-            moviesResults.add(movieObject);
+
+        for (int i = 0; i < movies.length(); i++) {
+            JSONObject movie = movies.getJSONObject(i);
+            moviesResults.add(toMovieObject.apply(movie));
         }
+
+        //Getting all movies to compare and see if it is already in library
+        body = Unirest.get(String.format(url, API_MOVIE_LIST)).asString().getBody();
+        JSONArray libraryMovies = new JSONArray(body);
+        List<MovieObject> library = new ArrayList<>();
+
+        for (int i = 0; i < libraryMovies.length(); i++) {
+            JSONObject movie = libraryMovies.getJSONObject(i);
+            library.add(toMovieObject.apply(movie));
+        }
+
 
         List<Callable<Void>> downloads = new ArrayList<>();
         moviesResults.forEach(m -> downloads.add(() -> {
+            //setting movie state from library
+            library.stream()
+                    .filter(l ->{
+                        return l.imdbId.equalsIgnoreCase(m.imdbId);})
+                    .findFirst()
+                    .ifPresent(l -> {
+                        m.inLibrary = l.inLibrary;
+                        m.wanted = l.wanted;
+                    });
+
+            //If we already have the movie, let's mark it has not wanted, even if in monitored state in Radarr
+            if(m.inLibrary) m.wanted = false;
+
             try {
                 String fileName = imagePath.get() + m.poster.replaceAll("[^a-zA-Z0-9]", "") + ".jpg";
                 File f = new File(fileName);

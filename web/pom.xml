@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>2018.2.1</version>
+        <version>2018.2.2</version>
     </parent>
 
 
@@ -199,7 +199,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>2018.2.1</version>
+            <version>2018.2.2</version>
         </dependency>
 
         <dependency>
@@ -339,8 +339,8 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        Allow CouchPotato plugin to also catter for Radarr
-                        Add multithreading to the file plugin to be able to do more than one operation at a time
+                        make the processing of incoming commands multi threaded for the websockets
+                        add the current state of movies that are in library for a Radarr search
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>

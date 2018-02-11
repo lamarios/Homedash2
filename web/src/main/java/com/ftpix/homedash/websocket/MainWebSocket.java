@@ -42,7 +42,7 @@ public class MainWebSocket {
     private long time = 0;
     private Gson gson = new GsonFireBuilder().enableExposeMethodResult().createGsonBuilder().excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT, Modifier.VOLATILE).serializeSpecialFloatingPointValues().create();
     private ExecutorService exec;
-    private final int THREADS_COUNT = 4;
+    private ExecutorService commandProcessor = Executors.newCachedThreadPool();
 
     public MainWebSocket() {
 
@@ -90,41 +90,43 @@ public class MainWebSocket {
 
     @OnWebSocketMessage
     public void message(Session session, String message) throws IOException {
-        try {
-            logger.info("Received Message [{}]", message);
+        commandProcessor.execute(() -> {
+            try {
+                logger.info("Received Message [{}]", message);
 
-            Optional<WebSocketSession> optClient = getClientFromSession(session);
+                Optional<WebSocketSession> optClient = getClientFromSession(session);
 
-            if (optClient.isPresent()) {
-                WebSocketSession client = optClient.get();
-                WebSocketMessage socketMessage = gson.fromJson(message, WebSocketMessage.class);
+                if (optClient.isPresent()) {
+                    WebSocketSession client = optClient.get();
+                    WebSocketMessage socketMessage = gson.fromJson(message, WebSocketMessage.class);
 
-                switch (socketMessage.getCommand()) {
-                    case WebSocketMessage.COMMAND_REFRESH:
-                        WebSocketMessage response = refreshSingleModule(socketMessage.getModuleId(), (String) socketMessage.getMessage());
-                        final String jsonResponse = gson.toJson(response);
-                        client.getSession().getRemote().sendString(jsonResponse);
-                        break;
-                    case WebSocketMessage.COMMAND_CHANGE_PAGE:
-                        client.setPage(DB.PAGE_DAO.queryForId(Double.valueOf(socketMessage.getMessage().toString()).intValue()));
-                        logger.info("New page for client: [{}]", client.getPage().getName());
-                        time = 0;
-                        startRefresh();
-                        break;
-                    case WebSocketMessage.COMMAND_CHANGE_LAYOUT:
-                        Layout layout = DB.LAYOUT_DAO.queryForId(Double.valueOf(socketMessage.getMessage().toString()).intValue());
-                        client.setLayout(layout);
-                        logger.info("New layout for client: [{}]", client.getLayout().getName());
-                        time = 0;
-                        startRefresh();
-                        break;
-                    default: // send the command to the module concerned
-                        sendCommandToModule(client, socketMessage);
+                    switch (socketMessage.getCommand()) {
+                        case WebSocketMessage.COMMAND_REFRESH:
+                            WebSocketMessage response = refreshSingleModule(socketMessage.getModuleId(), (String) socketMessage.getMessage());
+                            final String jsonResponse = gson.toJson(response);
+                            client.getSession().getRemote().sendString(jsonResponse);
+                            break;
+                        case WebSocketMessage.COMMAND_CHANGE_PAGE:
+                            client.setPage(DB.PAGE_DAO.queryForId(Double.valueOf(socketMessage.getMessage().toString()).intValue()));
+                            logger.info("New page for client: [{}]", client.getPage().getName());
+                            time = 0;
+                            startRefresh();
+                            break;
+                        case WebSocketMessage.COMMAND_CHANGE_LAYOUT:
+                            Layout layout = DB.LAYOUT_DAO.queryForId(Double.valueOf(socketMessage.getMessage().toString()).intValue());
+                            client.setLayout(layout);
+                            logger.info("New layout for client: [{}]", client.getLayout().getName());
+                            time = 0;
+                            startRefresh();
+                            break;
+                        default: // send the command to the module concerned
+                            sendCommandToModule(client, socketMessage);
+                    }
                 }
+            } catch (Exception e) {
+                logger.error("Error while receiving command:", e);
             }
-        } catch (Exception e) {
-            logger.error("Error while receiving command:", e);
-        }
+        });
 
     }
 
