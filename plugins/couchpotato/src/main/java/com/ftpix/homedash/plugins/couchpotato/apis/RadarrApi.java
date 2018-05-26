@@ -33,7 +33,7 @@ public class RadarrApi extends MovieProviderAPI {
     private final String baseUrl, url, apiKey;
     private final ImagePath imagePath;
 
-    private final String API_MOVIE_SEARCH = "movies/lookup";
+    private final String API_MOVIE_SEARCH = "movie/lookup";
     private final String API_ADD_MOVIE = "movie.add/?title=[TITLE]&identifier=[IMDB]";
     private final String API_AVAILABLE = "system/status";
     private final String API_PROFILES = "profile";

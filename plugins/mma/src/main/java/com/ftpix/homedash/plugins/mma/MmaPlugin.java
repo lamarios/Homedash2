@@ -7,13 +7,18 @@ import com.ftpix.homedash.notifications.Notifications;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.plugins.mma.model.HomeDashEvent;
 import com.ftpix.homedash.plugins.mma.model.HomeDashOrganization;
+import com.ftpix.sherdogparser.PictureProcessor;
 import com.ftpix.sherdogparser.Sherdog;
 import com.ftpix.sherdogparser.models.Event;
 import com.ftpix.sherdogparser.models.Fight;
 import com.ftpix.sherdogparser.models.Fighter;
 import com.ftpix.sherdogparser.models.Organization;
+import com.ftpix.sherdogparser.parsers.ParserUtils;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -65,7 +70,15 @@ public class MmaPlugin extends Plugin {
         organizationUrl = settings.get(ORGANIZATION_URL);
         sendNotifications = settings.containsKey(NOTIFICATION_SETTING);
 
-        sherdog = new Sherdog.Builder().withCacheFolder(getCacheFolder()).build();
+        PictureProcessor processor = (url, fighter) -> {
+
+            Path p = getCacheFolder().resolve(DigestUtils.md5Hex(fighter.getSherdogUrl()) + ".jpg");
+            ParserUtils.downloadImageToFile(url, p);
+
+            return p.toString();
+        };
+
+        sherdog = new Sherdog.Builder().withPictureProcessor(processor).build();
     }
 
     @Override

@@ -15,6 +15,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -57,13 +58,6 @@ public class SonarrTvPlugin extends Plugin {
         apiKey = settings.get(API_KEY);
 
         api = new SonarrApi(url, apiKey);
-
-        File f = new File(getImagePath());
-        if (!f.exists()) {
-            f.mkdirs();
-        }
-        f.setWritable(true);
-        f.deleteOnExit();
     }
 
     @Override
@@ -175,8 +169,12 @@ public class SonarrTvPlugin extends Plugin {
     }
 
 
-    private String getImagePath() {
-        return getCacheFolder() + IMAGE_PATH;
+    private Path getImagePath() throws IOException {
+        Path resolve = getCacheFolder().resolve(IMAGE_PATH);
+        if (!java.nio.file.Files.exists(resolve)) {
+            java.nio.file.Files.createDirectories(resolve);
+        }
+        return resolve;
     }
 
     @Override
@@ -193,7 +191,13 @@ public class SonarrTvPlugin extends Plugin {
      * @param series
      */
     private void downloadFanArt(SonarrCalendar series) {
-        File f = new File(getImagePath() + series.getSeriesId() + "-fanart.jpg");
+        File f = null;
+        try {
+            f = getImagePath().resolve(series.getSeriesId() + "-fanart.jpg").toFile();
+        } catch (IOException e) {
+            logger().error("Couldn't get fanart");
+            return;
+        }
 
         logger().info("Series: \n {}", series.toString());
 
@@ -221,6 +225,10 @@ public class SonarrTvPlugin extends Plugin {
                 }
             }
         }
-        series.setFanart(getImagePath() + series.getSeriesId() + "-fanart.jpg");
+        try {
+            series.setFanart(getImagePath().resolve(series.getSeriesId() + "-fanart.jpg").toString());
+        } catch (IOException e) {
+            logger().error("Couldn't get fanart");
+        }
     }
 }

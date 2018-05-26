@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash.plugins</groupId>
         <artifactId>plugins</artifactId>
-        <version>2018.2.2</version>     </parent>
+        <version>2018.5.1</version>     </parent>
 
     <artifactId>mma</artifactId>
     <name>mma</name>
@@ -23,7 +23,7 @@
         <dependency>
             <groupId>com.ftpix</groupId>
             <artifactId>sherdog-parser</artifactId>
-            <version>1.0</version>
+            <version>2.3</version>
         </dependency>
 
         <dependency>

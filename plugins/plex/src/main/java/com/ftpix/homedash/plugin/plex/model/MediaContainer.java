@@ -23,7 +23,7 @@ public class MediaContainer {
         List<Video> videos = new ArrayList<>();
 
         try {
-            JSONArray videoArray = json.getJSONArray("Video");
+            JSONArray videoArray = json.getJSONArray("Metadata");
             videoArray.forEach(object -> {
                 videos.add(Video.fromJson((JSONObject) object));
             });

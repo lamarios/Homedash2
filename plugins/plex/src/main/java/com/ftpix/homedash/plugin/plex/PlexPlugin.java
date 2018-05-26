@@ -17,7 +17,9 @@ import org.imgscalr.Scalr;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -68,13 +70,6 @@ public class PlexPlugin extends Plugin {
         if (!url.endsWith("/")) {
             url += "/";
         }
-
-        File f = new File(getImagePath());
-        if (!f.exists()) {
-            f.mkdirs();
-        }
-        f.setWritable(true);
-        f.deleteOnExit();
 
     }
 
@@ -261,39 +256,42 @@ public class PlexPlugin extends Plugin {
 
 
     private String downloadPicture(String plexPath) {
-        String filePath = getImagePath() + DigestUtils.md5Hex(plexPath) + ".jpg";
+        try {
+            Path filePath = getImagePath().resolve(DigestUtils.md5Hex(plexPath) + ".jpg");
 
 
-        File f = new File(filePath);
-
-
-        if (!f.exists()) {
-            try {
+            if (!java.nio.file.Files.exists(filePath)) {
                 String pictureUrl = String.format(PLEX_ART_URL, url.substring(0, url.length() - 1), plexPath, token);
 
 
                 logger().info("Download from: {}", pictureUrl);
 
-                FileUtils.copyURLToFile(new URL(pictureUrl), f);
+                FileUtils.copyURLToFile(new URL(pictureUrl), filePath.toFile());
 
                 // resizing the picture.
-                BufferedImage image = ImageIO.read(f);
+                BufferedImage image = ImageIO.read(filePath.toFile());
                 BufferedImage resize = Scalr.resize(image, THUMB_SIZE);
 
-                ImageIO.write(resize, Files.getFileExtension(f.getName()), f);
+                ImageIO.write(resize, Files.getFileExtension(filePath.toFile().getName()), filePath.toFile());
 
 
-            } catch (Exception e) {
-                logger().error("Couldn't get poster from path [{}]", plexPath, e);
             }
+            return "/" + filePath;
+        } catch (Exception e) {
+            logger().error("Couldn't get poster from path [{}]", plexPath, e);
+            return "";
         }
 
-        return "/" + filePath;
 
     }
 
 
-    private String getImagePath() {
-        return getCacheFolder() + IMAGE_PATH;
+    private Path getImagePath() throws IOException {
+
+        Path resolve = getCacheFolder().resolve(IMAGE_PATH);
+        if (!java.nio.file.Files.exists(resolve)) {
+            java.nio.file.Files.createDirectories(resolve);
+        }
+        return resolve;
     }
 }

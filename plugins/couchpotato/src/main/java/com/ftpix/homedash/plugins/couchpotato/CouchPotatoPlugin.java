@@ -21,7 +21,9 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -34,10 +36,16 @@ public class CouchPotatoPlugin extends Plugin {
     public static final String URL = "url", API_KEY = "apiKey", TYPE = "type";
     public static final int THUMB_SIZE = 500;
 
-    public static final String METHOD_SEARCH_MOVIE = "searchMovie", METHOD_MOVIE_LIST = "movieList", METHOD_ADD_MOVIE = "addMovie", METHOD_GET_QUALITIES="qualities", METHOD_GET_FOLDERS="folders";
+    public static final String METHOD_SEARCH_MOVIE = "searchMovie", METHOD_MOVIE_LIST = "movieList", METHOD_ADD_MOVIE = "addMovie", METHOD_GET_QUALITIES = "qualities", METHOD_GET_FOLDERS = "folders";
 
     private final String IMAGE_PATH = "images/";
-    private final ImagePath imagePath = () -> getCacheFolder() + IMAGE_PATH;
+    private final ImagePath imagePath = () -> {
+        try {
+            return getCacheFolder().resolve(IMAGE_PATH).toString();
+        } catch (IOException e) {
+            return "";
+        }
+    };
     private MovieProviderAPI movieAPI = null;
 
 
@@ -67,11 +75,6 @@ public class CouchPotatoPlugin extends Plugin {
 
         movieAPI = createMovieProviderApiFromSettings(settings);
 
-        File f = new File(imagePath.get());
-        if (!f.exists()) {
-            f.mkdirs();
-        }
-        f.deleteOnExit();
     }
 
     @Override
@@ -108,7 +111,7 @@ public class CouchPotatoPlugin extends Plugin {
                 response.setCommand(WebSocketMessage.COMMAND_ERROR);
                 response.setMessage("Error while Adding movie.");
             }
-        }else if (command.equalsIgnoreCase(METHOD_GET_QUALITIES)){
+        } else if (command.equalsIgnoreCase(METHOD_GET_QUALITIES)) {
             try {
                 response.setMessage(movieAPI.getQualityProfiles());
                 response.setCommand(METHOD_GET_QUALITIES);
@@ -117,7 +120,7 @@ public class CouchPotatoPlugin extends Plugin {
                 response.setCommand(WebSocketMessage.COMMAND_ERROR);
                 response.setMessage("Error while getting qualities.");
             }
-        }else if (command.equalsIgnoreCase(METHOD_GET_FOLDERS)){
+        } else if (command.equalsIgnoreCase(METHOD_GET_FOLDERS)) {
             try {
                 response.setMessage(movieAPI.getMoviesRootFolder());
                 response.setCommand(METHOD_GET_FOLDERS);
@@ -157,19 +160,24 @@ public class CouchPotatoPlugin extends Plugin {
 
     @Override
     public ModuleExposedData exposeData() {
-        ModuleExposedData data = new ModuleExposedData();
+        try {
+            ModuleExposedData data = new ModuleExposedData();
 
-        File f = new File(getImagePath());
+            File f = getImagePath().toFile();
 
-        FilenameFilter filter = (dir, name) -> name.matches("([^\\s]+(\\.(?i)(jpg|png|gif|bmp))$)");
+            FilenameFilter filter = (dir, name) -> name.matches("([^\\s]+(\\.(?i)(jpg|png|gif|bmp))$)");
 
-        List<File> filesArray = Arrays.asList(f.listFiles(filter));
-        Collections.shuffle(filesArray);
-        if (!filesArray.isEmpty()) {
-            data.addImage(getImagePath() + filesArray.get(0).getName());
+            List<File> filesArray = Arrays.asList(f.listFiles(filter));
+            Collections.shuffle(filesArray);
+            if (!filesArray.isEmpty()) {
+                data.addImage(getImagePath() + filesArray.get(0).getName());
+            }
+
+            return data;
+        } catch (Exception e) {
+            logger().error("Couldn't get images", e);
+            return null;
         }
-
-        return data;
     }
 
     @Override
@@ -197,8 +205,12 @@ public class CouchPotatoPlugin extends Plugin {
     /// Plugin methds
     ///
 
-    private String getImagePath() {
-        return getCacheFolder() + IMAGE_PATH;
+    private Path getImagePath() throws IOException {
+        Path resolve = getCacheFolder().resolve(IMAGE_PATH);
+        if (!java.nio.file.Files.exists(resolve)) {
+            java.nio.file.Files.createDirectories(resolve);
+        }
+        return resolve;
     }
 
 

@@ -18,6 +18,9 @@ import org.apache.logging.log4j.ThreadContext;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.channels.NotYetBoundException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -312,9 +315,15 @@ public abstract class Plugin {
         }
     }
 
-    protected final String getCacheFolder() throws NotYetBoundException {
+    protected final Path getCacheFolder() throws NotYetBoundException, IOException {
         if (module != null) {
-            return cacheBase + module.getId() + "/";
+
+            Path p = Paths.get(cacheBase + module.getId() + "/");
+
+            if(!Files.exists(p)){
+                Files.createDirectories(p);
+            }
+            return p;
         } else {
             throw new NotYetBoundException();
         }
