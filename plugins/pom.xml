@@ -22,7 +22,7 @@
         <module>pihole</module>
         <module>portmapper</module>
         <module>couchpotato</module>
-        <module>network-monitor</module>
+        <module>networkmonitor</module>
         <module>dynamicdns</module>
         <module>googlepubliccalendar</module>
         <module>mma</module>

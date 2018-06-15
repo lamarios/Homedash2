@@ -16,14 +16,18 @@ public class Constants {
     public final static int PORT;
     public final static String SALT;
     private static Logger logger = LogManager.getLogger();
+    public final static boolean DEV_MODE;
 
     static {
+
+
+        DEV_MODE = Boolean.parseBoolean(System.getProperty("dev", "false"));
 
         logger.info("Loading conf file");
         ResourceBundle rs = null;
         try {
             rs = ResourceBundle.getBundle("homedash");
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.info("couldn't find file homedash.properties, checking if the default file exists");
 
             logger.info("Please copy homedash.properties.default to homedash.properties");

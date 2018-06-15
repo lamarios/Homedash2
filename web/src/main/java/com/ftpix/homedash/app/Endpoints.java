@@ -2,22 +2,26 @@ package com.ftpix.homedash.app;
 
 import com.ftpix.homedash.app.controllers.*;
 import com.ftpix.homedash.plugins.Plugin;
+import com.ftpix.homedash.utils.HomeDashTemplateEngine;
 import com.ftpix.homedash.utils.Predicates;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lesscss.LessCompiler;
+import org.lesscss.LessException;
 import spark.ModelAndView;
-import spark.template.jade.JadeTemplateEngine;
+import spark.Response;
+import spark.Route;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static spark.Spark.get;
 
@@ -42,7 +46,7 @@ public class Endpoints {
 
         /*
          * Main Page
-		 */
+         */
         get("/", (req, res) -> {
             Map<String, Object> model = new HashMap<>();
 
@@ -62,11 +66,12 @@ public class Endpoints {
             }
             return new ModelAndView(model, "index");
 
-        }, new JadeTemplateEngine());
+        }, new HomeDashTemplateEngine());
 
 
         cacheResources();
         pluginResources();
+        staticResources();
 
     }
 
@@ -102,11 +107,72 @@ public class Endpoints {
         });
     }
 
+
+    private static void staticResources() {
+
+
+        Route route = (Route) (req, res) -> {
+
+
+            if (Constants.DEV_MODE) {
+                String content = getDevStaticResource(req.splat()[0], res);
+
+                if (content != null) {
+                    return content;
+                }
+            }
+
+            String fullPath = "web" + req.pathInfo();
+            return getContent(res, fullPath);
+        };
+
+
+        get("/css/*", route);
+        get("/fonts/*", route);
+        get("/js/*", route);
+        get("/image/*", route);
+    }
+
+
+    /**
+     * GEts the content of a file from resource with full path
+     *
+     * @param res
+     * @param fullPath
+     * @return
+     */
+    private static String getContent(Response res, String fullPath) {
+        try {
+            Path p = Paths.get(fullPath);
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            InputStream is = classLoader.getResourceAsStream(fullPath);
+
+
+            res.raw().setContentType(Files.probeContentType(p));
+            res.raw().setHeader("Content-Disposition", "inline; filename=" + p.getFileName());
+
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = is.read(buffer)) > 0) {
+                res.raw().getOutputStream().write(buffer, 0, len);
+            }
+
+            String result = IOUtils.toString(is);
+            is.close();
+            return result.trim();
+        } catch (Exception e) {
+            logger.error("Error while getting resource", e);
+            res.status(500);
+            return "";
+        }
+    }
+
     /**
      * Plugin resources
      */
     private static void pluginResources() {
         get("/plugin/:name/*", (req, res) -> {
+
 
             String name = req.params("name");
             String path = req.splat()[0];
@@ -114,29 +180,11 @@ public class Endpoints {
 
             logger.info("/plugin/{}/{}", name, path);
 
-            try {
-                Path p = Paths.get(fullPath);
-                ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-                InputStream is = classLoader.getResourceAsStream(fullPath);
-
-
-                res.raw().setContentType(Files.probeContentType(p));
-                res.raw().setHeader("Content-Disposition", "inline; filename=" + p.getFileName());
-
-                byte[] buffer = new byte[1024];
-                int len;
-                while ((len = is.read(buffer)) > 0) {
-                    res.raw().getOutputStream().write(buffer, 0, len);
-                }
-
-                String result = IOUtils.toString(is);
-                is.close();
-                return result.trim();
-            } catch (Exception e) {
-                logger.error("Error while getting resource", e);
-                res.status(500);
-                return "";
+            if (Constants.DEV_MODE) {
+                return getDevResource(name, path, res);
             }
+
+            return getContent(res, fullPath);
         });
     /*
         get("/plugin/:name/js/*", (req, res) -> {
@@ -191,6 +239,97 @@ public class Endpoints {
             }
         });
         */
+
+    }
+
+    /**
+     * GEts dev static resources
+     *
+     * @param file
+     * @return
+     */
+    private static String getDevStaticResource(String file, Response res) throws IOException, LessException {
+        Path assets = Paths.get(".").resolve("web").resolve("src").resolve("main").resolve("java").resolve("assets");
+
+        if (file.endsWith("css")) {
+            assets = assets.resolve("less").resolve(file.replaceAll("css", "less"));
+
+
+            if (Files.exists(assets)) {
+                LessCompiler lessCompiler = new LessCompiler();
+//                LessCompiler lessCompiler = new LessCompiler(Arrays.asList("--relative-urls", "--strict-math=on"));
+                String css = lessCompiler.compile(assets.toFile());
+
+                res.raw().setContentType("text/css");
+                res.raw().setHeader("Content-Disposition", "inline; filename=" + assets.getFileName().toString().replaceAll("less", "css"));
+
+
+                return css;
+            }else{
+                return null;
+            }
+        } else if (file.endsWith("js")) {
+            assets = assets.resolve("js").resolve(file);
+
+            res.raw().setContentType(Files.probeContentType(assets));
+            res.raw().setHeader("Content-Disposition", "inline; filename=" + assets.getFileName());
+
+            if (Files.exists(assets)) {
+                return Files.readAllLines(assets).stream().collect(Collectors.joining("\n"));
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Gets the content of file using file system and try to find it in asset folders
+     *
+     * @param name
+     * @return
+     */
+    private static String getDevResource(String plugin, String name, Response res) throws IOException, LessException {
+
+        Path path = Paths.get(".").toAbsolutePath().resolve("plugins").resolve(plugin);
+
+
+        if (name.endsWith(".css")) {
+            name = name.replaceAll("css", "less");
+        }
+
+        String nameFilter = name;
+
+        Optional<Path> optionalPath = Files.walk(path)
+                .filter(p -> p.toAbsolutePath().toString().endsWith("assets/" + nameFilter))
+                .findFirst();
+
+        if (optionalPath.isPresent()) {
+
+
+            Path file = optionalPath.get();
+            if (name.endsWith("less")) {
+                LessCompiler lessCompiler = new LessCompiler();
+//                LessCompiler lessCompiler = new LessCompiler(Arrays.asList("--relative-urls", "--strict-math=on"));
+                String css = lessCompiler.compile(file.toFile());
+
+                res.raw().setContentType("text/css");
+                res.raw().setHeader("Content-Disposition", "inline; filename=" + file.getFileName().toString().replaceAll("less", "css"));
+
+                return css;
+
+            } else {
+                res.raw().setContentType(Files.probeContentType(file));
+                res.raw().setHeader("Content-Disposition", "inline; filename=" + file.getFileName());
+                return Files.readAllLines(file)
+                        .stream()
+                        .collect(Collectors.joining("\n"));
+            }
+
+        } else {
+            return "";
+        }
 
     }
 }

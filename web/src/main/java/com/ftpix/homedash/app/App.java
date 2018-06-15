@@ -53,7 +53,7 @@ public class App {
 
             loadNativeLibs();
 
-            staticFileLocation("/web");
+//            staticFileLocation("/web");
 
             port(Constants.PORT);
 

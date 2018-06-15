@@ -1,6 +1,7 @@
 package com.ftpix.homedash.app.controllers;
 
 import com.ftpix.homedash.models.*;
+import com.ftpix.homedash.utils.HomeDashTemplateEngine;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mashape.unirest.http.HttpResponse;
@@ -12,7 +13,6 @@ import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
-import spark.template.jade.JadeTemplateEngine;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -33,7 +33,7 @@ public enum RemoteController implements Controller<RemoteFavorite, Integer> {
     @Override
     public void defineEndpoints() {
 
-        Spark.get("/add-remote", this::addRemotePage, new JadeTemplateEngine());
+        Spark.get("/add-remote", this::addRemotePage, new HomeDashTemplateEngine());
 
 
         Spark.post("/remote/browse-remote", "application/json", (req, res) -> {

@@ -8,11 +8,11 @@ import com.ftpix.homedash.notifications.Notifications;
 import com.ftpix.homedash.notifications.implementations.PushBullet;
 import com.ftpix.homedash.notifications.implementations.PushOver;
 import com.ftpix.homedash.notifications.implementations.Pushalot;
+import com.ftpix.homedash.utils.HomeDashTemplateEngine;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import spark.*;
-import spark.template.jade.JadeTemplateEngine;
 
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
@@ -34,7 +34,7 @@ public enum SettingsController implements Controller<Settings, String> {
         /**
          * Settings page
          */
-        Spark.get("/settings", this::getSettingsPage, new JadeTemplateEngine());
+        Spark.get("/settings", this::getSettingsPage, new HomeDashTemplateEngine());
 
         Spark.post("/settings", this::saveSettings);
 
@@ -42,9 +42,9 @@ public enum SettingsController implements Controller<Settings, String> {
         /**
          * Login form
          */
-        Spark.get("/login", (req, res) -> new ModelAndView(new HashMap<String, String>(), "login"), new JadeTemplateEngine());
+        Spark.get("/login", (req, res) -> new ModelAndView(new HashMap<String, String>(), "login"), new HomeDashTemplateEngine());
 
-        Spark.post("/login", this::login, new JadeTemplateEngine());
+        Spark.post("/login", this::login, new HomeDashTemplateEngine());
 
 
         /**

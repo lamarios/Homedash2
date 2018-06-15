@@ -9,6 +9,7 @@ import com.mashape.unirest.http.Unirest;
 import de.neuland.jade4j.JadeConfiguration;
 import de.neuland.jade4j.exceptions.JadeException;
 import de.neuland.jade4j.template.ClasspathTemplateLoader;
+import de.neuland.jade4j.template.FileTemplateLoader;
 import de.neuland.jade4j.template.JadeTemplate;
 import de.neuland.jade4j.template.TemplateLoader;
 import org.apache.logging.log4j.LogManager;
@@ -18,6 +19,7 @@ import org.apache.logging.log4j.ThreadContext;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.channels.NotYetBoundException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -44,6 +46,9 @@ public abstract class Plugin {
     private final static String REMOTE_URL = "url", REMOTE_API_KEY = "key", REMOTE_MODULE_ID = "id";
 
     private AtomicInteger clients = new AtomicInteger(0);
+
+
+    private final static boolean DEV_MODE = Boolean.parseBoolean(System.getProperty("dev", "false"));
 
     public Plugin() {
     }
@@ -158,9 +163,28 @@ public abstract class Plugin {
      */
     public final String getView(String size) throws JadeException, IOException {
 
+
         JadeConfiguration config = new JadeConfiguration();
 
-        TemplateLoader loader = new ClasspathTemplateLoader();
+        TemplateLoader loader = null;
+        if(DEV_MODE){
+            //getting template
+            Path plugin = Paths.get(".").resolve("plugins").resolve(getId()).toAbsolutePath();
+
+            Optional<Path> optionalPath = Files.walk(plugin)
+                    .filter(p -> Files.isDirectory(p) && p.toAbsolutePath().endsWith("assets/"))
+                    .findFirst();
+
+
+
+            if(optionalPath.isPresent()){
+                String basePath = optionalPath.get().toAbsolutePath().toString()+"/";
+                loader = new FileTemplateLoader(basePath, StandardCharsets.UTF_8.name());
+            }
+        }else{
+            loader = new ClasspathTemplateLoader();
+        }
+
 
         config.setTemplateLoader(loader);
 

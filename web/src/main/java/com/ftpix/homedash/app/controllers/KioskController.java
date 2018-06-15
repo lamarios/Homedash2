@@ -5,6 +5,7 @@ import com.ftpix.homedash.db.DB;
 import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.plugins.Plugin;
+import com.ftpix.homedash.utils.HomeDashTemplateEngine;
 import com.ftpix.homedash.utils.Predicates;
 import com.google.gson.Gson;
 import io.gsonfire.GsonFireBuilder;
@@ -14,7 +15,6 @@ import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
-import spark.template.jade.JadeTemplateEngine;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -30,8 +30,8 @@ public enum KioskController {
     private final Gson gson = new GsonFireBuilder().enableExposeMethodResult().createGsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
     public void defineEndpoints() {
-        Spark.get("/kiosk/:moduleId", this::getKioskView, new JadeTemplateEngine());
-        Spark.get("/kiosk", this::getKioskView, new JadeTemplateEngine());
+        Spark.get("/kiosk/:moduleId", this::getKioskView, new HomeDashTemplateEngine());
+        Spark.get("/kiosk", this::getKioskView, new HomeDashTemplateEngine());
         Spark.get("/kiosk/:moduleId/inRotation", this::isInRotation, gson::toJson);
         Spark.get("/kiosk/:moduleId/toggleRotation", this::toggleRotation, gson::toJson);
 

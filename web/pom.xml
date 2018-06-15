@@ -119,6 +119,12 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.lesscss</groupId>
+            <artifactId>lesscss</artifactId>
+            <version>1.7.0.1.1</version>
+        </dependency>
+
         <!-- plugins -->
         <dependency>
             <groupId>com.ftpix.homedash.plugins</groupId>

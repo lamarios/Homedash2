@@ -5,6 +5,7 @@ import com.ftpix.homedash.models.Layout;
 import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.plugins.Plugin;
+import com.ftpix.homedash.utils.HomeDashTemplateEngine;
 import com.google.gson.Gson;
 import de.neuland.jade4j.exceptions.JadeException;
 import io.gsonfire.GsonFireBuilder;
@@ -15,7 +16,6 @@ import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
-import spark.template.jade.JadeTemplateEngine;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -48,7 +48,7 @@ public enum LayoutController implements Controller<Layout, Integer> {
         /**
          * Displays layout settings
          */
-        Spark.get("/layout-settings", this::getLayoutSettings, new JadeTemplateEngine());
+        Spark.get("/layout-settings", this::getLayoutSettings, new HomeDashTemplateEngine());
 
         /**
          * Adds a new layout

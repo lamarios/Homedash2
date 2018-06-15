@@ -7,6 +7,7 @@ import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.Page;
 import com.ftpix.homedash.plugins.Plugin;
+import com.ftpix.homedash.utils.HomeDashTemplateEngine;
 import com.google.gson.Gson;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -18,7 +19,6 @@ import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
-import spark.template.jade.JadeTemplateEngine;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -67,7 +67,7 @@ public enum ModuleLayoutController implements Controller<ModuleLayout, Integer> 
         model.put("plugins", PluginModuleMaintainer.INSTANCE.PLUGIN_INSTANCES);
 
 
-        JadeTemplateEngine engine = new JadeTemplateEngine();
+        HomeDashTemplateEngine engine = new HomeDashTemplateEngine();
         String html = engine.render(new ModelAndView(model, "module-layout"));
 
         Map<String, Object> toJson = new HashMap<String, Object>();

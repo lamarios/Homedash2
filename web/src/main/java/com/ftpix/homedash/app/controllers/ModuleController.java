@@ -6,6 +6,7 @@ import com.ftpix.homedash.db.DB;
 import com.ftpix.homedash.jobs.BackgroundRefresh;
 import com.ftpix.homedash.models.*;
 import com.ftpix.homedash.plugins.Plugin;
+import com.ftpix.homedash.utils.HomeDashTemplateEngine;
 import com.google.gson.Gson;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -18,7 +19,6 @@ import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
-import spark.template.jade.JadeTemplateEngine;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -42,23 +42,23 @@ public enum ModuleController implements Controller<Module, Integer> {
         /*
          * Add module
 		 */
-        Spark.get("/add-module/on-page/:page", this::addModuleOnPage, new JadeTemplateEngine());
+        Spark.get("/add-module/on-page/:page", this::addModuleOnPage, new HomeDashTemplateEngine());
 
 		/*
          * Add module with class This will save the module if there are no
 		 * settings to display, otherwise it'll show the settings
 		 */
-        Spark.get("/add-module/:pluginclass", this::addModule, new JadeTemplateEngine());
+        Spark.get("/add-module/:pluginclass", this::addModule, new HomeDashTemplateEngine());
 
 		/*
          * Add module
 		 */
-        Spark.get("/module/:moduleId/settings", this::getModuleSettings, new JadeTemplateEngine());
+        Spark.get("/module/:moduleId/settings", this::getModuleSettings, new HomeDashTemplateEngine());
 
 		/*
          * Save a new or edited module
 		 */
-        Spark.post("/save-module", this::saveModule, new JadeTemplateEngine());
+        Spark.post("/save-module", this::saveModule, new HomeDashTemplateEngine());
 
 		/*
          * Deletes a module
@@ -75,7 +75,7 @@ public enum ModuleController implements Controller<Module, Integer> {
         Spark.get("/module/:moduleId/move-to-page/:pageId", this::moveModule, gson::toJson);
 
 
-        Spark.get("/module/:moduleId/full-screen", this::getFullScreenView, new JadeTemplateEngine());
+        Spark.get("/module/:moduleId/full-screen", this::getFullScreenView, new HomeDashTemplateEngine());
 
         Spark.post("/module/getNextAvailableSize", this::getNextAvailableSize);
     }
