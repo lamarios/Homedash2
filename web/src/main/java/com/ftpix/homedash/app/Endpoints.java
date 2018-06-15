@@ -120,6 +120,7 @@ public class Endpoints {
                 if (content != null) {
                     return content;
                 }
+                //if it's not in the assets we just load it as a normal file
             }
 
             String fullPath = "web" + req.pathInfo();
