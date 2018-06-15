@@ -255,10 +255,11 @@ function savePositions(event, ui) {
     };
 
     $.post('/save-module-positions/' + LAYOUT.id, data, function (result) {
-        console.log(result);
+        gridster.init();
     });
 
 }
+
 
 /**
  * Initiate the grid

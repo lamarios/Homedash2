@@ -1,16 +1,12 @@
 .gridster
     for layout in layouts
         .gridster-item(data-row="#{layout.getY()}", data-col="#{layout.getX()}", data-sizex="#{layout.getWidth()}", data-sizey="#{layout.getHeight()}",  data-module="#{layout.getModule().getId()}")
-            .module-loading
-                .breath-overlay
             div(class="module #{layout.getSize()}", data-module="#{layout.getModule().getId()}", data-size="#{layout.getSize()}")
                 .module-settings
                     .module-settings-icon(data-id="#{layout.getModule().getId()}")
                         i.fa.fa-ellipsis-v
                     .module-resize-icon(data-id="#{layout.getModule().getId()}")
                         i.fa.fa-long-arrow-right
-
-
                 .module-icons
                     if layout.getModule().getLocation() == "REMOTE"
                         span.remote-name #{plugins.get(layout.getModule().getId()).getSettingsAsMap().get("name")}&nbsp;
@@ -21,6 +17,8 @@
                     if plugins.get(layout.getModule().getId()).hasExternalLink()
                         a(href="#{plugins.get(layout.getModule().getId()).getExternalLink()}", target="_blank")
                             i.fa.fa-share-square-o
+                .module-loading
+                    .breath-overlay
                 .settings-overlay
                 div(class="content #{plugins.get(layout.getModule().getId()).getId()} size-#{layout.getSize()}")
                     !{plugins.get(layout.getModule().getId()).getView(layout.getSize())}

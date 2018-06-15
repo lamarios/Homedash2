@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>2018.5.1</version>
+        <version>2018.6.1</version>
     </parent>
 
 
@@ -199,7 +199,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>2018.5.1</version>
+            <version>2018.6.1</version>
         </dependency>
 
         <dependency>
@@ -339,8 +339,7 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        make the processing of incoming commands multi threaded for the websockets
-                        add the current state of movies that are in library for a Radarr search
+                        add work around to make the resizing/moving more reliable
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>
