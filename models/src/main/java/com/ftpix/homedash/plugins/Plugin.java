@@ -167,23 +167,7 @@ public abstract class Plugin {
         JadeConfiguration config = new JadeConfiguration();
 
         TemplateLoader loader = null;
-        if(DEV_MODE){
-            //getting template
-            Path plugin = Paths.get(".").resolve("plugins").resolve(getId()).toAbsolutePath();
-
-            Optional<Path> optionalPath = Files.walk(plugin)
-                    .filter(p -> Files.isDirectory(p) && p.toAbsolutePath().endsWith("assets/"))
-                    .findFirst();
-
-
-
-            if(optionalPath.isPresent()){
-                String basePath = optionalPath.get().toAbsolutePath().toString()+"/";
-                loader = new FileTemplateLoader(basePath, StandardCharsets.UTF_8.name());
-            }
-        }else{
-            loader = new ClasspathTemplateLoader();
-        }
+        loader = getTemplateLoader(loader);
 
 
         config.setTemplateLoader(loader);
@@ -266,7 +250,10 @@ public abstract class Plugin {
             logger().info("Getting settings for [{}]", this.getId());
             JadeConfiguration config = new JadeConfiguration();
 
-            TemplateLoader loader = new ClasspathTemplateLoader();
+            TemplateLoader loader = null;
+
+
+            loader = getTemplateLoader(loader);
 
             config.setTemplateLoader(loader);
 
@@ -288,6 +275,33 @@ public abstract class Plugin {
             logger().error("Error while getting settings template", e);
             throw e;
         }
+    }
+
+    /**
+     * GEts the template loader based on the developer mode value
+     * @param loader
+     * @return
+     * @throws IOException
+     */
+    private final TemplateLoader getTemplateLoader(TemplateLoader loader) throws IOException {
+        if(DEV_MODE){
+            //getting template
+            Path plugin = Paths.get(".").resolve("plugins").resolve(getId()).toAbsolutePath();
+
+            Optional<Path> optionalPath = Files.walk(plugin)
+                    .filter(p -> Files.isDirectory(p) && p.toAbsolutePath().endsWith("assets/"))
+                    .findFirst();
+
+
+
+            if(optionalPath.isPresent()){
+                String basePath = optionalPath.get().toAbsolutePath().toString()+"/";
+                loader = new FileTemplateLoader(basePath, StandardCharsets.UTF_8.name());
+            }
+        }else{
+            loader = new ClasspathTemplateLoader();
+        }
+        return loader;
     }
 
     protected abstract Map<String, Object> getSettingsModel();

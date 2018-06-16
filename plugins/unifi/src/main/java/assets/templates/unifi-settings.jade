@@ -1,0 +1,28 @@
+.form-group
+    label(for="url") Unifi controller address (including http and port)
+    if settings && settings.containsKey("url")
+        input.form-control(type="text", id="url", name="url", placeholder="URL", value='#{settings.get("url")}')
+    else
+        input.form-control(type="text", id="url", name ="url", placeholder = "URL")
+
+.form-group
+    label(for="site") Site
+    if settings && settings.containsKey("site")
+        input.form-control(type="text", id="site", name="site", placeholder="Name of controller site", value='#{settings.get("site")}')
+    else
+        input.form-control(type="text", id="site", name ="site", placeholder = "Name of controller site")
+
+.form-group
+    label(for="username") Username
+    if settings && settings.containsKey("username")
+        input.form-control(type="text", id="username", name="username", placeholder="", value='#{settings.get("username")}')
+    else
+        input.form-control(type="text", id="username", name ="username", placeholder = "")
+
+.form-group
+    label(for="password") Password
+    if settings && settings.containsKey("password")
+        input.form-control(type="password", id="password", name="password", placeholder="", value='#{settings.get("password")}')
+    else
+        input.form-control(type="password", id="password", name ="password", placeholder = "")
+
