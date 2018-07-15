@@ -1,4 +1,5 @@
 @background: rgb(10, 127, 116);
+@transitionSpeed: 0.25s;
 @speed: 3s;
 .harddisk.size-2x1, .harddisk.size-1x1, .harddisk.size-kiosk {
   background-color: @background;
@@ -111,7 +112,14 @@
 
 .harddisk.size-full-screen {
 
-  .files tr.folder {
+  .files tr {
+    color: grey;
+    &.readable {
+      color: black;
+    }
+  }
+  color: black;
+  .files tr.folder.readable {
     cursor: pointer;
   }
 
@@ -147,8 +155,6 @@
     margin: 0;
     text-align: center;
     height: 40px;
-
-    @transitionSpeed: 0.25s;
 
     -webkit-transition: all @transitionSpeed;
     -moz-transition: all @transitionSpeed;
@@ -192,30 +198,37 @@
         cursor: pointer;
       }
 
-      .table-responsive {
-        border: none;
+      //.table-responsive {
+      //  border: none;
 
-        table {
-          tr {
-            border: none;
-          }
+      table {
+        width: 100%;
+        tr {
+          border: none;
+        }
 
-          td {
-            color: white;
-            border: none;
-          }
+        td {
+          color: white;
+          border: none;
+        }
 
-          td.text {
-            color: white;
-            text-align: left;
-            font-size: 20px;
-          }
+        td.text {
+          color: white;
+          text-align: left;
+          font-size: 20px;
+          width: 50%;
+        }
 
-          td.actions {
-            text-align: right;
+        td.actions {
+          text-align: right;
+          width: 50%;
+
+          .progress {
+            width: 100%;
           }
         }
       }
+      //}
     }
   }
 

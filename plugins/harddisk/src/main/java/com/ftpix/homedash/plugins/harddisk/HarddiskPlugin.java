@@ -11,16 +11,13 @@ import org.apache.commons.io.FileUtils;
 import oshi.SystemInfo;
 import oshi.software.os.OSFileStore;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -29,11 +26,14 @@ import java.util.stream.Stream;
  * Created by gz on 06-Jun-16.
  */
 public class HarddiskPlugin extends Plugin {
-    private final static String MOUNT = "mount", COMMAND_BROWSE = "browse", COMMAND_DELETE = "delete", COMMAND_RENAME = "rename", COMMAND_MOVE = "move", COMMAND_COPY = "copy", COMMAND_NEW_FOLDER = "newFolder", COMMAND_UPLOAD_FILE = "uploadFile";
+    private final static String MOUNT = "mount", COMMAND_BROWSE = "browse", COMMAND_DELETE = "delete", COMMAND_RENAME = "rename",
+            COMMAND_MOVE = "move", COMMAND_COPY = "copy", COMMAND_NEW_FOLDER = "newFolder", COMMAND_UPLOAD_FILE = "uploadFile",
+            COMMAND_ADD_CLIPBOARD = "addClipboard", COMMAND_REMOVE_CLIPBOARD = "removeClipboard";
     private final static int MAX_DATA = 100;
     public static final String COMMAND_CALCULATE = "calculate";
     private SystemInfo systemInfo = new SystemInfo();
     private Path mountPoint;
+    private final Map<String, FileOperation> clipBoard = new HashMap<>();
 
 
     @Override
@@ -78,16 +78,30 @@ public class HarddiskPlugin extends Plugin {
         logger().info("Message: {}", message);
         try {
             switch (command) {
+                case COMMAND_REMOVE_CLIPBOARD:
+                    clipBoard.remove(message);
+                    webSocketMessage.setCommand(WebSocketMessage.COMMAND_REFRESH);
+                    webSocketMessage.setMessage(refresh(""));
+                    break;
+                case COMMAND_ADD_CLIPBOARD:
+                    if (!clipBoard.containsKey(message)) {
+                        this.clipBoard.put(message, new FileOperation());
+                    }
+                    webSocketMessage.setCommand(WebSocketMessage.COMMAND_REFRESH);
+                    webSocketMessage.setMessage(refresh(""));
+                    break;
                 case COMMAND_BROWSE:
                     List<DiskFile> diskFiles = browse(message);
                     webSocketMessage.setMessage(diskFiles);
                     break;
                 case COMMAND_COPY:
                     FileOperation operation = gson.fromJson(message, FileOperation.class);
+                    clipBoard.put(operation.getSource(), operation);
                     copy(operation);
                     webSocketMessage.setCommand(WebSocketMessage.COMMAND_SUCCESS);
                     webSocketMessage.setMessage("File copied successfully");
                     webSocketMessage.setExtra(operation);
+                    clipBoard.remove(operation.getSource());
                     break;
                 case COMMAND_DELETE:
                     delete(message);
@@ -100,6 +114,7 @@ public class HarddiskPlugin extends Plugin {
                     webSocketMessage.setCommand(WebSocketMessage.COMMAND_SUCCESS);
                     webSocketMessage.setMessage("File moved successfully");
                     webSocketMessage.setExtra(fileOperation);
+                    clipBoard.remove(fileOperation.getSource());
                     break;
                 case COMMAND_RENAME:
                     rename(gson.fromJson(message, FileOperation.class));
@@ -149,13 +164,18 @@ public class HarddiskPlugin extends Plugin {
         spaces.put("free", Long.toString(root.getFreeSpace()));
         spaces.put("used", Long.toString(usedSpace));
         spaces.put("pretty", ByteUtils.humanReadableByteCount(usedSpace, root.getTotalSpace(), true));
+        spaces.put("clipboard", clipBoard);
 
         return spaces;
     }
 
     @Override
     public int getRefreshRate(String size) {
-        return ONE_MINUTE;
+        if (size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)) {
+            return ONE_SECOND;
+        } else {
+            return ONE_MINUTE;
+        }
     }
 
     @Override
@@ -244,6 +264,7 @@ public class HarddiskPlugin extends Plugin {
             file.name = path.getFileName().toString();
             file.folder = Files.isDirectory(path);
             file.hash = DigestUtils.md5Hex(path.toAbsolutePath().toString());
+            file.readable = Files.isReadable(path);
 
             if (!file.folder) {
                 try {
@@ -383,29 +404,72 @@ public class HarddiskPlugin extends Plugin {
         }
 
         logger().info("Attempting to copy {} to {}", source.toString(), destination.toString());
-        Files.copy(source, destination);
+
 
         //if it is a folder, Files.copy will only create an empty folder so we need to copy the files inside as well.
         if (Files.isDirectory(source)) {
-            copyFolder(source, destination);
+            Files.copy(source, destination);
+            long totalSize = FileUtils.sizeOfDirectory(source.toFile());
+            AtomicInteger progress = new AtomicInteger(0);
+            copyFolder(source, destination, fileOperation, totalSize, progress);
+        } else {
+            long size = Files.size(source);
+            long transferred = 0;
+
+            try (
+                    FileInputStream fileInputStream = new FileInputStream(source.toFile());
+                    FileOutputStream fileOutputStream = new FileOutputStream(destination.toFile());
+            ) {
+                byte[] b = new byte[1024];
+                int len;
+                while ((len = fileInputStream.read(b, 0, 1024)) > 0) {
+                    fileOutputStream.write(b, 0, len);
+                    transferred += len;
+                    double progress = ((double) transferred / (double) size) * 100D;
+                    fileOperation.setProgress((int) progress);
+                    System.out.println(fileOperation.getProgress());
+                }
+            }
+
         }
     }
 
     /**
      * Copies a folder to a specified path
      *
-     * @param source      the folder to copy
-     * @param destination where to copy it
+     * @param source        the folder to copy
+     * @param destination   where to copy it
+     * @param fileOperation
+     * @param totalSize
+     * @param progress
      * @throws IOException
      */
-    private void copyFolder(Path source, Path destination) throws IOException {
+    private void copyFolder(Path source, Path destination, FileOperation fileOperation, long totalSize, AtomicInteger progress) throws IOException {
         Files.list(source).forEach(path -> {
             try {
-                logger().info("Copying [" + path.toString() + "] to [" + destination.resolve(path.getFileName()).toString() + "]");
-                Files.copy(path, destination.resolve(path.getFileName()));
 
                 if (Files.isDirectory(path)) {
-                    copyFolder(path, destination.resolve(path.getFileName()));
+                    Files.copy(path, destination.resolve(path.getFileName()));
+                    copyFolder(path, destination.resolve(path.getFileName()), fileOperation, totalSize, progress);
+                } else {
+                    logger().info("Copying [" + path.toString() + "] to [" + destination.resolve(path.getFileName()).toString() + "]");
+//                Files.copy(path, destination.resolve(path.getFileName()));
+
+                    try (
+                            FileInputStream fileInputStream = new FileInputStream(path.toFile());
+                            FileOutputStream fileOutputStream = new FileOutputStream(destination.resolve(path.getFileName()).toFile());
+                    ) {
+                        byte[] b = new byte[1024];
+                        int len;
+                        while ((len = fileInputStream.read(b, 0, 1024)) > 0) {
+                            fileOutputStream.write(b, 0, len);
+                            int totalProgress = progress.addAndGet(len);
+                            double progressPercentage = ((double) totalProgress / (double) totalSize) * 100D;
+                            fileOperation.setProgress((int) progressPercentage);
+                            System.out.println(fileOperation.getProgress());
+                        }
+                    }
+
                 }
             } catch (IOException e) {
                 e.printStackTrace();

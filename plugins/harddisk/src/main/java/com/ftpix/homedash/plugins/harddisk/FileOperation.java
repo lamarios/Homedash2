@@ -5,6 +5,7 @@ package com.ftpix.homedash.plugins.harddisk;
  */
 public class FileOperation {
     private String source, destination;
+    int progress = 0;
 
     public String getSource() {
         return source;
@@ -19,6 +20,15 @@ public class FileOperation {
     }
 
     public void setDestination(String destination) {
+
         this.destination = destination;
+    }
+
+    public int getProgress() {
+        return progress;
+    }
+
+    public void setProgress(int progress) {
+        this.progress = progress;
     }
 }

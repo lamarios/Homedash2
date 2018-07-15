@@ -10,7 +10,6 @@ function harddisk(moduleId) {
     this.path = ['.'];
 
     //The clip board will hold more than one file
-    this.clipboard = [];
 
     this.documentReady = function (size) {
         if (size === 'full-screen') {
@@ -18,7 +17,7 @@ function harddisk(moduleId) {
             var self = this;
             sendMessage(this.moduleId, 'browse', this.path.join('/'));
 
-            $('.files').on('click', 'tr.folder td:first-of-type', function () {
+            $('.files').on('click', 'tr.folder.readable td:first-of-type', function () {
                 var file = $(this).attr('data-name');
                 if (file === '..' && self.path.length > 1) {
                     self.path.pop();
@@ -35,15 +34,9 @@ function harddisk(moduleId) {
             $('.files').on('click', '.add-clipboard', function () {
                 var path = self.path.join('/') + '/' + $(this).attr('data-name');
 
+                sendMessage(self.moduleId, 'addClipboard', path);
 
-                if (!self.clipboard.includes(path)) {
-                    var data = {
-                        path: path,
-                        inProgress: false,
-                    }
-                    self.clipboard.push(data);
-                }
-                self.clipBoardHtml();
+
             });
 
 
@@ -80,10 +73,6 @@ function harddisk(moduleId) {
                 };
 
                 sendMessage(self.moduleId, 'copy', JSON.stringify(data));
-                var index = self.indexOfClipBoard(path);
-                self.clipboard[index].inProgress = true;
-
-                self.clipBoardHtml();
             });
 
             $('body').on('click', '.action-move', function () {
@@ -130,12 +119,23 @@ function harddisk(moduleId) {
             });
 
             $('body').on('click', '.action-remove-from-clipboard', function () {
-                self.removeFromClipboard($(this).attr('data-path'));
-                self.clipBoardHtml();
-                self.showClipboard();
+                sendMessage(self.moduleId, 'removeClipboard', $(this).attr('data-path'));
+            });
+
+            $('#hidden').click(function () {
+                self.showHiddenFiles();
             });
         }
     };
+
+
+    this.showHiddenFiles = function () {
+        if ($('#hidden').is(':checked')) {
+            $('.hiddenFile').removeClass('hidden');
+        } else {
+            $('.hiddenFile').addClass('hidden');
+        }
+    }
 
     this.onMessage = function (size, command, message, extra) {
         switch (size) {
@@ -173,6 +173,8 @@ function harddisk(moduleId) {
             $('.progress-bar').css('width', percentage + '%');
             $('.progress-bar').html(message.pretty);
 
+
+            this.clipBoardHtml(message.clipboard);
         } else if (command === 'browse') {
             $('.current-path').html(this.path.join('/'));
             $('.files tbody').html(this.files2html(message));
@@ -181,10 +183,6 @@ function harddisk(moduleId) {
 
 
             if (extra !== undefined && extra.source !== undefined) {
-                this.removeFromClipboard(extra.source);
-                this.clipBoardHtml();
-                this.showClipboard();
-
             }
 
 
@@ -215,12 +213,12 @@ function harddisk(moduleId) {
         root.find('.hdd-container').html(this.generateSVG(percentage, diskSpace.usage));
     };
 
-    this.clipBoardHtml = function () {
+    this.clipBoardHtml = function (clipboard) {
 
         var html = [];
 
         html.push('<p class="counter">');
-        html.push(this.clipboard.length);
+        html.push(Object.keys(clipboard).length);
         html.push(' files in clipboard');
         html.push('<i class="fa fa-chevron-down"></i>');
         html.push('</p>');
@@ -228,22 +226,26 @@ function harddisk(moduleId) {
 
         html.push('<div class="content">');
         html.push('<p><i class="fa fa-times"></i></p>');
-        html.push('<div class="table-responsive">');
+        // html.push('<div class="table-responsive">');
         html.push('<table class="table table-condensed"><tbody>');
 
-        $.each(this.clipboard, function (index, clipboardItem) {
-            var filename = clipboardItem.path.replace(/^.*[\\\/]/, '');
+        $.each(clipboard, function (index, clipboardItem) {
+            var filename = index.replace(/^.*[\\\/]/, '');
+            var inProgress = clipboardItem.progress > 0;
+
 
             html.push('<tr>');
             html.push('<td class="text">', filename, '</td>');
-            if (!clipboardItem.inProgress) {
+            if (!inProgress) {
                 html.push('<td class="actions">');
-                html.push('<button data-path="', clipboardItem.path, '" class="btn btn-primary btn-sm action-copy" >Copy here</button>');
-                html.push('<button data-path="', clipboardItem.path, '" class="btn btn-primary btn-sm action-move" >Move here</button>');
-                html.push('<button data-path="', clipboardItem.path, '" class="btn btn-default btn-sm action-remove-from-clipboard"><i class="fa fa-times"></i></buton>');
+                html.push('<button data-path="', index, '" class="btn btn-primary btn-sm action-copy" >Copy here</button>');
+                html.push('<button data-path="', index, '" class="btn btn-primary btn-sm action-move" >Move here</button>');
+                html.push('<button data-path="', index, '" class="btn btn-default btn-sm action-remove-from-clipboard"><i class="fa fa-times"></i></buton>');
                 html.push('</td>');
             } else {
-                html.push("<td>In progress</td>");
+                html.push("<td class='actions'>");
+                html.push('<div class="progress"><div class="progress-bar" style="width: ' + clipboardItem.progress + '%"></div></div>');
+                html.push("</td>");
             }
             html.push('</tr>');
 
@@ -252,17 +254,17 @@ function harddisk(moduleId) {
 
         html.push('</tbody></table></div>');
 
-        html.push('</div>') // content
+        // html.push('</div>') // content
 
 
         $('.clipboard').html(html.join(''));
 
 
-        this.showClipboard();
+        this.showClipboard(clipboard);
     }
 
-    this.showClipboard = function () {
-        if (this.clipboard.length > 0) {
+    this.showClipboard = function (clipboard) {
+        if (Object.keys(clipboard).length > 0) {
             $('.clipboard').addClass('active');
         } else {
             $('.clipboard').removeClass('active');
@@ -311,11 +313,23 @@ function harddisk(moduleId) {
         var html = [];
 
         if (this.path.length > 1) {
-            html.push('<tr class="folder"><td colspan="2"  data-name="..">..</td></tr>');
+            html.push('<tr class="folder readable"><td colspan="3"  data-name="..">..</td></tr>');
         }
 
+        var hideNow = !$('#hidden').is(':checked');
         $.each(files, function (index, value) {
-            html.push('<tr ', value.folder ? 'class="folder"' : '', '>');
+
+            var isHidden = value.name !== '..' && value.name.startsWith('.');
+            var hiddenClass = isHidden ? 'hiddenFile' : '';
+
+            if (isHidden) {
+                hiddenClass += hideNow ? ' hidden' : '';
+            }
+
+            var readableClass = value.readable ? 'readable' : '';
+
+            var folderClass = value.folder ? 'folder' : '';
+            html.push('<tr ', 'class="', readableClass, ' ', hiddenClass, ' ', folderClass, '">');
 
 
             var icon = '<i class="fa fa-file-o" aria-hidden="true"></i>';
@@ -325,7 +339,7 @@ function harddisk(moduleId) {
             }
 
             html.push('<td data-name="', value.name, '">', icon, '&nbsp;', value.name, '</td>');
-            if (value.folder === true) {
+            if (value.folder === true && value.readable) {
                 html.push('<td data-hash="', value.hash, '"><a data-name="', value.name, '" class="calculate-size"><i class="fa fa-calculator" aria-hidden="true"></i></td>');
             } else if (value.size !== undefined) {
                 html.push('<td>', value.size.replace(' ', '&nbsp;'), '</td>');
@@ -333,14 +347,16 @@ function harddisk(moduleId) {
                 html.push('<td></td>');
             }
             html.push('<td><div class="dropdown">');
-            html.push('<button class="btn btn-primary btn-sm" id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">');
-            html.push('<i class="fa fa-ellipsis-v" aria-hidden="true"></i>');
-            html.push('</button>');
-            html.push('<ul class="dropdown-menu pull-right" aria-labelledby="dLabel">');
-            html.push('<li><a data-name="', value.name, '" class="add-clipboard">Add to clipboard</a></li>');
-            html.push('<li><a data-name="', value.name, '" class="rename">Rename</a></li>');
-            html.push('<li><a data-name="', value.name, '" class="delete">Delete</a></li>');
-            html.push('</ul>');
+            if (value.readable) {
+                html.push('<button class="btn btn-primary btn-sm" id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">');
+                html.push('<i class="fa fa-ellipsis-v" aria-hidden="true"></i>');
+                html.push('</button>');
+                html.push('<ul class="dropdown-menu pull-right" aria-labelledby="dLabel">');
+                html.push('<li><a data-name="', value.name, '" class="add-clipboard">Add to clipboard</a></li>');
+                html.push('<li><a data-name="', value.name, '" class="rename">Rename</a></li>');
+                html.push('<li><a data-name="', value.name, '" class="delete">Delete</a></li>');
+                html.push('</ul>');
+            }
             html.push('</div></td>')
             html.push('</tr>');
         });
@@ -394,23 +410,6 @@ function harddisk(moduleId) {
             this.clipboard.splice(found, 1);
             found = this.indexOfClipBoard(filePath);
         }
-    }
-
-    /**
-     * Find index of a clip board item by it's file path
-     */
-    this.indexOfClipBoard = function (path) {
-        var found = -1
-
-        $.each(this.clipboard, function (index, item) {
-            if (path === item.path) {
-                found = index;
-                return;
-            }
-        });
-
-        return found;
-
     }
 
 
