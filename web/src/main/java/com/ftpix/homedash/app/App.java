@@ -12,6 +12,7 @@ import com.ftpix.homedash.websocket.MainWebSocket;
 import com.google.common.io.Files;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jvnet.hk2.internal.ConstantActiveDescriptor;
 import org.quartz.DateBuilder;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -34,10 +35,7 @@ import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import static spark.Spark.before;
-import static spark.Spark.port;
-import static spark.Spark.staticFileLocation;
-import static spark.Spark.webSocket;
+import static spark.Spark.*;
 
 /**
  * Hello world!
@@ -56,6 +54,11 @@ public class App {
 //            staticFileLocation("/web");
 
             port(Constants.PORT);
+
+            if(Constants.SECURE && Constants.KEY_STORE != null && Constants.KEY_STORE_PASS != null) {
+                logger.info("Starting in secure mode using keystore:[{}]", Constants.KEY_STORE);
+                secure(Constants.KEY_STORE, Constants.KEY_STORE_PASS, null, null);
+            }
 
             webSocket("/ws", MainWebSocket.class);
             webSocket("/ws-full-screen", FullScreenWebSocket.class);

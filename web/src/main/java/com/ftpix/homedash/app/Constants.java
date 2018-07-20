@@ -17,6 +17,8 @@ public class Constants {
     public final static String SALT;
     private static Logger logger = LogManager.getLogger();
     public final static boolean DEV_MODE;
+    public final static boolean SECURE;
+    public static final String KEY_STORE, KEY_STORE_PASS;
 
     static {
 
@@ -38,6 +40,27 @@ public class Constants {
         if (!path.endsWith("/")) {
             path += "/";
         }
+
+
+        boolean secure = false;
+        try {
+            if (Boolean.valueOf(rs.getString("secure"))) {
+                secure = true;
+            }
+        } catch (Exception e) {
+            logger.info("Can't fins secure parameter, assuming false");
+        }
+
+
+        SECURE = secure;
+        if (SECURE) {
+            KEY_STORE = rs.getString("key_store");
+            KEY_STORE_PASS = rs.getString("key_store_pass");
+        } else {
+            KEY_STORE_PASS = null;
+            KEY_STORE = null;
+        }
+
 
         CACHE_FOLDER = path;
 

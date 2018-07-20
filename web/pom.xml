@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>2018.7.2</version>
+        <version>2018.7.3</version>
     </parent>
 
 
@@ -205,7 +205,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>2018.7.2</version>
+            <version>2018.7.3</version>
         </dependency>
 
         <dependency>
@@ -351,8 +351,7 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        Add progress bar when copying file with harddisk plugin
-                        Add checkbox to show hidden file (off by default) in harddisk plugin
+                        allow for HTTPS via config
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>

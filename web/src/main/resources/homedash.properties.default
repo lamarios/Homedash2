@@ -4,3 +4,11 @@ cache_path = cache/
 db_path = ./homedash
 
 salt = somesuperrandomestring
+
+
+
+secure = false
+
+# Required only if secure = true, more help: https://uwesander.de/using-your-ssl-certificate-for-your-spark-web-application.html
+key_store = jks location
+key_store_pass = jks password
