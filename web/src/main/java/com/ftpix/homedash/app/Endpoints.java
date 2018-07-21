@@ -131,7 +131,7 @@ public class Endpoints {
         get("/css/*", route);
         get("/fonts/*", route);
         get("/js/*", route);
-        get("/image/*", route);
+        get("/images/*", route);
     }
 
 
