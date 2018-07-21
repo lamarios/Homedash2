@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>2018.7.3</version>
+        <version>2018.7.4</version>
     </parent>
 
 
@@ -205,7 +205,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>2018.7.3</version>
+            <version>2018.7.4</version>
         </dependency>
 
         <dependency>
@@ -351,7 +351,7 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        allow for HTTPS via config
+                        add icon for iOS webapp
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>
