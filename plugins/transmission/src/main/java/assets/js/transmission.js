@@ -191,7 +191,7 @@ function transmission(moduleId) {
     }
 
     this.addTorrent = function (event) {
-        var url = prompt("Margnet link", '');
+        var url = prompt("Magnet link", '');
         if (url != undefined) {
             if (url.length > 0) {
                 sendMessage(this.moduleId, 'addTorrent', url);
