@@ -389,7 +389,7 @@
                         <fileSet>
                             <directory>${project.build.directory}</directory>
                             <excludes>
-                                <exclude>web-${version}.jar</exclude>
+                                <exclude>web*.jar</exclude>
                             </excludes>
                             <includes>
                                 <include>web*-assembly.zip</include>
