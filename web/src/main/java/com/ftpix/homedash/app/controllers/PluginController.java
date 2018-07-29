@@ -25,7 +25,7 @@ public enum PluginController {
     public List<Plugin> listAvailablePlugins() {
         logger.info("listAvailablePlugins()");
         List<Plugin> availablePlugins = new ArrayList<>();
-        Reflections reflections = new Reflections();
+        Reflections reflections = new Reflections("");
 
         Set<Class<? extends Plugin>> subTypes = reflections.getSubTypesOf(Plugin.class);
 

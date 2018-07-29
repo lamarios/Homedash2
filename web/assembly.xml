@@ -62,7 +62,7 @@
             <directory>${project.build.directory}/classes</directory>
             <outputDirectory>cfg</outputDirectory>
             <includes>
-                <include>**/*.properties</include>
+                <include>**/*.properties.default</include>
                 <include>**/*.xml</include>
             </includes>
 

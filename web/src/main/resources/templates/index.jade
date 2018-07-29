@@ -1,9 +1,9 @@
 extends ./layout.jade
 block css
-    link(href='/css/index.css', rel='stylesheet')
-    link(href="/css/vendor/gridster/gridster.css", rel='stylesheet')
+    link(href='/css/index.css', rel='stylesheet', type="text/css")
+    link(href="/css/vendor/gridster/gridster.css", rel='stylesheet', type="text/css")
     for plugin in filteredPlugins
-        link(href="/plugin/#{plugin.getId()}/css/#{plugin.getId()}.css", rel="stylesheet")
+        link(href="/plugin/#{plugin.getId()}/css/#{plugin.getId()}.css", rel="stylesheet", type="text/css")
 block content
     #page-select-overlay
     h1#page-title

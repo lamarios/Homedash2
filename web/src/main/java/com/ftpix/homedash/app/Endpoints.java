@@ -152,6 +152,12 @@ public class Endpoints {
             res.raw().setContentType(Files.probeContentType(p));
             res.raw().setHeader("Content-Disposition", "inline; filename=" + p.getFileName());
 
+            if(p.endsWith(".css")){
+                res.raw().setHeader("Content-type"," text/css");
+            }else if (p.endsWith(".js")){
+                res.raw().setHeader("Content-type"," text/js");
+            }
+
             byte[] buffer = new byte[1024];
             int len;
             while ((len = is.read(buffer)) > 0) {
