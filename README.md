@@ -9,7 +9,7 @@
 
 ### Run
 
-1. Java 1.8
+1. Java 8 (using openjdk)
 
 ## How to build
 

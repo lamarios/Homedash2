@@ -1,17 +1,26 @@
 package com.ftpix.homedash.app.controllers;
 
 import com.ftpix.homedash.plugins.Plugin;
+import com.openpojo.reflection.PojoClass;
+import com.openpojo.reflection.impl.PojoClassFactory;
 import de.neuland.jade4j.exceptions.JadeException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.reflections.Reflections;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public enum PluginController {
     INSTANCE;
     private Logger logger = LogManager.getLogger();
+
+
+    private final static Set<Class> subTypes = PojoClassFactory.enumerateClassesByExtendingType("", Plugin.class, null)
+            .stream()
+            .map(PojoClass::getClazz)
+            .collect(Collectors.toSet());
+
 
     public void defineEndpoints() {
 
@@ -25,15 +34,13 @@ public enum PluginController {
     public List<Plugin> listAvailablePlugins() {
         logger.info("listAvailablePlugins()");
         List<Plugin> availablePlugins = new ArrayList<>();
-        Reflections reflections = new Reflections();
 
-        Set<Class<? extends Plugin>> subTypes = reflections.getSubTypesOf(Plugin.class);
 
         logger.info("Found {} plugins", subTypes.size());
 
         subTypes.forEach(plugin -> {
             try {
-                availablePlugins.add(plugin.newInstance());
+                availablePlugins.add((Plugin) plugin.newInstance());
             } catch (Exception e) {
                 e.printStackTrace();
                 logger.error("Error while creating new instance of " + plugin.getCanonicalName(), e);

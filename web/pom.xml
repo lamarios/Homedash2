@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>2018.7.5</version>
+        <version>2018.7.8</version>
     </parent>
 
 
@@ -67,14 +67,6 @@
             <version>2.5.5</version>
         </dependency>
 
-
-        <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>0.9.10</version>
-        </dependency>
-
-
         <dependency>
             <groupId>io.gsonfire</groupId>
             <artifactId>gson-fire</artifactId>
@@ -125,6 +117,13 @@
             <groupId>org.lesscss</groupId>
             <artifactId>lesscss</artifactId>
             <version>1.7.0.1.1</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.openpojo</groupId>
+            <artifactId>openpojo</artifactId>
+            <version>0.8.10</version>
         </dependency>
 
         <!-- plugins -->
@@ -207,7 +206,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>2018.7.5</version>
+            <version>2018.7.8</version>
         </dependency>
 
         <dependency>
@@ -376,8 +375,8 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        Add posssibility to use external config
-                        Modify reflection so that it works on openjdk
+                        Put back reflections changes to make it work with openJDK (no luck with oracle jre yet...)
+                        Fix issue on Radarr where movies would be added with the year = 0 hence messing up recognition by software like plex
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>

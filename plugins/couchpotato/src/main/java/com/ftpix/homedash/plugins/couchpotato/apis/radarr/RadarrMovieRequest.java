@@ -3,7 +3,7 @@ package com.ftpix.homedash.plugins.couchpotato.apis.radarr;
 import java.util.List;
 
 public class RadarrMovieRequest {
-    private String title, titleSlug, rootFolderPath;
+    private String title, titleSlug, rootFolderPath, year;
     private int tmdbId, qualityProfileId;
     private boolean monitored;
     private List<RadarrImage> images;
@@ -63,5 +63,13 @@ public class RadarrMovieRequest {
 
     public void setQualityProfileId(int qualityProfileId) {
         this.qualityProfileId = qualityProfileId;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
     }
 }

@@ -8,11 +8,12 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+import com.openpojo.reflection.PojoClass;
+import com.openpojo.reflection.impl.PojoClassFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.reflections.Reflections;
+import org.h2.command.dml.Update;
 
-import javax.ws.rs.GET;
 import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.Optional;
@@ -101,13 +102,13 @@ public class DB {
 
         logger.info("Current version: [{}]", version.toString());
 
-        //getting implementations of updateDB
-        Reflections reflections = new Reflections("com.ftpix.homedash.db.schemaManagement.updates");
-        reflections.getSubTypesOf(UpdateStep.class)
+        PojoClassFactory.enumerateClassesByExtendingType("com.ftpix.homedash.db.schemaManagement.updates", Update.class, null)
+
                 .stream()
+                .map(PojoClass::getClazz)
                 .map(step -> {
                     try {
-                        return step.newInstance();
+                        return (UpdateStep) step.newInstance();
                     } catch (InstantiationException | IllegalAccessException e) {
                         logger.info("Couldn't instanciate class {}", step.getCanonicalName());
                         return null;
@@ -126,7 +127,7 @@ public class DB {
                             logger.info("Executing sql [{}]", up);
                             DB.SCHEMA_DAO.executeRaw(up);
                         } catch (SQLException e) {
-                            logger.error("[{}] Couldn't execute query: {}",step.getVersion(),  up, e);
+                            logger.error("[{}] Couldn't execute query: {}", step.getVersion(), up, e);
                             throw new RuntimeException(e);
                         }
                     });
