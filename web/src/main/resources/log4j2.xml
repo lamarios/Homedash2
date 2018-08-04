@@ -42,9 +42,9 @@
             <!--<AppenderRef ref="file-log" level="info"/>-->
         <!--</Logger>-->
         <Logger name="com.ftpix.homedash" level="info">
-            <AppenderRef ref="RoutingAppender" level="all"/>
+            <AppenderRef ref="RoutingAppender" level="info"/>
         </Logger>
-        <Root level="all">
+        <Root level="info">
             <AppenderRef ref="console"/>
         </Root>
     </Loggers>

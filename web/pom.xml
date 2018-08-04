@@ -331,9 +331,9 @@
                 <version>2.4.1</version>
                 <!-- The configuration of the plugin -->
                 <executions>
-                    <execution>
+<!--                    <execution>
                         <configuration>
-                            <!-- Specifies the configuration file of the assembly plugin -->
+                            &lt;!&ndash; Specifies the configuration file of the assembly plugin &ndash;&gt;
                             <descriptors>
                                 <descriptor>assembly.xml</descriptor>
                             </descriptors>
@@ -342,7 +342,7 @@
                         <goals>
                             <goal>single</goal>
                         </goals>
-                    </execution>
+                    </execution>-->
                     <execution>
                         <id>jar-with-dependencies</id>
                         <phase>package</phase>
