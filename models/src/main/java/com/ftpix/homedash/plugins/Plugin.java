@@ -1,6 +1,7 @@
 package com.ftpix.homedash.plugins;
 
 import com.ftpix.homedash.models.*;
+import com.ftpix.homedash.models.Module;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mashape.unirest.http.HttpResponse;

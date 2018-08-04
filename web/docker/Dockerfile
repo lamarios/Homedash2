@@ -1,14 +1,15 @@
-FROM openjdk:10-jre
+FROM openjdk:10
 
-RUN mkdir /app && mkdir /config
+RUN mkdir /app && mkdir /data
 
-ADD ./*.jar /app/Homedash.jar
+ADD ./*.jar /app/homedash.jar
 
 ADD run.sh /run.sh
 
 EXPOSE 4567
 
-VOLUME "/config"
+VOLUME "/data"
+
 
 RUN chmod +x /run.sh
 

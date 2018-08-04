@@ -2,20 +2,21 @@ package com.ftpix.homedash.db;
 
 import com.ftpix.homedash.app.Constants;
 import com.ftpix.homedash.db.schemaManagement.UpdateStep;
+import com.ftpix.homedash.db.schemaManagement.updates.Update20170722;
 import com.ftpix.homedash.models.*;
+import com.ftpix.homedash.models.Module;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
-import com.openpojo.reflection.PojoClass;
-import com.openpojo.reflection.impl.PojoClassFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.h2.command.dml.Update;
 
 import java.sql.SQLException;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 public class DB {
@@ -102,10 +103,8 @@ public class DB {
 
         logger.info("Current version: [{}]", version.toString());
 
-        PojoClassFactory.enumerateClassesByExtendingType("com.ftpix.homedash.db.schemaManagement.updates", Update.class, null)
-
+        List.of(Update20170722.class)
                 .stream()
-                .map(PojoClass::getClazz)
                 .map(step -> {
                     try {
                         return (UpdateStep) step.newInstance();

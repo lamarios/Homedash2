@@ -1,12 +1,8 @@
 package com.ftpix.homedash.websocket;
 
 import com.ftpix.homedash.app.PluginModuleMaintainer;
-import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.ModuleLayout;
-import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
-import com.google.gson.Gson;
-import io.gsonfire.GsonFireBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.websocket.api.Session;
@@ -14,20 +10,14 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import sun.security.pkcs11.Secmod;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static org.apache.maven.doxia.sink.SinkEventAttributes.SIZE;
 
 /**
  * Created by gz on 7/16/17.

@@ -15,6 +15,8 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 
@@ -28,9 +30,10 @@ public class ModuleTest {
     public void aModuleShouldHave2Settings() {
 
         try {
-            Module module = ModuleController.INSTANCE.get(1);
+            var all = ModuleController.INSTANCE.getAll();
 
-            assertTrue("Has 2 settings", module.getSettings().size() == 2);
+
+            assertTrue("Has 2 settings", all.get(0).getSettings().size() == 2);
 
         } catch (Exception e) {
             fail("Exception " + e.getMessage());
@@ -43,7 +46,7 @@ public class ModuleTest {
     public void bModuleShouldHaveModuleLayout() {
 
         try {
-            Module module = ModuleController.INSTANCE.get(1);
+            var module = ModuleController.INSTANCE.getAll().get(0);
 
             Layout desktopLayout = LayoutController.INSTANCE.get(1);
             Layout tabletLayout = LayoutController.INSTANCE.get(2);
@@ -56,6 +59,7 @@ public class ModuleTest {
 
 
         } catch (Exception e) {
+            e.printStackTrace();
             fail("Exception " + e.getMessage());
 
         }
@@ -109,7 +113,6 @@ public class ModuleTest {
         try {
             App.createDefaultData();
             Module module = new Module();
-            module.setId(1);
             module.setPluginClass(DockerPlugin.class.getCanonicalName());
             module.setPage(PageController.INSTANCE.get(1));
 

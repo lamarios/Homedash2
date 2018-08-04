@@ -4,15 +4,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.ftpix.homedash</groupId>
     <artifactId>homedash</artifactId>
-    <version>2018.7.8</version>
+    <version>2018.8.1</version>
     <name>Archetype - homedash</name>
     <url>http://maven.apache.org</url>
     <packaging>pom</packaging>
 
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <java.version>1.10</java.version>
     </properties>
 
     <modules>
@@ -65,7 +64,15 @@
                         <mainClass>${main.class}</mainClass>
                     </configuration>
                 </plugin>
-
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.0</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>

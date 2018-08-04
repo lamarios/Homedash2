@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-
-CONFIG=/config/homedash.properties
+APP=/app
+CONFIG=/app/homedash.properties
 rm ${CONFIG}
 touch ${CONFIG}
 
@@ -9,11 +9,13 @@ if [ -z ${SALT+x} ]; then
     echo "Missing salt string environment variable"
 else
 
+
+    ls ${APP}
     #wrting config
     echo "port=4567" >> ${CONFIG}
 
     echo "cache_path = cache/" >> ${CONFIG}
-    echo "db_path = /config/homedash" >> ${CONFIG}
+    echo "db_path = /data/homedash" >> ${CONFIG}
 
     echo "salt = ${SALT}" >> $CONFIG
 
@@ -33,7 +35,13 @@ else
          fi
     fi
 
-    java -Dconfig.file=/config/homedash.properties -jar /app/Homedash.jar
+    echo "######################################"
+    echo "STARTING HOMEDASH"
+    cat ${CONFIG}
+    echo "######################################"
+
+        cd $APP
+       java -Dconfig.file=$CONFIG -jar homedash.jar
 fi
 
 

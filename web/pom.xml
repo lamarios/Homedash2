@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>2018.7.8</version>
+        <version>2018.8.1</version>
     </parent>
 
 
@@ -119,13 +119,6 @@
             <version>1.7.0.1.1</version>
         </dependency>
 
-
-        <dependency>
-            <groupId>com.openpojo</groupId>
-            <artifactId>openpojo</artifactId>
-            <version>0.8.10</version>
-        </dependency>
-
         <!-- plugins -->
         <dependency>
             <groupId>com.ftpix.homedash.plugins</groupId>
@@ -206,7 +199,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>2018.7.8</version>
+            <version>2018.8.1</version>
         </dependency>
 
         <dependency>
@@ -237,6 +230,12 @@
 
     <build>
         <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+            </plugin>
             <plugin>
                 <groupId>org.lesscss</groupId>
                 <artifactId>lesscss-maven-plugin</artifactId>
@@ -325,7 +324,6 @@
             </plugin>
 
 
-
             <!-- Assembly -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -375,8 +373,9 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        Put back reflections changes to make it work with openJDK (no luck with oracle jre yet...)
-                        Fix issue on Radarr where movies would be added with the year = 0 hence messing up recognition by software like plex
+                        Get rid of old way of running the application to make it multi platform.
+                        Update to java 10.
+                        Run using docker.
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>
@@ -391,7 +390,7 @@
                                 <exclude>web*.jar</exclude>
                             </excludes>
                             <includes>
-                                <include>web*-assembly.zip</include>
+                                <include>Homedash-*.jar</include>
                             </includes>
                         </fileSet>
                     </fileSets>
@@ -418,9 +417,9 @@
                                     <filtering>true</filtering>
                                 </resource>
                                 <resource>
-                                    <directory>${basedir}/target</directory>
+                                    <directory>${basedir}/target/</directory>
                                     <includes>
-                                        <include>Homedash-${project.version}.jar</include>
+                                        <include>Homedash-${version}.jar</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -428,7 +427,6 @@
                     </execution>
                 </executions>
             </plugin>
-
 
 
             <!-- build docker image -->

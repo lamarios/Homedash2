@@ -47,14 +47,15 @@ public class Constants {
                 logger.info("Loading external config file: {}", file.getAbsolutePath());
             } else {
                 ClassLoader loader = Thread.currentThread().getContextClassLoader();
-                try(InputStream resourceStream = loader.getResourceAsStream("homedash.properties")) {
+                try (InputStream resourceStream = loader.getResourceAsStream("homedash.properties")) {
                     prop.load(resourceStream);
                 }
             }
         } catch (Exception e) {
             logger.info("couldn't find file homedash.properties, checking if the default file exists");
 
-            logger.info("Please copy homedash.properties.default to homedash.properties");
+            logger.error("Please copy homedash.properties.default to homedash.properties", e);
+
             System.exit(-1);
         }
 

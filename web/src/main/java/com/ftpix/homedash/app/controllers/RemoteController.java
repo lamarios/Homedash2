@@ -1,6 +1,7 @@
 package com.ftpix.homedash.app.controllers;
 
 import com.ftpix.homedash.models.*;
+import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.utils.HomeDashTemplateEngine;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

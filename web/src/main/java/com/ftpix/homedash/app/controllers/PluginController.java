@@ -1,25 +1,56 @@
 package com.ftpix.homedash.app.controllers;
 
+import com.ftpix.homedash.plugin.plex.PlexPlugin;
 import com.ftpix.homedash.plugins.Plugin;
-import com.openpojo.reflection.PojoClass;
-import com.openpojo.reflection.impl.PojoClassFactory;
+import com.ftpix.homedash.plugins.SonarrTvPlugin;
+import com.ftpix.homedash.plugins.SystemInfoPlugin;
+import com.ftpix.homedash.plugins.TransmissionPlugin;
+import com.ftpix.homedash.plugins.couchpotato.CouchPotatoPlugin;
+import com.ftpix.homedash.plugins.docker.DockerPlugin;
+import com.ftpix.homedash.plugins.dockercompose.DockerComposePlugin;
+import com.ftpix.homedash.plugins.dynamicdns.DynamicDnsPlugin;
+import com.ftpix.homedash.plugins.googlepubliccalendar.GooglePublicCalendarPlugin;
+import com.ftpix.homedash.plugins.harddisk.HarddiskPlugin;
+import com.ftpix.homedash.plugins.kvm.KvmPlugin;
+import com.ftpix.homedash.plugins.mma.MmaPlugin;
+import com.ftpix.homedash.plugins.networkmonitor.NetworkMonitorPlugin;
+import com.ftpix.homedash.plugins.pihole.PiHolePlugin;
+import com.ftpix.homedash.plugins.portmapper.PortMapperPlugin;
+import com.ftpix.homedash.plugins.spotify.SpotifyPlugin;
+import com.ftpix.homedash.plugins.unifi.UnifiPlugin;
+import com.ftpix.logreader.LogReaderPlugin;
 import de.neuland.jade4j.exceptions.JadeException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public enum PluginController {
     INSTANCE;
     private Logger logger = LogManager.getLogger();
 
 
-    private final static Set<Class> subTypes = PojoClassFactory.enumerateClassesByExtendingType("", Plugin.class, null)
-            .stream()
-            .map(PojoClass::getClazz)
-            .collect(Collectors.toSet());
+    private final static Set<Class> subTypes = Set.of(
+            CouchPotatoPlugin.class,
+            DockerPlugin.class,
+            DockerComposePlugin.class,
+            DynamicDnsPlugin.class,
+            GooglePublicCalendarPlugin.class,
+            HarddiskPlugin.class,
+            KvmPlugin.class,
+            LogReaderPlugin.class,
+            MmaPlugin.class,
+            NetworkMonitorPlugin.class,
+            PiHolePlugin.class,
+            PlexPlugin.class,
+            PortMapperPlugin.class,
+            SonarrTvPlugin.class,
+            SpotifyPlugin.class,
+            SystemInfoPlugin.class,
+            TransmissionPlugin.class,
+            UnifiPlugin.class
+            );
 
 
     public void defineEndpoints() {

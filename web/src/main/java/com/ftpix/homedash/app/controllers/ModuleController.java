@@ -5,6 +5,7 @@ import com.ftpix.homedash.app.PluginModuleMaintainer;
 import com.ftpix.homedash.db.DB;
 import com.ftpix.homedash.jobs.BackgroundRefresh;
 import com.ftpix.homedash.models.*;
+import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.utils.HomeDashTemplateEngine;
 import com.google.gson.Gson;

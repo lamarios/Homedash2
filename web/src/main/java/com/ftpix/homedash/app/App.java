@@ -1,15 +1,18 @@
 package com.ftpix.homedash.app;
 
+import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.ftpix.homedash.app.controllers.SettingsController;
 import com.ftpix.homedash.db.DB;
 import com.ftpix.homedash.jobs.BackgroundRefresh;
 import com.ftpix.homedash.models.Layout;
 import com.ftpix.homedash.models.Page;
 import com.ftpix.homedash.plugins.SystemInfoPlugin;
+import com.ftpix.homedash.updater.Updater;
 import com.ftpix.homedash.websocket.FullScreenWebSocket;
 import com.ftpix.homedash.websocket.SingleModuleKioskWebSocket;
 import com.ftpix.homedash.websocket.MainWebSocket;
 import com.google.common.io.Files;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jvnet.hk2.internal.ConstantActiveDescriptor;
@@ -26,15 +29,21 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Random;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import static java.nio.file.Files.deleteIfExists;
 import static spark.Spark.*;
 
 /**
@@ -47,48 +56,119 @@ public class App {
     public static void main(String[] args) {
         try {
 
-            URL resource = App.class.getResource("/");
+            if (args.length > 0 && args[0].equalsIgnoreCase("-create-config")) {
+                createDefaultConfig();
+            } else {
+                URL resource = App.class.getResource("/");
 
-            loadNativeLibs();
+                loadNativeLibs();
 
 //            staticFileLocation("/web");
 
-            port(Constants.PORT);
+                port(Constants.PORT);
 
-            if(Constants.SECURE && Constants.KEY_STORE != null && Constants.KEY_STORE_PASS != null) {
-                logger.info("Starting in secure mode using keystore:[{}]", Constants.KEY_STORE);
-                secure(Constants.KEY_STORE, Constants.KEY_STORE_PASS, null, null);
-            }
-
-            webSocket("/ws", MainWebSocket.class);
-            webSocket("/ws-full-screen", FullScreenWebSocket.class);
-            webSocket("/ws-kiosk", SingleModuleKioskWebSocket.class);
-
-            //No cache policy, especially against Edge and IE
-            before((req, res) -> {
-                res.header("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
-                res.header("Pragma", "no-cache"); // HTTP 1.0.
-                res.header("Expires", "0"); // Proxies.
-                logger.info("{} -> {}", req.requestMethod(), req.url());
-                if (!req.pathInfo().startsWith("/api") && !req.pathInfo().startsWith("/cache") && !req.pathInfo().equalsIgnoreCase("/login") && !SettingsController.INSTANCE.checkSession(req, res)) {
-                    res.redirect("/login");
+                if (Constants.SECURE && Constants.KEY_STORE != null && Constants.KEY_STORE_PASS != null) {
+                    logger.info("Starting in secure mode using keystore:[{}]", Constants.KEY_STORE);
+                    secure(Constants.KEY_STORE, Constants.KEY_STORE_PASS, null, null);
                 }
-            });
 
-            createDefaultData();
-            Endpoints.define();
+                webSocket("/ws", MainWebSocket.class);
+                webSocket("/ws-full-screen", FullScreenWebSocket.class);
+                webSocket("/ws-kiosk", SingleModuleKioskWebSocket.class);
+
+                //No cache policy, especially against Edge and IE
+                before((req, res) -> {
+                    res.header("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+                    res.header("Pragma", "no-cache"); // HTTP 1.0.
+                    res.header("Expires", "0"); // Proxies.
+                    logger.info("{} -> {}", req.requestMethod(), req.url());
+                    if (!req.pathInfo().startsWith("/api") && !req.pathInfo().startsWith("/cache") && !req.pathInfo().equalsIgnoreCase("/login") && !SettingsController.INSTANCE.checkSession(req, res)) {
+                        res.redirect("/login");
+                    }
+                });
+
+                createDefaultData();
+                Endpoints.define();
 
 
-            // set up the notifications
-            SettingsController.INSTANCE.updateNotificationProviders();
+                // set up the notifications
+                SettingsController.INSTANCE.updateNotificationProviders();
 
 //            enableDebugScreen();
 
-            prepareJobs();
-
+                prepareJobs();
+            }
         } catch (Exception e) {
             logger.error("Error during startup, we better stop everything", e);
             System.exit(1);
+        }
+    }
+
+    /**
+     * Creates a default config
+     */
+    private static void createDefaultConfig() {
+        var sb = new StringBuilder();
+
+        String generatedString = RandomStringUtils.random(50, true, true);
+
+
+        sb.append("#Port running the server\n");
+        sb.append("port=4567\n");
+        sb.append("\n");
+        sb.append("\n");
+
+
+        sb.append("#Where all the cache files (mostly images) are going to be stored");
+        sb.append("\n");
+        sb.append("cache_path = cache/");
+        sb.append("\n");
+        sb.append("\n");
+
+        sb.append("# Location of your saved file");
+        sb.append("\n");
+        sb.append("db_path = ./homedash");
+        sb.append("\n");
+        sb.append("\n");
+
+        sb.append("# random string used to authentication and other hashing pruposes");
+        sb.append("\n");
+        sb.append("salt = "+generatedString);
+        sb.append("\n");
+        sb.append("\n");
+
+
+        sb.append("#wheter or not to run the server under https");
+        sb.append("\n");
+        sb.append("secure = false");
+        sb.append("\n");
+        sb.append("\n");
+
+        sb.append("# Required only if secure = true, more help: https://uwesander.de/using-your-ssl-certificate-for-your-spark-web-application.html");
+        sb.append("\n");
+        sb.append("       key_store = jks location");
+        sb.append("\n");
+        sb.append("    key_store_pass = jks password");
+        sb.append("\n");
+
+
+        Path p = Paths.get("homedash.properties");
+
+        if (java.nio.file.Files.exists(p)) {
+            System.out.println("Configuration file " + p.toAbsolutePath().toString() + " already exists");
+        } else {
+            try {
+                var updater = new Updater();
+                updater.getCurrentVersion();
+                java.nio.file.Files.write(p, sb.toString().getBytes());
+                System.out.println("Configuration created, you can start Homedash using the following command:");
+                System.out.println("java -Dconfig.file=" + p.toAbsolutePath().toString() + " -jar Homedash-" + updater.getCurrentVersion() + ".jar");
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("Couldn't write file " + p.toAbsolutePath().toString() + " make sure you have write permission on working dir");
+            }
+
+
         }
     }
 

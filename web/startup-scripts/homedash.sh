@@ -40,9 +40,9 @@ function start {
         echo "****************"
 
 
-        export CLASSPATH
+        export CLASSPATH=$CLASSPATH
 
-        java $BIN_NAME & echo $! >> $PID
+        java  --class-path $CLASSPATH $BIN_NAME
     fi
 }
 
