@@ -27,10 +27,14 @@ else
         echo "secure = ${SECURE}" >> ${CONFIG}
         # Required only if secure = true, more help: https://uwesander.de/using-your-ssl-certificate-for-your-spark-web-application.html
         if [ -z ${KEY_STORE+x} ]; then
+            echo "No key store set"
+        else
             echo "key_store = ${KEY_STORE}" >> ${CONFIG}
         fi
 
         if [ -z ${KEY_STORE_PASS+x} ]; then
+            echo "No key store pass set"
+        else
             echo "key_store_pass = ${KEY_STORE_PASS}" >> ${CONFIG}
          fi
     fi

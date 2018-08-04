@@ -51,6 +51,14 @@ docker run -t --name homedash \
         gonzague/homedash
 ```
 
+
+To run with SSL you'll need  to add the following environment variables to your container:
+```
+SECURE=true
+KEY_STORE=path to the jks file
+KEY_STORE_PASS=password to your jks file
+```
+
 Note that running Homedash in docker will have reduced feature when it comes to system monitoring due to the nature of docker containers.
 
 ## Develop plugin
