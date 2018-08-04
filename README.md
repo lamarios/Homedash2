@@ -50,7 +50,10 @@ docker run -t --name homedash \
         -p "4567:4567" \
         gonzague/homedash
 ```
-
+You can customize the JVM by setting the JAVA_OPTS environment variable:
+```
+JAVA_OPTS="-Xmx=128M
+```
 
 To run with SSL you'll need  to add the following environment variables to your container:
 ```

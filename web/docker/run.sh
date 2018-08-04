@@ -5,6 +5,9 @@ CONFIG=/app/homedash.properties
 rm ${CONFIG}
 touch ${CONFIG}
 
+if [ -z ${JAVA_OPTS+x} ]; then
+    JAVA_OPTS=""
+fi
 if [ -z ${SALT+x} ]; then
     echo "Missing salt string environment variable"
 else
@@ -45,7 +48,7 @@ else
     echo "######################################"
 
         cd $APP
-       java -Dconfig.file=$CONFIG -jar homedash.jar
+       java ${JAVA_OPTS} -Dconfig.file=$CONFIG -jar homedash.jar
 fi
 
 
