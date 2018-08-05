@@ -227,32 +227,31 @@ function harddisk(moduleId) {
         html.push('<div class="content">');
         html.push('<p><i class="fa fa-times"></i></p>');
         // html.push('<div class="table-responsive">');
-        html.push('<table class="table table-condensed"><tbody>');
 
         $.each(clipboard, function (index, clipboardItem) {
             var filename = index.replace(/^.*[\\\/]/, '');
             var inProgress = clipboardItem.progress > 0;
 
 
-            html.push('<tr>');
-            html.push('<td class="text">', filename, '</td>');
+            html.push('<div class="row">');
+            html.push('<div class="col-md-6 text">', filename, '</div>');
+            html.push('<div  class="col-md-6 actions">');
             if (!inProgress) {
-                html.push('<td class="actions">');
                 html.push('<button data-path="', index, '" class="btn btn-primary btn-sm action-copy" >Copy here</button>');
                 html.push('<button data-path="', index, '" class="btn btn-primary btn-sm action-move" >Move here</button>');
                 html.push('<button data-path="', index, '" class="btn btn-default btn-sm action-remove-from-clipboard"><i class="fa fa-times"></i></buton>');
-                html.push('</td>');
             } else {
-                html.push("<td class='actions'>");
+                html.push("<div class='actions'>");
                 html.push('<div class="progress"><div class="progress-bar" style="width: ' + clipboardItem.progress + '%"></div></div>');
-                html.push("</td>");
             }
-            html.push('</tr>');
+            html.push("</div>");
+
+            html.push('</div>');
 
         });
 
 
-        html.push('</tbody></table></div>');
+        html.push('</div>');
 
         // html.push('</div>') // content
 

@@ -1,7 +1,32 @@
 #!/usr/bin/env bash
 
+
 APP=/app
 CONFIG=/app/homedash.properties
+
+#####
+# user stuff
+#####
+
+ROOT=1
+if [ -z ${UID+x} ]; then
+    echo "Running as ROOT"
+    UID=0
+else
+   echo "Creating user for id ${UID} and group ${GID}"
+
+   if [ -z ${GID+x} ]; then
+        echo "Group ID = 0"
+        GID=0
+   else
+        groupadd -g $GID abc
+   fi
+
+    ROOT=0
+    useradd -d ${APP} -u ${UID} -g ${GID} abc
+fi
+
+
 rm ${CONFIG}
 touch ${CONFIG}
 
@@ -47,8 +72,15 @@ else
     cat ${CONFIG}
     echo "######################################"
 
-        cd $APP
-       java ${JAVA_OPTS} -Dconfig.file=$CONFIG -jar homedash.jar
+
+    cd $APP
+    if [ "$ROOT" -eq "0" ]; then
+        chown -R abc:abc $APP /data
+        runuser -l abc -c "java ${JAVA_OPTS} -Dconfig.file=$CONFIG -jar homedash.jar"
+
+    else
+        java ${JAVA_OPTS} -Dconfig.file=$CONFIG -jar homedash.jar
+    fi
 fi
 
 

@@ -420,14 +420,13 @@ public class HarddiskPlugin extends Plugin {
                     FileInputStream fileInputStream = new FileInputStream(source.toFile());
                     FileOutputStream fileOutputStream = new FileOutputStream(destination.toFile());
             ) {
-                byte[] b = new byte[1024];
+                byte[] b = new byte[8192];
                 int len;
                 while ((len = fileInputStream.read(b, 0, 1024)) > 0) {
                     fileOutputStream.write(b, 0, len);
                     transferred += len;
                     double progress = ((double) transferred / (double) size) * 100D;
                     fileOperation.setProgress((int) progress);
-                    System.out.println(fileOperation.getProgress());
                 }
             }
 
@@ -459,14 +458,13 @@ public class HarddiskPlugin extends Plugin {
                             FileInputStream fileInputStream = new FileInputStream(path.toFile());
                             FileOutputStream fileOutputStream = new FileOutputStream(destination.resolve(path.getFileName()).toFile());
                     ) {
-                        byte[] b = new byte[1024];
+                        byte[] b = new byte[8192];
                         int len;
                         while ((len = fileInputStream.read(b, 0, 1024)) > 0) {
                             fileOutputStream.write(b, 0, len);
                             int totalProgress = progress.addAndGet(len);
                             double progressPercentage = ((double) totalProgress / (double) totalSize) * 100D;
                             fileOperation.setProgress((int) progressPercentage);
-                            System.out.println(fileOperation.getProgress());
                         }
                     }
 
