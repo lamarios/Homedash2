@@ -50,17 +50,18 @@ docker run -t --name homedash \
         -p "4567:4567" \
         gonzague/homedash
 ```
-You can customize the JVM by setting the JAVA_OPTS environment variable:
-```
-JAVA_OPTS="-Xmx=128M
-```
+Environment Variables:
 
-To run with SSL you'll need  to add the following environment variables to your container:
-```
-SECURE=true
-KEY_STORE=path to the jks file
-KEY_STORE_PASS=password to your jks file
-```
+| Variable | Description | Required |
+| ---------- | ------------- | ---------- |
+| SALT | A random string used for authentication and other hashes | YES |
+| UID | if you want to run the container under a different user id. Runs as root (0) by default | no |
+| GID | The group id to run the container under. Runs as root (0) by default | no |
+| JAVA_OPTS | configure the JVM | no |
+| SECURE | "true" or "false" (default) to enable HTTPS  | no |
+| KEY_STORE | if SECURE="true" you need to specified the path of your keystore (jks) file | no |
+| KEY_STORE_PASS | the password to your key store file | no | 
+
 
 Note that running Homedash in docker will have reduced feature when it comes to system monitoring due to the nature of docker containers.
 

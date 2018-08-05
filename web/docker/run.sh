@@ -79,6 +79,7 @@ else
         runuser -l abc -c "java ${JAVA_OPTS} -Dconfig.file=$CONFIG -jar homedash.jar"
 
     else
+        chown -R root:root $APP /data
         java ${JAVA_OPTS} -Dconfig.file=$CONFIG -jar homedash.jar
     fi
 fi
