@@ -62,7 +62,7 @@ Environment Variables:
 | GID | The group id to run the container under. Runs as root (0) by default | no |
 | JAVA_OPTS | configure the JVM | no |
 | SECURE | "true" or "false" (default) to enable HTTPS  | no |
-| KEY_STORE | if SECURE="true" you need to specified the path of your keystore (jks) file | no |
+| KEY_STORE | if SECURE="true" you need to specified the path of your keystore (jks) file within the container after you mounted it | no |
 | KEY_STORE_PASS | the password to your key store file | no | 
 
 
