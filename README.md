@@ -36,7 +36,10 @@ java -jar Homedash-{version}.jar -create-config
 
 This will create a config file that you can modify in your current working directory.
 
-You can then run jav -Dconfig.file=./homedash.properties -jar Homedash-{version}.jar
+You can then run 
+```
+java -Dconfig.file=./homedash.properties -jar Homedash-{version}.jar
+```
 
 ### From docker
 
