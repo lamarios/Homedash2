@@ -367,9 +367,6 @@ public class DockerPlugin extends Plugin {
                 .skip(from)
                 .collect(Collectors.toList());
 
-        //we only get the last 100 lines maximum
-        lines = lines.subList(Math.max(0, lines.size() - 1000), lines.size());
-
         return lines;
     }
 }
