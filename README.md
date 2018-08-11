@@ -64,6 +64,7 @@ Environment Variables:
 | SECURE | "true" or "false" (default) to enable HTTPS  | no |
 | KEY_STORE | if SECURE="true" you need to specified the path of your keystore (jks) file within the container after you mounted it | no |
 | KEY_STORE_PASS | the password to your key store file | no | 
+| DEBUG | Set to "true" to allow connection to the JMX to get visual vm debugging, if enabled you need to add the port map the port 4570 of the container as well. | no | 
 
 
 Note that running Homedash in docker will have reduced feature when it comes to system monitoring due to the nature of docker containers.
