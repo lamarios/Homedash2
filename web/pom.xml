@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>2018.8.2</version>
+        <version>2018.8.3</version>
     </parent>
 
 
@@ -199,7 +199,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>2018.8.2</version>
+            <version>2018.8.3</version>
         </dependency>
 
         <dependency>
@@ -373,8 +373,8 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        Fix layout of harddisk plugin clipboard layout
-                        Modify docker container to run under a specified user id and group id
+                        Add dialog to get logs of a docker container
+                        Add possibility to run the home dash docker container with DEBUG mode to allow the JMX connections
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>

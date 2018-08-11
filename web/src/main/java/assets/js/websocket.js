@@ -205,11 +205,12 @@ function showNotification(type, message) {
  * @param method
  * @param message
  */
-function sendMessage(moduleId, command, message) {
+function sendMessage(moduleId, command, message, extra) {
     var wsMsg = new WebsocketMessage();
     wsMsg.message = message;
     wsMsg.id = moduleId;
     wsMsg.command = command;
+    wsMsg.extra = extra;
     var json = JSON.stringify(wsMsg);
     ws.send(json);
     console.log(json);
@@ -219,4 +220,5 @@ function WebsocketMessage() {
     this.id = -1;
     this.command = "";
     this.message = "";
+    this.extra = '';
 }

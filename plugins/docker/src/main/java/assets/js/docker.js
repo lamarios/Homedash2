@@ -2,6 +2,7 @@ function docker(moduleId) {
     this.moduleId = moduleId;
     this.selectedContainer;
     this.selectedImage;
+    this.logCount = 0;
 
     this.documentReady = function (size) {
         var root = rootElement(this.moduleId);
@@ -10,6 +11,10 @@ function docker(moduleId) {
 
             root.on('click', '.container-modal', function () {
                 self.showContainerModal($(this));
+            });
+
+            root.on('click', '.container-logs', function () {
+                self.showContainerLogs($(this));
             });
 
             root.on('click', '.image-modal', function () {
@@ -64,6 +69,8 @@ function docker(moduleId) {
             this.refreshImages(extra.images);
         } else if (command === 'details') {
             this.showContainerDetails(message);
+        } else if (command === 'logs') {
+            this.displayLogs(message);
         }
     };
 
@@ -80,6 +87,47 @@ function docker(moduleId) {
 
     };
 
+
+    this.displayLogs = function (logLines) {
+        var root = rootElement(this.moduleId);
+
+        var logs = $('#container-logs-modal .logs');
+        var modal = root.find('#container-logs-modal');
+        this.logCount += logLines.length;
+
+        if (modal.hasClass('in')) {
+            this.requestForLogs(modal.attr('data-id'));
+        }
+
+        if (logLines.length > 0) {
+            logs.val(logs.val() + '\n' + logLines.join('\n'));
+            logs.scrollTop(logs[0].scrollHeight - logs.height());
+        }
+    };
+
+    this.showContainerLogs = function (source) {
+        this.logCount = 0;
+        var root = rootElement(this.moduleId);
+
+        var logs = $('#container-logs-modal .logs');
+        logs.val('');
+
+        var modal = root.find('#container-logs-modal');
+        modal.attr('data-id', source.attr('data-id'));
+        modal.find('.modal-title').html(source.attr('data-name') + ' logs');
+        modal.modal('show');
+
+        this.requestForLogs(source.attr('data-id'));
+    };
+
+
+    this.requestForLogs = function (containerId) {
+        var self = this;
+        setTimeout(function () {
+            console.log('refreshing logs');
+            sendMessage(self.moduleId, 'logs', containerId, self.logCount);
+        }, 1000);
+    };
 
     this.showContainerModal = function (source) {
         var root = rootElement(this.moduleId);
@@ -243,6 +291,10 @@ function docker(moduleId) {
             html.push('<td class="container-modal" data-id="', container.id, '", data-name="',
                 container.names.join(','), '">',
                 '<i class="fa fa-info-circle" aria-hidden="true"></i>',
+                '</td>');
+            html.push('<td class="container-logs" data-id="', container.id, '", data-name="',
+                container.names.join(','), '">',
+                '<button class="btn btn-sm btn-default"><i class="fa fa-info-circle" aria-hidden="true"></i> logs</button>',
                 '</td>');
 
             html.push('</tr>');

@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash.plugins</groupId>
         <artifactId>plugins</artifactId>
-        <version>2018.8.2</version>
+        <version>2018.8.3</version>
     </parent>
 
     <artifactId>docker</artifactId>
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>com.spotify</groupId>
             <artifactId>docker-client</artifactId>
-            <version>8.8.0</version>
+            <version>8.11.7</version>
         </dependency>
 
     </dependencies>

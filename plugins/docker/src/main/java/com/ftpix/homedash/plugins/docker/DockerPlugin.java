@@ -10,6 +10,7 @@ import com.ftpix.homedash.plugins.docker.models.DockerInfo;
 import com.ftpix.homedash.plugins.docker.models.DockerImageInfo;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
+import com.spotify.docker.client.LogStream;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.ContainerInfo;
 import com.spotify.docker.client.messages.ContainerStats;
@@ -23,6 +24,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DockerPlugin extends Plugin {
 
@@ -30,7 +32,7 @@ public class DockerPlugin extends Plugin {
             ACTION_REMOVE_IMAGE_FORCE = "removeImageForce", ACTION_CONTAINER_DETAILS = "details",
             ACTION_RESTART = "restart", ACTION_START = "start", ACTION_STOP = "stop", ACTION_REMOVE = "remove",
             ACTION_KILL = "kill", SUCCESS_MESSAGE_CONTAINER = "Container %sed successfully",
-            SUCCESS_MESSAGE_IMAGE = "Image %sed successfully";
+            SUCCESS_MESSAGE_IMAGE = "Image %sed successfully", ACTION_LOGS = "logs";
 
     private DockerClient client;
 
@@ -138,10 +140,15 @@ public class DockerPlugin extends Plugin {
                     response.setMessage(String.format(SUCCESS_MESSAGE_IMAGE, ACTION_REMOVE));
                     response.setExtra(refresh(ModuleLayout.FULL_SCREEN));
                     break;
+                case ACTION_LOGS:
+                    response.setCommand(ACTION_LOGS);
+                    response.setMessage(getContainerLogs(message, ((Double) extra).intValue()));
+                    break;
             }
         } catch (Exception e) {
             response.setCommand(WebSocketMessage.COMMAND_ERROR);
             response.setMessage("Docker command failed: " + e.getMessage());
+            logger().error("Couldn't process command", e);
         }
 
         return response;
@@ -342,5 +349,27 @@ public class DockerPlugin extends Plugin {
     private void startContainer(String containerId) throws DockerException, InterruptedException {
         logger().info("Starting container #{}", containerId);
         client.startContainer(containerId);
+    }
+
+
+    /**
+     * GEts the logs for a specific container
+     *  @param containerId
+     * @param from the number of lines to skip (to avoid killing the clients with giant logs
+     */
+    private List<String> getContainerLogs(String containerId, int from) throws DockerException, InterruptedException {
+        final String logs;
+        try (LogStream stream = client.logs(containerId, DockerClient.LogsParam.stdout(), DockerClient.LogsParam.stderr())) {
+            logs = stream.readFully();
+        }
+
+        List<String> lines = Stream.of(logs.split("\n"))
+                .skip(from)
+                .collect(Collectors.toList());
+
+        //we only get the last 100 lines maximum
+        lines = lines.subList(Math.max(0, lines.size() - 1000), lines.size());
+
+        return lines;
     }
 }

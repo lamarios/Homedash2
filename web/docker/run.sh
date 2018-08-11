@@ -33,6 +33,15 @@ touch ${CONFIG}
 if [ -z ${JAVA_OPTS+x} ]; then
     JAVA_OPTS=""
 fi
+
+if [ -z ${DEBUG+x} ]; then
+    echo "Runing in normal mode"
+else
+    echo "Running debug mode"
+    JAVA_OPTS="${JAVA_OPTS} -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=4570 -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
+fi
+
+
 if [ -z ${SALT+x} ]; then
     echo "Missing salt string environment variable"
 else

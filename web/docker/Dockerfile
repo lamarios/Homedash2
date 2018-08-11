@@ -10,6 +10,8 @@ ADD ./*.jar /app/homedash.jar
 ADD run.sh /run.sh
 
 EXPOSE 4567
+EXPOSE 4570
+
 
 VOLUME "/data"
 
