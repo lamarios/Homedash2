@@ -204,8 +204,11 @@ public class RadarrApi extends MovieProviderAPI {
         }));
 
         ExecutorService exec = Executors.newFixedThreadPool(moviesResults.size());
-        exec.invokeAll(downloads);
-
+        try {
+            exec.invokeAll(downloads);
+        } finally {
+            exec.shutdown();
+        }
 
         return moviesResults;
     }
