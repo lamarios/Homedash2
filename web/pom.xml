@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>2018.8.4</version>
+        <version>2018.8.5</version>
     </parent>
 
 
@@ -199,7 +199,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>2018.8.4</version>
+            <version>2018.8.5</version>
         </dependency>
 
         <dependency>
@@ -373,8 +373,7 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        Add dialog to get logs of a docker container
-                        Add possibility to run the home dash docker container with DEBUG mode to allow the JMX connections
+                        fix issue where thread pool where not shut down in couchpotato plug in
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>
