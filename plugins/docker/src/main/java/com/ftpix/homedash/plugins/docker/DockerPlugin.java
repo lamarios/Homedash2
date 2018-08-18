@@ -354,19 +354,25 @@ public class DockerPlugin extends Plugin {
 
     /**
      * GEts the logs for a specific container
-     *  @param containerId
+     * @param containerId
      * @param from the number of lines to skip (to avoid killing the clients with giant logs
      */
-    private List<String> getContainerLogs(String containerId, int from) throws DockerException, InterruptedException {
+    private HashMap<String, Object> getContainerLogs(String containerId, int from) throws DockerException, InterruptedException {
         final String logs;
         try (LogStream stream = client.logs(containerId, DockerClient.LogsParam.stdout(), DockerClient.LogsParam.stderr())) {
             logs = stream.readFully();
         }
 
-        List<String> lines = Stream.of(logs.split("\n"))
+
+        String[] split = logs.split("\n");
+        List<String> lines = Stream.of(split)
                 .skip(from)
                 .collect(Collectors.toList());
 
-        return lines;
+        var result = new HashMap<String, Object>();
+        result.put("lines", lines);
+        result.put("total", split.length);
+
+        return result;
     }
 }

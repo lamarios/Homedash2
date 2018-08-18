@@ -2,7 +2,7 @@ function docker(moduleId) {
     this.moduleId = moduleId;
     this.selectedContainer;
     this.selectedImage;
-    this.logCount = 0;
+    this.lastLine = 0;
 
     this.documentReady = function (size) {
         var root = rootElement(this.moduleId);
@@ -93,20 +93,20 @@ function docker(moduleId) {
 
         var logs = $('#container-logs-modal .logs');
         var modal = root.find('#container-logs-modal');
-        this.logCount += logLines.length;
+        this.lastLine = logLines.total;
 
         if (modal.hasClass('in')) {
             this.requestForLogs(modal.attr('data-id'));
         }
 
-        if (logLines.length > 0) {
-            logs.val(logs.val() + '\n' + logLines.join('\n'));
+        if (logLines.lines.length > 0) {
+            logs.val(logs.val() + '\n' + logLines.lines.join('\n'));
             logs.scrollTop(logs[0].scrollHeight - logs.height());
         }
     };
 
     this.showContainerLogs = function (source) {
-        this.logCount = 0;
+        this.lastLine = 0;
         var root = rootElement(this.moduleId);
 
         var logs = $('#container-logs-modal .logs');
@@ -125,7 +125,7 @@ function docker(moduleId) {
         var self = this;
         setTimeout(function () {
             console.log('refreshing logs');
-            sendMessage(self.moduleId, 'logs', containerId, self.logCount);
+            sendMessage(self.moduleId, 'logs', containerId, self.lastLine);
         }, 1000);
     };
 
