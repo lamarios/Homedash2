@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>2018.8.5</version>
+        <version>2018.8.6</version>
     </parent>
 
 
@@ -199,7 +199,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>2018.8.5</version>
+            <version>2018.8.6</version>
         </dependency>
 
         <dependency>
@@ -373,7 +373,7 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        fix issue where thread pool where not shut down in couchpotato plug in
+                        modify the docker plugin logs behavior so that it makes more sens
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>
