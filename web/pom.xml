@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>2018.8.6</version>
+        <version>2018.8.7</version>
     </parent>
 
 
@@ -199,7 +199,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>2018.8.6</version>
+            <version>2018.8.7</version>
         </dependency>
 
         <dependency>
@@ -373,7 +373,7 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        modify the docker plugin logs behavior so that it makes more sens
+                        Fix login form CSS / JS
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>

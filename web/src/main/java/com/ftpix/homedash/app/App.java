@@ -36,10 +36,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.Random;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -82,6 +79,14 @@ public class App {
                     res.header("Pragma", "no-cache"); // HTTP 1.0.
                     res.header("Expires", "0"); // Proxies.
                     logger.info("{} -> {}", req.requestMethod(), req.url());
+
+
+
+                    if(List.of("/css/", "/js/", "/fonts/").stream().anyMatch(s-> req.pathInfo().startsWith(s))){
+                        //skipping any processing on resources
+                        return;
+                    }
+
                     if (!req.pathInfo().startsWith("/api") && !req.pathInfo().startsWith("/cache") && !req.pathInfo().equalsIgnoreCase("/login") && !SettingsController.INSTANCE.checkSession(req, res)) {
                         res.redirect("/login");
                     }
