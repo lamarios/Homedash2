@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>2018.8.7</version>
+        <version>2018.9.1</version>
     </parent>
 
 
@@ -199,7 +199,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>2018.8.7</version>
+            <version>2018.9.1</version>
         </dependency>
 
         <dependency>
@@ -373,7 +373,7 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        Fix login form CSS / JS
+                        Fix typo
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>
