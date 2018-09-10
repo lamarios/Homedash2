@@ -32,7 +32,7 @@ public class UnifiPlugin extends Plugin {
 
     @Override
     public String getDescription() {
-        return "Gets a Unifi site current thourghput";
+        return "Gets a Unifi site current throughput";
     }
 
     @Override
