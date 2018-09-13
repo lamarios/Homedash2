@@ -8,22 +8,38 @@ CONFIG=/app/homedash.properties
 # user stuff
 #####
 
-ROOT=1
+USER="root"
+GROUP="root"
 if [ -z ${UID+x} ]; then
     echo "Running as ROOT"
     UID=0
 else
    echo "Creating user for id ${UID} and group ${GID}"
-
    if [ -z ${GID+x} ]; then
         echo "Group ID = 0"
         GID=0
    else
         groupadd -g $GID abc
+	
+	# checking if the group addition worked
+	if [ $? -eq "0" ]; then
+		GROUP="abc"	
+	else
+		GROUP=$(cat /etc/group | grep ":${GID}:" | awk -F':' '{print $1}')
+		echo "Group already exists, using ${GROUP}"
+	fi
+	
    fi
 
-    ROOT=0
     useradd -d ${APP} -u ${UID} -g ${GID} abc
+    if [ $? -eq "0" ]; then
+        USER="abc"	
+    else
+        USER=$(id -nu ${UID})
+	echo "User already exists, using ${USER}"
+    fi
+    	
+
 fi
 
 
@@ -79,16 +95,17 @@ else
     echo "######################################"
     echo "STARTING HOMEDASH"
     cat ${CONFIG}
+    echo "User: ${USER}"
+    echo "Group: ${GROUP}"
     echo "######################################"
 
 
     cd $APP
-    if [ "$ROOT" -eq "0" ]; then
-        chown -R abc:abc $APP /data
-        runuser -l abc -c "java ${JAVA_OPTS} -Dconfig.file=$CONFIG -jar homedash.jar"
+    chown -R ${USER}:${GROUP} $APP /data
+    if [ "${USER}" != "root" ]; then
+        runuser -l ${USER} -c "java ${JAVA_OPTS} -Dconfig.file=$CONFIG -jar homedash.jar"
 
     else
-        chown -R root:root $APP /data
         java ${JAVA_OPTS} -Dconfig.file=$CONFIG -jar homedash.jar
     fi
 fi
