@@ -9,6 +9,7 @@ import com.ftpix.homedash.plugins.mma.model.HomeDashEvent;
 import com.ftpix.homedash.plugins.mma.model.HomeDashOrganization;
 import com.ftpix.sherdogparser.PictureProcessor;
 import com.ftpix.sherdogparser.Sherdog;
+import com.ftpix.sherdogparser.exceptions.SherdogParserException;
 import com.ftpix.sherdogparser.models.Event;
 import com.ftpix.sherdogparser.models.Fight;
 import com.ftpix.sherdogparser.models.Fighter;
@@ -147,9 +148,7 @@ public class MmaPlugin extends Plugin {
                                     sb.append(f.getFighter1().getName()).append(" vs ").append(f.getFighter2().getName()).append("\n");
                                 });
 
-                            } catch (IOException e1) {
-                                e1.printStackTrace();
-                            } catch (ParseException e1) {
+                            } catch (IOException | SherdogParserException | ParseException e1) {
                                 e1.printStackTrace();
                             }
 
