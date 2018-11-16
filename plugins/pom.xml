@@ -6,7 +6,7 @@
     <parent>
         <artifactId>homedash</artifactId>
         <groupId>com.ftpix.homedash</groupId>
-        <version>2018.10.1</version>
+        <version>2018.11.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
