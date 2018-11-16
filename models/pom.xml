@@ -68,7 +68,7 @@
         <dependency>
             <groupId>com.sparkjava</groupId>
             <artifactId>spark-core</artifactId>
-            <version>2.6.0</version>
+            <version>${spark.version}</version>
         </dependency>
 
     </dependencies>
