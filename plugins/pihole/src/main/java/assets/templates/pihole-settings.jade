@@ -4,3 +4,9 @@
         input.form-control(type="text", id="url", name="url", placeholder="URL", value='#{settings.get("url")}')
     else
         input.form-control(type="text", id="url", name ="url", placeholder = "URL")
+.form-group
+    label(for="key") Pi-Hole web API authentication, can be found under <em>/etc/pihole/setupVars.conf</em> -> WEBPASSWORD
+    if settings && settings.containsKey("key")
+        input.form-control(type="text", id="key", name="key", placeholder="Authentication key", value='#{settings.get("key")}')
+    else
+        input.form-control(type="text", id="key", name ="key", placeholder = "Authentication key")

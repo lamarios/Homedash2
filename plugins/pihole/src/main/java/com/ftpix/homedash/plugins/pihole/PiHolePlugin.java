@@ -13,18 +13,15 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by gz on 11-Jun-16.
  */
 public class PiHolePlugin extends Plugin {
-    private final String SETTING_URL = "url";
-    private String url;
-    private Gson gson = new Gson();
+    private final String SETTING_URL = "url", SETTING_KEY = "key";
+
+    private PiHoleClient client;
 
     @Override
     public String getId() {
@@ -43,24 +40,26 @@ public class PiHolePlugin extends Plugin {
 
     @Override
     public String getExternalLink() {
-        return this.url;
+        return client.getUrl();
     }
 
     @Override
     protected void init() {
-        this.url = settings.get(SETTING_URL);
-        if (!this.url.endsWith("/")) {
-            this.url += "/";
+        String url = settings.get(SETTING_URL);
+        if (!url.endsWith("/")) {
+            url += "/";
         }
 
-        if (!this.url.startsWith("http://") && !this.url.startsWith("https://")) {
-            this.url = "http://" + this.url;
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            url = "http://" + url;
         }
+
+        client = new PiHoleClient(url, settings.get(SETTING_KEY));
     }
 
     @Override
     public String[] getSizes() {
-        return new String[]{"2x2", "1x1", "3x2", "4x2", ModuleLayout.KIOSK};
+        return new String[]{"2x2", "1x1", "3x2", "4x2", ModuleLayout.KIOSK, ModuleLayout.FULL_SCREEN};
     }
 
     @Override
@@ -80,19 +79,28 @@ public class PiHolePlugin extends Plugin {
 
     @Override
     protected Object refresh(String size) throws Exception {
-        return getStats();
+        if (size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)) {
+            return client.getQueries();
+        } else {
+            return client.getStats();
+        }
     }
 
     @Override
     public int getRefreshRate(String size) {
-        return ONE_MINUTE;
+        if (size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)) {
+            return ONE_SECOND;
+        } else {
+            return ONE_MINUTE;
+        }
+
     }
 
     @Override
     public Map<String, String> validateSettings(Map<String, String> settings) {
         Map<String, String> errors = new HashMap<>();
 
-        url = settings.get(SETTING_URL);
+        String url = settings.get(SETTING_URL);
         if (!url.endsWith("/")) {
             url += "/";
         }
@@ -117,7 +125,7 @@ public class PiHolePlugin extends Plugin {
     public ModuleExposedData exposeData() {
         try {
             ModuleExposedData data = new ModuleExposedData();
-            PiHoleStats stats = getStats();
+            PiHoleStats stats = client.getStats();
 
             NumberFormat formatter = new DecimalFormat("#0.00");
 
@@ -160,17 +168,6 @@ public class PiHolePlugin extends Plugin {
     // /////////////////////////////
     // //Plugin Methods
 
-    private PiHoleStats getStats() throws UnirestException {
-
-        HttpResponse<String> response = Unirest
-                .post(this.url + "api.php")
-                .header("cache-control", "no-cache").asString();
-
-        logger().info("[PiHole] Query result: {} for url:[{}]",
-                response.getBody(), this.url);
-        return gson.fromJson(response.getBody(), PiHoleStats.class);
-
-    }
 }
 
 

@@ -11,7 +11,11 @@ function pihole(moduleId) {
     };
 
     this.onMessage = function (size, command, message, extra) {
-        this.processData(message);
+        if (size !== 'full-screen') {
+            this.processData(message);
+        } else {
+            this.processFullScreen(message);
+        }
     }
 
     this.processData = function (message) {
@@ -25,4 +29,34 @@ function pihole(moduleId) {
         root.find('.domains-blocked p').html(message.domains_being_blocked);
     };
 
+
+    this.processFullScreen = function (message) {
+
+        var root = rootElement(this.moduleId);
+        var table = root.find('#queries');
+
+        var html = "";
+        var self = this;
+        message.forEach(function (m) {
+            html += "<tr>";
+            html += "<td>" + m.date.date.year + "-" + self.pad(m.date.date.month, 2) + "-" + self.pad(m.date.date.day, 2) + ' ' + self.pad(m.date.time.hour, 2) + ':' + self.pad(m.date.time.minute, 2) + ':'
+                + self.pad(m.date.time.second, 2) + "</td>";
+            // html += "<td>" + m.blocked === true?'yes':'no'+ '</td>';
+            html += "<td>" + m.blocked + '</td>';
+            html += "<td>" + m.type + '</td>';
+            html += "<td>" + m.requestedDomain + '</td>';
+            html += "<td>" + m.requestingClient + '</td>';
+            html += "<td>" + m.answerTypeString + '</td>';
+            html += "</tr>";
+        });
+
+
+        table.html(html);
+
+
+    }
+
+    this.pad = function (number, digits) {
+        return Array(Math.max(digits - String(number).length + 1, 0)).join(0) + number;
+    }
 }
