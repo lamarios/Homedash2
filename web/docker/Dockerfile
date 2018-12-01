@@ -1,7 +1,7 @@
 FROM openjdk:11
 
 #Installing virtmanager to be able to use kvm/qemu plugin
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install qemu-kvm libvirt-clients libvirt-daemon-system
+RUN apt-get update && apt-get -y install apt-utils && DEBIAN_FRONTEND=noninteractive apt-get -y install qemu-kvm libvirt-clients libvirt-daemon-system
 
 RUN mkdir /app && mkdir /data
 
