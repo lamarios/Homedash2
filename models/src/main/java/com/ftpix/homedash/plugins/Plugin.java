@@ -159,6 +159,17 @@ public abstract class Plugin {
      */
     protected abstract void onLastClientDisconnect();
 
+
+    /**
+     * Any data that might be useful to the settings screen of the plugin.
+     *
+     * @return anything useful, see Dynamic DNS plugin for example
+     * @param settings
+     */
+    protected Object getSettingsScreenData(Map<String, String> settings) {
+        return null;
+    }
+
     /**
      * Gets the html for a specific size
      */
@@ -264,6 +275,10 @@ public abstract class Plugin {
                 model.put("settings", settings);
             }
 
+
+            Optional.ofNullable(getSettingsScreenData(settings))
+                    .ifPresent(s -> model.put("data", s));
+
             Optional.ofNullable(getSettingsModel()).ifPresent(pluginSettingsModel -> model.put("model", pluginSettingsModel));
 
             String templateFile = "templates/" + getId() + "-settings.jade";
@@ -280,12 +295,13 @@ public abstract class Plugin {
 
     /**
      * GEts the template loader based on the developer mode value
+     *
      * @param loader
      * @return
      * @throws IOException
      */
     private final TemplateLoader getTemplateLoader(TemplateLoader loader) throws IOException {
-        if(DEV_MODE){
+        if (DEV_MODE) {
             //getting template
             Path plugin = Paths.get(".").resolve("plugins").resolve(getId()).toAbsolutePath();
 
@@ -294,12 +310,11 @@ public abstract class Plugin {
                     .findFirst();
 
 
-
-            if(optionalPath.isPresent()){
-                String basePath = optionalPath.get().toAbsolutePath().toString()+"/";
+            if (optionalPath.isPresent()) {
+                String basePath = optionalPath.get().toAbsolutePath().toString() + "/";
                 loader = new FileTemplateLoader(basePath, StandardCharsets.UTF_8.name());
             }
-        }else{
+        } else {
             loader = new ClasspathTemplateLoader();
         }
         return loader;
@@ -359,7 +374,7 @@ public abstract class Plugin {
 
             Path p = Paths.get(cacheBase + module.getId() + "/");
 
-            if(!Files.exists(p)){
+            if (!Files.exists(p)) {
                 Files.createDirectories(p);
             }
             return p;
@@ -550,7 +565,6 @@ public abstract class Plugin {
 
     /**
      * Increase the number of clients, if it's the first one, do something
-     *
      */
     public void increaseClients() {
         if (clients.incrementAndGet() == 1) {
@@ -564,8 +578,8 @@ public abstract class Plugin {
     /**
      * Decrease the number of clients, if it's the last one, do something
      */
-    public void decreaseClients(){
-        if(clients.decrementAndGet() == 0){
+    public void decreaseClients() {
+        if (clients.decrementAndGet() == 0) {
             logger().info("[{}] onLastClientDisconnect()", getId());
             onLastClientDisconnect();
         }
@@ -573,7 +587,7 @@ public abstract class Plugin {
         logger().info("[{}] has now {} clients", getId(), clients.get());
     }
 
-    protected Logger logger(){
+    protected Logger logger() {
         ThreadContext.put("logFile", getId());
         return logger;
     }
@@ -583,12 +597,12 @@ public abstract class Plugin {
      * Define endpoints that external parties can access.
      * The url will start by /external/{moduleid}/{your endpoint}
      * Follow sparkjava definition for parameters
-     *
+     * <p>
      * YOUR URL MUST START WITH /
      *
      * @return
      */
-    public List<ExternalEndPointDefinition> defineExternalEndPoints(){
-       return null;
+    public List<ExternalEndPointDefinition> defineExternalEndPoints() {
+        return null;
     }
 }

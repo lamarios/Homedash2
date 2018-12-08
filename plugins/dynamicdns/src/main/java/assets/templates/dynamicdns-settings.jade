@@ -4,3 +4,114 @@ label
     else
         input(type="checkbox", name="notifications", value="1")
     span Send notification when IP changes
+
+.form-group
+    label Set up DNS provider
+    select#providers(name="provider", onChange="providerChanged()")
+        option(value="-1") Select provider
+        each provider in data.get("object")
+            if settings && settings.containsKey("provider") && settings.get("provider").equalsIgnoreCase(provider.getClass().getCanonicalName())
+                option(value=provider.getClass().getCanonicalName(), selected) #{provider.getName()}
+            else
+                option(value=provider.getClass().getCanonicalName()) #{provider.getName()}
+#provider
+
+if data.get("settingsJson")
+    script(type="text/javascript").
+        var SETTINGS = !{data.get("settingsJson")}
+else
+    script(type="text/javascript").
+        var SETTINGS = {};
+
+script(type="text/javascript").
+
+    var PROVIDERS = !{data.get("json")};
+
+
+
+    window.onload = function(){
+        providerChanged();
+    }
+
+
+    function providerChanged() {
+
+
+        var selected = document.getElementById("providers");
+
+        var value = selected.options[selected.selectedIndex].value;
+
+
+        var html = '';
+
+        for(var i = 0; i < PROVIDERS.length; i++){
+            var provider = PROVIDERS[i];
+            if(provider.id === value){
+                html = processFields(provider.form);
+                break;
+            }
+        }
+
+        console.log('html', html);
+
+        document.getElementById('provider').innerHTML = html;
+    }
+
+    /**
+     * Generates the HTML for each field of the provider
+     * @param json
+     */
+    function processFields(json) {
+        console.log(json);
+
+        var html = [];
+
+        var parent = this;
+        $.each(json, function (index, input) {
+            switch (input.type) {
+                case 'TEXT':
+                    html.push(inputText2html(input));
+                    break;
+                case 'PASSWORD':
+                    html.push(inputPassword2html(input));
+                    break;
+            }
+        });
+
+        return html.join('');
+    }
+
+    function inputPassword2html(input) {
+        var html = [];
+        html.push('<div class="form-group">');
+        html.push('<label for="ddns-', this.moduleId, '-input-', input.name, '">', input.label,
+            '</label>');
+        html.push('<input type="password" class="form-control" "ddns-', this.moduleId, '-input-',
+            input.name, '" name="', input.name, '"')
+
+        if(SETTINGS !== 'undefined' && SETTINGS[input.name] !== 'undefined'){
+            html.push(' value="', SETTINGS[input.name], '" ');
+        }
+
+        html.push('>');
+        html.push('</div>');
+
+        return html.join('');
+    }
+
+    function inputText2html(input) {
+        var html = [];
+        html.push('<div class="form-group">');
+        html.push('<label for="ddns-', this.moduleId, '-input-', input.name, '">', input.label,
+            '</label>');
+        html.push('<input type="text" class="form-control" "ddns-', this.moduleId, '-input-',
+            input.name, '" name="', input.name, '"')
+
+        if(SETTINGS !== 'undefined' && SETTINGS[input.name] !== 'undefined'){
+            html.push(' value="', SETTINGS[input.name], '" ');
+        }
+
+        html.push('>');
+        html.push('</div>');
+        return html.join('');
+    }

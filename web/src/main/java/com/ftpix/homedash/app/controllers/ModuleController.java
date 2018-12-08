@@ -254,6 +254,8 @@ public enum ModuleController implements Controller<Module, Integer> {
                 map.put("pluginName", plugin.getDisplayName());
                 map.put("settings", PluginController.INSTANCE.getPluginSettingsHtml(plugin, flatSettings));
                 map.put("errors", errors);
+
+
                 ((Map<String, String>) map.get("errors")).forEach((k, v) -> logger.info("error {} ->{}", k, v));
                 return new ModelAndView(map, "module-settings");
             }
@@ -282,6 +284,7 @@ public enum ModuleController implements Controller<Module, Integer> {
             map.put("plugin", plugin);
             map.put("pluginName", plugin.getDisplayName());
             map.put("settings", PluginController.INSTANCE.getPluginSettingsHtml(plugin));
+
             return new ModelAndView(map, "module-settings");
         } catch (Exception e) {
             logger.error("Couldn't get module settings", e);
@@ -310,6 +313,7 @@ public enum ModuleController implements Controller<Module, Integer> {
             map.put("settings", PluginController.INSTANCE.getPluginSettingsHtml(plugin));
             map.put("pluginClass", plugin.getClass().getCanonicalName());
             map.put("pluginName", plugin.getDisplayName());
+
 
             return new ModelAndView(map, "module-settings");
         } catch (Exception e) {

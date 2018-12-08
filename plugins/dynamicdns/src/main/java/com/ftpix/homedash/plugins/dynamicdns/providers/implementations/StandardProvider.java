@@ -1,6 +1,7 @@
 package com.ftpix.homedash.plugins.dynamicdns.providers.implementations;
 
 import com.ftpix.homedash.plugins.dynamicdns.inputs.FormInput;
+import com.ftpix.homedash.plugins.dynamicdns.inputs.FormType;
 import com.ftpix.homedash.plugins.dynamicdns.providers.DynDNSProvider;
 
 import org.apache.commons.io.IOUtils;
@@ -38,11 +39,11 @@ public abstract class StandardProvider implements DynDNSProvider {
     }
 
     @Override
-    public List<FormInput> getForm() {
-        List<FormInput> inputs = new ArrayList<>();
-        inputs.add(new FormInput(USERNAME, "", "Username", FormInput.TYPE_TEXT));
-        inputs.add(new FormInput(PASSWORD, "", "Password", FormInput.TYPE_PASSWORD));
-        inputs.add(new FormInput(HOSTNAME, "", "Hostname", FormInput.TYPE_TEXT));
+    public ArrayList<FormInput> getForm() {
+        ArrayList<FormInput> inputs = new ArrayList<>();
+        inputs.add(new FormInput(USERNAME, "", "Username", FormType.TEXT));
+        inputs.add(new FormInput(PASSWORD, "", "Password", FormType.PASSWORD));
+        inputs.add(new FormInput(HOSTNAME, "", "Hostname", FormType.TEXT));
 
         return inputs;
     }
@@ -97,7 +98,7 @@ public abstract class StandardProvider implements DynDNSProvider {
 
     @Override
     public String getId() {
-        return getName() + hostname + username;
+        return this.getClass().getCanonicalName();
     }
 
     @Override

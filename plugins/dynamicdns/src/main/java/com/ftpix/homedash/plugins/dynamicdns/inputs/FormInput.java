@@ -1,12 +1,15 @@
 package com.ftpix.homedash.plugins.dynamicdns.inputs;
 
+import com.google.gson.annotations.Expose;
+
 public class FormInput {
+    @Expose
     private String name, values, label;
-    private int type;
-    public static final int TYPE_TEXT = 0, TYPE_PASSWORD = 1, TYPE_CHECKBOX = 2, TYPE_SELECT = 3;
+    @Expose
+    private FormType type;
 
 
-    public FormInput(String name, String values, String label, int type) {
+    public FormInput(String name, String values, String label, FormType type) {
         super();
         this.name = name;
         this.values = values;
@@ -30,14 +33,6 @@ public class FormInput {
         this.values = values;
     }
 
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
-
     public String getLabel() {
         return label;
     }
@@ -46,5 +41,11 @@ public class FormInput {
         this.label = label;
     }
 
+    public FormType getType() {
+        return type;
+    }
 
+    public void setType(FormType type) {
+        this.type = type;
+    }
 }
