@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -34,6 +35,10 @@ public class HomeDashTemplateEngine extends TemplateEngine {
             this.configuration = new JadeConfiguration();
             this.configuration.setTemplateLoader(new SparkClasspathTemplateLoader(templateRoot));
         }
+
+        Map<String, Object> shared = new HashMap<>();
+        shared.put("STATIC_CONFIG", Constants.STATIC_CONFIG);
+        this.configuration.setSharedVariables(shared);
     }
 
     public HomeDashTemplateEngine(JadeConfiguration configuration) {

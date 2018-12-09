@@ -71,6 +71,7 @@ body.pages {
   .name {
     color: #222;
   }
+
   .layout {
     color: #999;
     font-size: 14px;
@@ -79,6 +80,7 @@ body.pages {
 
 #layout-wrapper {
   position: relative;
+
   .loading {
     position: absolute;
     top: 0;
@@ -89,6 +91,7 @@ body.pages {
     text-align: center;
     z-index: 9;
     padding-top: 50px;
+
     .loader {
       margin: auto;
     }
@@ -196,8 +199,10 @@ body.pages {
         transition: all @transition-speed !important;
         z-index: 99;
       }
+
       .module-settings {
         display: none;
+
         .module-settings-icon {
           padding-top: 5px;
           display: block;
@@ -259,7 +264,7 @@ body.pages {
 
         .module-resize-icon.disabled {
           pointer-events: none;
-          opacity:0.5;
+          opacity: 0.5;
         }
 
         .dropdown-menu {
@@ -275,10 +280,13 @@ body.pages {
           }
         }
       }
+
       // module-settings
     }
+
     // module
   }
+
   // ul
 }
 
@@ -316,6 +324,7 @@ body.pages {
   .gridster {
     //background-color: fadeout(darken(@accentColor, 10%), 10%);
     border: 1px dashed @accentColor;
+
     .gridster-item {
       @scale-size: 0.8;
       -ms-transform: scale(@scale-size); /* IE 9 */
@@ -329,6 +338,7 @@ body.pages {
         }
       }
     }
+
     //gridster-item
     .gridster-item.selected {
       @scale-size: 1;
@@ -353,6 +363,7 @@ body.pages {
 //gridster
 
 ///settings
+@settings-bottom: -261px;
 
 #settings {
 
@@ -369,7 +380,7 @@ body.pages {
   }
 
   position: fixed;
-  bottom: -215px;
+  bottom: -261px;
   right: 0;
   left: 0;
   font-size: 16px;
@@ -408,6 +419,7 @@ body.pages {
       a:hover {
         text-decoration: none;
       }
+
       .fa {
         color: lighten(@accentColor, 20%);
       }
@@ -450,10 +462,7 @@ body.pages {
 
 @keyframes showSettings {
   0% {
-    bottom: -185px;
-  }
-  70% {
-    bottom: 20px;
+    bottom: @settings-bottom;
   }
   100% {
     bottom: 0;
@@ -485,6 +494,7 @@ body.pages {
     background-color: darken(@accentColor, 20%);
     font: 25px FontAwesome;
   }
+
   .icon:before {
     position: absolute;
     top: 15px;
@@ -541,3 +551,5 @@ body.pages {
 #layout-edit-mode.layout-edit {
   bottom: 0;
 }
+
+

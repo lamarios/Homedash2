@@ -19,7 +19,7 @@ block content
             .layout-name.col-sm-4
                 p
                     strong.name #{layout.getName()}&nbsp;
-                    if layout.getId() > 3
+                    if layouts.size() > 1
                         a(class="rename")
                             button.btn.btn-xs.btn-primary
                                 i.fa.fa-pencil
@@ -33,20 +33,24 @@ block content
                 p
                     | Min. window width:&nbsp;
                     span.screen-width
-                if layout.getId() > 3
-                    p
-                        a(class="remove")
-                            button.btn.btn-primary
-                                i.fa.fa-minus
-                        a(class="add")
-                            button.btn.btn-primary
-                                i.fa.fa-plus
+                p
+                    a(class="remove")
+                        button.btn.btn-primary
+                            i.fa.fa-minus
+                    a(class="add")
+                        button.btn.btn-primary
+                            i.fa.fa-plus
         hr
 
     button#add-layout.btn.btn-primary
         i.fa.fa-plus
         | Add layout
 
+    if STATIC_CONFIG
+        script(type="text/javascript").
+            window.onload = function(){
+                $('.static-warning').show();
+            }
 
 
 

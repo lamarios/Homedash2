@@ -29,4 +29,9 @@ block content
             .col-md-12
                 input(type="submit", class="btn btn-primary", value="Save")
 
+    if STATIC_CONFIG
+        script(type="text/javascript").
+            window.onload = function(){
+                $('.static-warning').show();
+            }
 block scripts

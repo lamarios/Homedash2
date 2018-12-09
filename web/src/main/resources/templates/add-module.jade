@@ -19,5 +19,10 @@ block content
                 .add-button
                     a(href="/add-module/#{plugin.getClass().getCanonicalName()}", class="btn btn-primary") Add #{plugin.getDisplayName()}
                 hr
+    if STATIC_CONFIG
+        script(type="text/javascript").
+            window.onload = function(){
+                $('.static-warning').show();
+            }
 block scripts
     

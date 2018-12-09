@@ -301,6 +301,12 @@ function deleteModule(moduleId) {
 function toggleLayoutEditMode() {
     $('#layout, #layout-edit-mode').toggleClass('layout-edit');
     $('#settings').removeClass('showing');
+
+    if(STATIC_CONFIG && $('#layout').hasClass('layout-edit')){
+        $('.static-warning').show();
+    }else{
+        $('.static-warning').hide();
+    }
 }
 
 function rootElement(moduleId) {

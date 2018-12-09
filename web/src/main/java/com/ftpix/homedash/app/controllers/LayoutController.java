@@ -81,7 +81,7 @@ public enum LayoutController implements Controller<Layout, Integer> {
         int id = Integer.parseInt(req.params("id"));
 
         Layout layout = get(id);
-        if (layout != null && layout.getId() > 3) {
+        if (layout != null && DB.LAYOUT_DAO.queryForAll().size() >= 2) {
             delete(layout);
 
             return true;
@@ -103,7 +103,7 @@ public enum LayoutController implements Controller<Layout, Integer> {
         String newName = req.queryParams("name");
 
         Layout layout = get(id);
-        if (layout != null && layout.getId() > 3 && newName.length() > 0) {
+        if (layout != null && newName.length() > 0) {
 
             layout.setName(newName);
 

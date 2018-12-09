@@ -3,12 +3,19 @@ package com.ftpix.homedash.app.controllers;
 
 import com.ftpix.homedash.app.Constants;
 import com.ftpix.homedash.db.DB;
-import com.ftpix.homedash.models.Settings;
+import com.ftpix.homedash.models.*;
+import com.ftpix.homedash.models.Module;
+import com.ftpix.homedash.models.export.Export;
+import com.ftpix.homedash.models.export.LayoutExport;
+import com.ftpix.homedash.models.export.ModuleExport;
+import com.ftpix.homedash.models.export.PageExport;
 import com.ftpix.homedash.notifications.Notifications;
 import com.ftpix.homedash.notifications.implementations.PushBullet;
 import com.ftpix.homedash.notifications.implementations.PushOver;
 import com.ftpix.homedash.notifications.implementations.Pushalot;
 import com.ftpix.homedash.utils.HomeDashTemplateEngine;
+import com.google.gson.Gson;
+import com.j256.ormlite.table.TableUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +26,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by gz on 01-Jun-16.
@@ -46,6 +54,7 @@ public enum SettingsController implements Controller<Settings, String> {
 
         Spark.post("/login", this::login, new HomeDashTemplateEngine());
 
+        Spark.get("/export-config", this::exportConfig);
 
         /**
          * Loging out !
@@ -57,6 +66,159 @@ public enum SettingsController implements Controller<Settings, String> {
             res.redirect("/");
             return null;
         });
+    }
+
+    /**
+     * Export Homedash config and plugin setup as a json to be used as a environment variable
+     *
+     * @param request  the http request
+     * @param response the http response
+     * @return the configuration as JSON
+     * @throws SQLException
+     */
+    private String exportConfig(Request request, Response response) throws SQLException {
+
+        Export export = new Export();
+
+        DB.PAGE_DAO.queryForAll()
+                .stream()
+                .map(PageExport::fromModel)
+                .forEach(export.boards::add);
+
+        DB.LAYOUT_DAO.queryForAll()
+                .stream()
+                .map(LayoutExport::fromModel)
+                .forEach(export.layouts::add);
+
+        DB.MODULE_DAO.queryForAll()
+                .stream()
+                .map(ModuleExport::fromModel)
+                .forEach(export.modules::add);
+
+        export.settings = DB.SETTINGS_DAO.queryForAll()
+                .stream()
+                .collect(Collectors.toMap(Settings::getName, Settings::getValue));
+
+        Gson gson = new Gson();
+
+
+        response.header("Content-type", "application/json");
+        return gson.toJson(export);
+    }
+
+
+    /**
+     * Imports a JSON as homedash config
+     *
+     * @param json
+     * @return
+     */
+    public boolean importConfig(String json) throws SQLException {
+
+        logger.info("Importing config:\n{}", json);
+
+        Export export = new Gson().fromJson(json, Export.class);
+
+        //delete all settings
+        DB.clearTable(Settings.class);
+        export.settings.forEach((n, v) -> {
+            Settings setting = new Settings();
+            setting.setName(n);
+            setting.setValue(v);
+
+            try {
+                DB.SETTINGS_DAO.createIfNotExists(setting);
+            } catch (SQLException e) {
+                logger.error("Error while creating setting", e);
+                throw new RuntimeException(e);
+            }
+        });
+
+        DB.clearTable(Page.class);
+        export.boards
+                .stream()
+                .map(PageExport::toModel)
+                .forEach(t -> {
+                    try {
+                        DB.PAGE_DAO.create(t);
+                    } catch (SQLException e) {
+                        logger.error("Error while creating board", e);
+                        throw new RuntimeException(e);
+                    }
+                });
+
+        DB.clearTable(Layout.class);
+        export.layouts
+                .stream()
+                .map(LayoutExport::toModel)
+                .forEach(l -> {
+                    try {
+                        DB.LAYOUT_DAO.create(l);
+                    } catch (SQLException e) {
+                        logger.error("Error while creating layout", e);
+                        throw new RuntimeException(e);
+                    }
+                });
+
+        DB.clearTable(Module.class);
+        DB.clearTable(ModuleSettings.class);
+        DB.clearTable(ModuleLayout.class);
+        export.modules
+                .forEach(e -> {
+
+                    try {
+                        Module m = ModuleExport.toModel(e);
+
+                        DB.MODULE_DAO.create(m);
+
+                        //settings
+                        e.settings.forEach((n, v) -> {
+                            ModuleSettings ms = new ModuleSettings();
+                            ms.setModule(m);
+                            ms.setName(n);
+                            ms.setValue(v);
+
+                            try {
+                                DB.MODULE_SETTINGS_DAO.create(ms);
+                                logger.info("created setting id [{}] [{}] for module [{}]", ms.getId(), ms.getName(), m.getId());
+                            } catch (SQLException e1) {
+                                logger.error("Error while creating module setting", e1);
+                                throw new RuntimeException(e1);
+                            }
+                        });
+
+                        e.layouts
+                                .forEach(l -> {
+                                    ModuleLayout ml = new ModuleLayout();
+                                    ml.setSize(l.size);
+                                    ml.setX(l.x);
+                                    ml.setY(l.y);
+
+                                    Layout layout = new Layout();
+                                    layout.setId(l.layoutId);
+
+                                    ml.setLayout(layout);
+                                    ml.setModule(m);
+
+                                    try {
+                                        DB.MODULE_LAYOUT_DAO.create(ml);
+                                        logger.info("created module layout id[{}]  for module [{}]", ml.getId(), m.getId());
+                                    } catch (SQLException e1) {
+
+                                        logger.error("Error while creating module layout", e1);
+                                        throw new RuntimeException(e1);
+                                    }
+                                });
+
+                    } catch (SQLException ex) {
+                        logger.error("Error while creating module", ex);
+                        throw new RuntimeException(ex);
+                    }
+                });
+
+
+        Constants.STATIC_CONFIG = true;
+        return true;
     }
 
 

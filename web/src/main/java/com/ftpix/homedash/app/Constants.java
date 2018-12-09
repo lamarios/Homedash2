@@ -25,6 +25,7 @@ public class Constants {
     public final static boolean DEV_MODE;
     public final static boolean SECURE;
     public static final String KEY_STORE, KEY_STORE_PASS;
+    public static boolean STATIC_CONFIG = false;
 
     static {
 

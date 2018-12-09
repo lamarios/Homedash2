@@ -34,6 +34,8 @@ public class DB {
 
     private static Logger logger = LogManager.getLogger();
 
+    private static ConnectionSource connectionSource;
+
     static {
 
         try {
@@ -42,7 +44,7 @@ public class DB {
 
             // this uses h2 by default but change to match your database
             // create a connection source to our database
-            ConnectionSource connectionSource = new JdbcConnectionSource(databaseUrl, "sa", "");
+            connectionSource = new JdbcConnectionSource(databaseUrl, "sa", "");
 
             logger.info("Creating Module DAO and tables if it doesn't exist");
             MODULE_DAO = DaoManager.createDao(connectionSource, Module.class);
@@ -89,6 +91,11 @@ public class DB {
             logger.info("Error while setting up ORM", e);
             System.exit(0);
         }
+    }
+
+
+    public static boolean clearTable(Class dataClass) throws SQLException {
+        return TableUtils.clearTable(connectionSource, dataClass) >= 0;
     }
 
 

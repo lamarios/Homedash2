@@ -27,6 +27,7 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
 
+import javax.swing.text.html.Option;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -81,8 +82,7 @@ public class App {
                     logger.info("{} -> {}", req.requestMethod(), req.url());
 
 
-
-                    if(List.of("/css/", "/js/", "/fonts/").stream().anyMatch(s-> req.pathInfo().startsWith(s))){
+                    if (List.of("/css/", "/js/", "/fonts/").stream().anyMatch(s -> req.pathInfo().startsWith(s))) {
                         //skipping any processing on resources
                         return;
                     }
@@ -92,7 +92,23 @@ public class App {
                     }
                 });
 
-                createDefaultData();
+
+                Optional.ofNullable(System.getenv("CONFIG"))
+                        .map(String::trim)
+                        .filter(s -> s.length() > 0)
+                        .ifPresent(json -> {
+                            try {
+                                SettingsController.INSTANCE.importConfig(json);
+                            } catch (SQLException e) {
+                                logger.error("Couldn't load JSON config, make sure it's correct and restart application", e);
+                                System.exit(1);
+                            }
+                        });
+
+                if (!Constants.STATIC_CONFIG) {
+                    createDefaultData();
+                }
+
                 Endpoints.define();
 
 
@@ -138,7 +154,7 @@ public class App {
 
         sb.append("# random string used to authentication and other hashing pruposes");
         sb.append("\n");
-        sb.append("salt = "+generatedString);
+        sb.append("salt = " + generatedString);
         sb.append("\n");
         sb.append("\n");
 
@@ -247,34 +263,36 @@ public class App {
      * Create default data like layouts and the main page
      */
     public static void createDefaultData() throws SQLException {
-        logger.info("Creating first page if it doesn't exist");
-        Page page = new Page();
-        page.setId(1);
-        page.setName("Main");
+        if (DB.LAYOUT_DAO.queryForAll().isEmpty()) {
+            logger.info("Creating first page if it doesn't exist");
+            Page page = new Page();
+            page.setId(1);
+            page.setName("Main");
 
-        DB.PAGE_DAO.createIfNotExists(page);
+            DB.PAGE_DAO.createIfNotExists(page);
 
-        logger.info("Creating the 3 default layouts");
-        Layout desktop = new Layout();
-        desktop.setId(1);
-        desktop.setMaxGridWidth(11);
-        desktop.setName("Desktop");
+            logger.info("Creating the 3 default layouts");
+            Layout desktop = new Layout();
+            desktop.setId(1);
+            desktop.setMaxGridWidth(11);
+            desktop.setName("Desktop");
 
-        DB.LAYOUT_DAO.createOrUpdate(desktop);
+            DB.LAYOUT_DAO.createOrUpdate(desktop);
 
-        Layout tablet = new Layout();
-        tablet.setId(2);
-        tablet.setMaxGridWidth(8);
-        tablet.setName("Tablet");
+            Layout tablet = new Layout();
+            tablet.setId(2);
+            tablet.setMaxGridWidth(8);
+            tablet.setName("Tablet");
 
-        DB.LAYOUT_DAO.createOrUpdate(tablet);
+            DB.LAYOUT_DAO.createOrUpdate(tablet);
 
-        Layout mobile = new Layout();
-        mobile.setId(3);
-        mobile.setMaxGridWidth(3);
-        mobile.setName("Mobile");
+            Layout mobile = new Layout();
+            mobile.setId(3);
+            mobile.setMaxGridWidth(3);
+            mobile.setName("Mobile");
 
-        DB.LAYOUT_DAO.createOrUpdate(mobile);
+            DB.LAYOUT_DAO.createOrUpdate(mobile);
+        }
 
     }
 

@@ -2,7 +2,7 @@
 
 
 APP=/app
-CONFIG=/app/homedash.properties
+CONFIG_FILE=/app/homedash.properties
 
 #####
 # user stuff
@@ -43,8 +43,8 @@ else
 fi
 
 
-rm ${CONFIG}
-touch ${CONFIG}
+rm ${CONFIG_FILE}
+touch ${CONFIG_FILE}
 
 if [ -z ${JAVA_OPTS+x} ]; then
     JAVA_OPTS=""
@@ -65,48 +65,53 @@ else
 
     ls ${APP}
     #wrting config
-    echo "port=4567" >> ${CONFIG}
+    echo "port=4567" >> ${CONFIG_FILE}
 
-    echo "cache_path = cache/" >> ${CONFIG}
-    echo "db_path = /data/homedash" >> ${CONFIG}
+    echo "cache_path = cache/" >> ${CONFIG_FILE}
+    echo "db_path = /data/homedash" >> ${CONFIG_FILE}
 
-    echo "salt = ${SALT}" >> $CONFIG
+    echo "salt = ${SALT}" >> $CONFIG_FILE
 
 
 
     if [ -z ${SECURE+x} ]; then
-        echo "secure = false" >> ${CONFIG}
+        echo "secure = false" >> ${CONFIG_FILE}
     else
-        echo "secure = ${SECURE}" >> ${CONFIG}
+        echo "secure = ${SECURE}" >> ${CONFIG_FILE}
         # Required only if secure = true, more help: https://uwesander.de/using-your-ssl-certificate-for-your-spark-web-application.html
         if [ -z ${KEY_STORE+x} ]; then
             echo "No key store set"
         else
-            echo "key_store = ${KEY_STORE}" >> ${CONFIG}
+            echo "key_store = ${KEY_STORE}" >> ${CONFIG_FILE}
         fi
 
         if [ -z ${KEY_STORE_PASS+x} ]; then
             echo "No key store pass set"
         else
-            echo "key_store_pass = ${KEY_STORE_PASS}" >> ${CONFIG}
+            echo "key_store_pass = ${KEY_STORE_PASS}" >> ${CONFIG_FILE}
          fi
+    fi
+
+
+    if [ -z ${CONFIG+x} ]; then
+        CONFIG="";
     fi
 
     echo "######################################"
     echo "STARTING HOMEDASH"
-    cat ${CONFIG}
+    cat ${CONFIG_FILE}
     echo "User: ${USER}"
     echo "Group: ${GROUP}"
+    echo "Config: ${CONFIG}"
     echo "######################################"
-
 
     cd $APP
     chown -R ${USER}:${GROUP} $APP /data
     if [ "${USER}" != "root" ]; then
-        runuser -l ${USER} -c "java ${JAVA_OPTS} -Dconfig.file=$CONFIG -jar homedash.jar"
+        runuser -l ${USER} -c "CONFIG='${CONFIG}' java ${JAVA_OPTS} -Dconfig.file=$CONFIG_FILE -jar homedash.jar"
 
     else
-        java ${JAVA_OPTS} -Dconfig.file=$CONFIG -jar homedash.jar
+       CONFIG="${CONFIG}" java ${JAVA_OPTS} -Dconfig.file=${CONFIG_FILE} -jar homedash.jar
     fi
 fi
 

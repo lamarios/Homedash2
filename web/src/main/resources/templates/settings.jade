@@ -124,6 +124,11 @@ block content
         div
             button(type="submit", class="btn btn-primary") Save
                             
+    if STATIC_CONFIG
+        script(type="text/javascript").
+            window.onload = function(){
+                $('.static-warning').show();
+            }
 block scripts
     script(src="/js/settings.js")
 

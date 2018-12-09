@@ -16,6 +16,14 @@ html(lang="en")
 
         block css
     body
+        script(type="text/javascript").
+            STATIC_CONFIG= #{com.ftpix.homedash.app.Constants.STATIC_CONFIG};
+
+        .static-warning
+            | The application is set up using environment variable, any change will be reset when the application restarts. You can
+            a(href="/export-config")  export the configuration
+            |  once you're done with your changes to replace the CONFIG environment variable.
+
         #notification
             .icon
             .message
