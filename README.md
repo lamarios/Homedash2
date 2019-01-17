@@ -4,7 +4,7 @@
 
 ### Build
 
-1. Java SDK 1.11
+1. Java SDK 11
 2. Maven
 
 ### Run
