@@ -28,7 +28,7 @@ public class SonarrTvPlugin extends Plugin {
     private final String IMAGE_PATH = "images/";
     private String url, apiKey;
     private SonarrApi api;
-
+    private final static String COMMAND_SEARCH = "search", COMMAND_QUALITIES = "qualities", COMMAND_FOLDERS = "folders", COMMAND_ADD_SHOW="add-show";
 
     @Override
     public String getId() {
@@ -62,7 +62,7 @@ public class SonarrTvPlugin extends Plugin {
 
     @Override
     public String[] getSizes() {
-        return new String[]{ModuleLayout.SIZE_2x2, "3x3", "4x4", "3x1", ModuleLayout.KIOSK};
+        return new String[]{ModuleLayout.SIZE_2x2, "3x3", "4x4", "3x1", ModuleLayout.FULL_SCREEN, ModuleLayout.KIOSK};
     }
 
     @Override
@@ -72,7 +72,36 @@ public class SonarrTvPlugin extends Plugin {
 
     @Override
     public WebSocketMessage processCommand(String command, String message, Object extra) {
-        return null;
+        WebSocketMessage response = new WebSocketMessage();
+        response.setCommand(command);
+        try {
+            switch (command) {
+                case COMMAND_SEARCH:
+                    String results = api.searchSeries(message);
+                    response.setMessage(results);
+                    break;
+                case COMMAND_QUALITIES:
+                    response.setMessage(api.getQualities());
+                    break;
+                case COMMAND_FOLDERS:
+                    response.setMessage(api.getFolders());
+                    break;
+                case COMMAND_ADD_SHOW:
+                    if(api.addShow(message)){
+                     response.setCommand(WebSocketMessage.COMMAND_SUCCESS);
+                     response.setMessage("Show added successfully");
+                    }else{
+                        response.setCommand(WebSocketMessage.COMMAND_ERROR);
+                        response.setMessage("Couldn't add show");
+                    }
+            }
+        } catch (Exception e) {
+            logger().error("Couldn't process command", e);
+            response.setCommand(WebSocketMessage.COMMAND_ERROR);
+            response.setMessage(e.getMessage());
+        }
+
+        return response;
     }
 
     @Override
@@ -95,7 +124,11 @@ public class SonarrTvPlugin extends Plugin {
 
     @Override
     public int getRefreshRate(String size) {
-        return ONE_HOUR;
+        if (size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)) {
+            return Plugin.NEVER;
+        } else {
+            return ONE_HOUR;
+        }
     }
 
     @Override

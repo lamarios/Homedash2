@@ -1,6 +1,7 @@
 package com.ftpix.homedash.plugins.api;
 
 
+import com.ftpix.homedash.plugins.api.models.SearchResults;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -12,17 +13,16 @@ import com.ftpix.homedash.plugins.api.models.SonarrCalendar;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
+import org.apache.commons.jexl2.parser.ASTStringLiteral;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.jetty.util.UrlEncoded;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 /**
@@ -154,6 +154,100 @@ public class SonarrApi {
         return true;
     }
 
+
+    /**
+     * Search for series to add
+     *
+     * @param query
+     * @return
+     * @throws SonarrUnauthorizedException
+     * @throws IOException
+     */
+    public String searchSeries(String query) throws SonarrUnauthorizedException, IOException {
+        logger.info("[Sonarr] Calling /series/lookup");
+
+        query = URLEncoder.encode(query, StandardCharsets.UTF_8.name());
+
+        String url = this.url + "/series/lookup?term=" + query + "&apiKey=" + this.apiKey;
+        try {
+            String response = Unirest.get(url).asString().getBody();
+            logger.info("response: [{}]", response);
+
+            if (response.contains("error")) {
+                logger.info("Not authorized");
+                throw new SonarrUnauthorizedException();
+            }
+
+            return response;
+        } catch (UnirestException e) {
+            logger.info("Error:" + e.getMessage());
+            throw new IOException();
+        }
+    }
+
+    public String getQualities() throws SonarrUnauthorizedException, IOException {
+        String url = this.url + "/profile?apiKey=" + this.apiKey;
+        try {
+            String response = Unirest.get(url).asString().getBody();
+            logger.info("response: [{}]", response);
+
+            if (response.contains("error")) {
+                logger.info("Not authorized");
+                throw new SonarrUnauthorizedException();
+            }
+
+            return response;
+        } catch (UnirestException e) {
+            logger.info("Error:" + e.getMessage());
+            throw new IOException();
+        }
+    }
+
+
+    public String getFolders() throws SonarrUnauthorizedException, IOException {
+        String url = this.url + "/rootfolder?apiKey=" + this.apiKey;
+        try {
+            String response = Unirest.get(url).asString().getBody();
+            logger.info("response: [{}]", response);
+
+            if (response.contains("error")) {
+                logger.info("Not authorized");
+                throw new SonarrUnauthorizedException();
+            }
+
+            return response;
+        } catch (UnirestException e) {
+            logger.info("Error:" + e.getMessage());
+            throw new IOException();
+        }
+    }
+
+
+    /**
+     * adds a tv show to sonnarr
+     * @param showJson the show JSON no manipulation is required so we keep it as is
+     * @return true if everything goes right
+     * @throws IOException
+     * @throws SonarrUnauthorizedException
+     */
+    public boolean addShow(String showJson) throws IOException, SonarrUnauthorizedException {
+        String url = this.url + "/series?apiKey=" + this.apiKey;
+
+        try {
+            String response = Unirest.post(url).body(showJson).asString().getBody();
+
+
+            if (response.contains("error")) {
+                logger.info("Not authorized");
+                throw new SonarrUnauthorizedException();
+            }
+
+            return true;
+        } catch (UnirestException e) {
+            logger.info("Error:" + e.getMessage());
+            throw new IOException();
+        }
+    }
 }
 
 

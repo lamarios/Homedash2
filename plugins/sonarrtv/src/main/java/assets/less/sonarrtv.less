@@ -55,6 +55,7 @@
   .buttons {
     position: absolute;
     top: 5px;
+
     a {
       color: white;
 
@@ -126,7 +127,7 @@
   }
 }
 
-.sonarrtv.size-3x3, .sonarrtv.size-4x4 , .sonarrtv.size-kiosk{
+.sonarrtv.size-3x3, .sonarrtv.size-4x4, .sonarrtv.size-kiosk {
   .show-info {
     bottom: 0;
     left: 0;
@@ -148,17 +149,55 @@
 }
 
 .sonarrtv.size-kiosk {
-  .buttons{
+  .buttons {
     display: none;
   }
 
-  .show-info{
-    .show-title{
+  .show-info {
+    .show-title {
       font-size: 5vh !important;
     }
 
-    .show-date{
+    .show-date {
       font-size: 3vh !important;
     }
   }
+}
+
+
+.sonarrtv.size-full-screen {
+
+  background-color: white;
+  color: black;
+
+  .show {
+    .banner {
+      border-radius: 10px;
+      margin: 10px;
+      height: 100px;
+      width: 100%;
+      background-color: black;
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      cursor: pointer;
+
+      .title {
+        border-radius: 10px;
+        height: 100%;
+        width: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        font-size: 25px;
+        padding: 20px;
+      }
+    }
+
+    .info{
+      display: none;
+      padding: 0 30px;
+    }
+
+  }
+
 }

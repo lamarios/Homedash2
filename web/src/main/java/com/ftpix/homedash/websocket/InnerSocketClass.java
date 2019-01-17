@@ -4,6 +4,7 @@ import com.ftpix.homedash.app.PluginModuleMaintainer;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
 import com.google.gson.Gson;
+import com.kenai.jnr.x86asm.SIZE;
 import io.gsonfire.GsonFireBuilder;
 import org.eclipse.jetty.websocket.api.Session;
 
@@ -99,37 +100,41 @@ public class InnerSocketClass {
      * Refresh all the modules
      */
     protected void refreshModule() {
-        while (refresh) {
-            logger.info("Refreshing module");
-            try {
-
+        try {
+            Plugin plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(this.moduleId);
+            while (refresh && plugin.getRefreshRate(SIZE) > Plugin.NEVER) {
+                logger.info("Refreshing module");
                 try {
-                    logger.info("Refreshing plugin [{}]", moduleId);
 
-                    WebSocketMessage response = MainWebSocket.refreshSingleModule(this.moduleId, SIZE);
+                    try {
+                        logger.info("Refreshing plugin [{}]", moduleId);
 
-                    final String jsonResponse = gson.toJson(response);
-                    logger.info("session:{}, response:[{}]", session, jsonResponse);
+                        WebSocketMessage response = MainWebSocket.refreshSingleModule(this.moduleId, SIZE);
 
-                    boolean done = this.session.getRemote().sendStringByFuture(jsonResponse).isDone();
-                    logger.info("Sending to client {}, isdone ? {}", jsonResponse, done);
+                        final String jsonResponse = gson.toJson(response);
+                        logger.info("session:{}, response:[{}]", session, jsonResponse);
+
+                        boolean done = this.session.getRemote().sendStringByFuture(jsonResponse).isDone();
+                        logger.info("Sending to client {}, isdone ? {}", jsonResponse, done);
+                    } catch (Exception e) {
+                        logger.error("Errror while sending response", e);
+                    }
+
+
                 } catch (Exception e) {
-                    logger.error("Errror while sending response", e);
+                    logger.error("Can't refresh module #" + moduleId, e);
                 }
 
+                try {
+                    Thread.sleep(plugin.getRefreshRate(SIZE) * 1000);
+                    time += plugin.getRefreshRate(SIZE);
+                } catch (Exception e) {
+                    logger.error("Error while sleeping", e);
+                }
 
-            } catch (Exception e) {
-                logger.error("Can't refresh module #" + moduleId, e);
             }
-
-            try {
-                Plugin plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(this.moduleId);
-                Thread.sleep(plugin.getRefreshRate(SIZE) * 1000);
-                time += plugin.getRefreshRate(SIZE);
-            } catch (Exception e) {
-                logger.error("Error while sleeping", e);
-            }
-
+        } catch (Exception e) {
+            logger.error("Something went wrong", e);
         }
     }
 
