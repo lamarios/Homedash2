@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>2019.01.1</version>
+        <version>2019.01.2</version>
     </parent>
 
 
@@ -199,7 +199,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>2019.01.1</version>
+            <version>2019.01.2</version>
         </dependency>
 
         <dependency>
@@ -373,8 +373,7 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        Fix issue where full screen plugins with refresh rate of NEVER would actually refresh as fast as possible
-                        Add full screen mode for sonarr plugin to allow to add TV shows
+                        Update sherdog plugin with latest sherdog-parser that fixes issues with https
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>
