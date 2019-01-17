@@ -9,7 +9,7 @@
 
 ### Run
 
-1. Java 10
+1. Java 11
 
 ## How to build
 
