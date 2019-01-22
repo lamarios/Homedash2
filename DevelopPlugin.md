@@ -1,4 +1,4 @@
-# Developping a plugin for HomeDash
+# Developing a plugin for HomeDash
 
 Developing a module for HomeDash is pretty simple, you just need to follow a specific file and folder structure
 
