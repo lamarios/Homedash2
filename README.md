@@ -14,7 +14,7 @@
 ## How to build
 
 ```
-mvn clean compile install package
+mvn clean  install
 ```
 
 The compiled application will be under web/target/Homedash-{version}.jar
