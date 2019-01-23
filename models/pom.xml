@@ -70,6 +70,11 @@
             <artifactId>spark-core</artifactId>
             <version>${spark.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.sparkjava</groupId>
+            <artifactId>spark-template-jade</artifactId>
+            <version>${spark.template.version}</version>
+        </dependency>
 
     </dependencies>
 </project>

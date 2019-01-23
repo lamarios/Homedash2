@@ -1,5 +1,6 @@
 package com.ftpix.homedash.plugins;
 
+import com.ftpix.homedash.Utils.HomeDashClassPathTemplateLoader;
 import com.ftpix.homedash.models.*;
 import com.ftpix.homedash.models.Module;
 import com.google.gson.Gson;
@@ -176,14 +177,7 @@ public abstract class Plugin {
     public final String getView(String size) throws JadeException, IOException {
 
 
-        JadeConfiguration config = new JadeConfiguration();
-
-        TemplateLoader loader = null;
-        loader = getTemplateLoader(loader);
-
-
-        config.setTemplateLoader(loader);
-
+        JadeConfiguration config = defaultTemplateConfig();
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("module", module);
 
@@ -192,6 +186,22 @@ public abstract class Plugin {
         JadeTemplate template = config.getTemplate("templates/" + getId() + "-" + size + ".jade");
 
         return config.renderTemplate(template, model);
+    }
+
+
+    /**
+     * Gets the jadeconfiguration to get templates
+     * @return
+     * @throws IOException
+     */
+    private JadeConfiguration defaultTemplateConfig() throws IOException {
+        JadeConfiguration config = new JadeConfiguration();
+
+        TemplateLoader loader = getTemplateLoader(null);
+
+        config.setTemplateLoader(loader);
+
+        return config;
     }
 
     /**
@@ -260,14 +270,7 @@ public abstract class Plugin {
 
 
             logger().info("Getting settings for [{}]", this.getId());
-            JadeConfiguration config = new JadeConfiguration();
-
-            TemplateLoader loader = null;
-
-
-            loader = getTemplateLoader(loader);
-
-            config.setTemplateLoader(loader);
+            JadeConfiguration config = defaultTemplateConfig();
 
             Map<String, Object> model = new HashMap<String, Object>();
 
@@ -315,7 +318,7 @@ public abstract class Plugin {
                 loader = new FileTemplateLoader(basePath, StandardCharsets.UTF_8.name());
             }
         } else {
-            loader = new ClasspathTemplateLoader();
+            loader = new HomeDashClassPathTemplateLoader();
         }
         return loader;
     }

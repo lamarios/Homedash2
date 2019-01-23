@@ -22,7 +22,7 @@
         <main.class>com.ftpix.homedash.app.App</main.class>
         <native.dir>lib/native</native.dir>
         <project.build.scriptSourceDirectory>startup-scripts</project.build.scriptSourceDirectory>
-        <docker.skip>false</docker.skip>
+        <docker.skip>true</docker.skip>
         <docker.image.name>gonzague/homedash</docker.image.name>
     </properties>
 
@@ -64,7 +64,7 @@
         <dependency>
             <groupId>com.sparkjava</groupId>
             <artifactId>spark-template-jade</artifactId>
-            <version>2.7.1</version>
+            <version>${spark.template.version}</version>
         </dependency>
 
         <dependency>

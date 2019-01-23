@@ -1,12 +1,12 @@
 package com.ftpix.homedash.utils;
 
+import com.ftpix.homedash.Utils.HomeDashClassPathTemplateLoader;
 import com.ftpix.homedash.app.Constants;
 import de.neuland.jade4j.JadeConfiguration;
 import de.neuland.jade4j.template.FileTemplateLoader;
 import de.neuland.jade4j.template.JadeTemplate;
 import spark.ModelAndView;
 import spark.TemplateEngine;
-import spark.template.jade.loader.SparkClasspathTemplateLoader;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -33,7 +33,7 @@ public class HomeDashTemplateEngine extends TemplateEngine {
             this.configuration.setTemplateLoader(new FileTemplateLoader(resolve.toString() + "/", StandardCharsets.UTF_8.name()));
         } else {
             this.configuration = new JadeConfiguration();
-            this.configuration.setTemplateLoader(new SparkClasspathTemplateLoader(templateRoot));
+            this.configuration.setTemplateLoader(new HomeDashClassPathTemplateLoader(templateRoot));
         }
 
         Map<String, Object> shared = new HashMap<>();
