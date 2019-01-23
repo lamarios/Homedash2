@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>2019.01.2</version>
+        <version>2019.01.3</version>
     </parent>
 
 
@@ -199,7 +199,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>2019.01.2</version>
+            <version>2019.01.3</version>
         </dependency>
 
         <dependency>
@@ -373,7 +373,7 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        Update sherdog plugin with latest sherdog-parser that fixes issues with https
+                        fix issue #7 where the UI wouldn't load on windows JAR distribution
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>
