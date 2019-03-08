@@ -11,19 +11,7 @@
 
 1. Java 11
 
-## How to build
 
-```
-mvn clean  install
-```
-
-The compiled application will be under web/target/Homedash-{version}.jar
-
-## Run from source with Maven
-
-```
-mvn -pl web exec:java
-```
 
 ## Run from distribution
 
@@ -69,7 +57,19 @@ Environment Variables:
 
 
 Note that running Homedash in docker will have reduced feature when it comes to system monitoring due to the nature of docker containers.
+## How to build
 
+```
+mvn clean  install
+```
+
+The compiled application will be under web/target/Homedash-{version}.jar
+
+## Run from source with Maven
+
+```
+mvn -pl web exec:java
+```
 ## Develop plugin
 
 If you're interested to develop a plugin, check DevelopPlugin.md
