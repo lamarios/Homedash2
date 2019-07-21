@@ -438,6 +438,33 @@
                 <executions>
                     <!-- BUILD DOCKER IMAGE -->
                     <execution>
+                        <id>Docker pull base</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>install</phase>
+                        <configuration>
+                            <skip>${docker.skip}</skip>
+                            <workingDirectory>${basedir}/target/docker</workingDirectory>
+                            <executable>docker</executable>
+                            <arguments>
+                                <argument>pull</argument>
+                                <argument>openjdk:11.0.4-jre</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <configuration>
+                    <workingDirectory>${basedir}/src/main/web</workingDirectory>
+                </configuration>
+                <executions>
+                    <!-- BUILD DOCKER IMAGE -->
+                    <execution>
                         <id>Docker build</id>
                         <goals>
                             <goal>exec</goal>
