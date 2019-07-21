@@ -449,7 +449,7 @@
                             <executable>docker</executable>
                             <arguments>
                                 <argument>build</argument>
-<!--                                <argument>&#45;&#45;no-cache</argument>-->
+                                <argument>--no-cache</argument>
                                 <argument>-t</argument>
                                 <argument>${docker.image.name}:latest</argument>
                                 <argument>-t</argument>
