@@ -34,10 +34,6 @@
                 <artifactId>lesscss-maven-plugin</artifactId>
             </plugin>
 
-            <plugin>
-                <groupId>net.tqh.plugins</groupId>
-                <artifactId>uglifyjs-maven-plugin</artifactId>
-            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

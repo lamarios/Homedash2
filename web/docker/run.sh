@@ -108,7 +108,7 @@ else
     cd $APP
     chown -R ${USER}:${GROUP} $APP /data
 
-    JAVA_PATH=/usr/local/openjdk-11/bin/java
+    JAVA_PATH=${JAVA_HOME}/bin/java
 
     if [ "${USER}" != "root" ]; then
         echo "Runing su"

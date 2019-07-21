@@ -59,17 +59,12 @@
                 </plugin>
 
                 <plugin>
-                    <groupId>net.tqh.plugins</groupId>
-                    <artifactId>uglifyjs-maven-plugin</artifactId>
-                </plugin>
-
-                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-antrun-plugin</artifactId>
                 </plugin>
 
                 <!-- UGLIFYJS -->
-                <plugin>
+<!--                <plugin>
                     <groupId>net.tqh.plugins</groupId>
                     <artifactId>uglifyjs-maven-plugin</artifactId>
                     <version>1.0</version>
@@ -90,7 +85,7 @@
                             </configuration>
                         </execution>
                     </executions>
-                </plugin>
+                </plugin>-->
 
                 <plugin>
                     <groupId>org.lesscss</groupId>
@@ -159,6 +154,37 @@
                                         </fileset>
                                     </copy>
                                 </target>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>copy-plugin-js</id>
+                            <phase>generate-resources</phase>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                            <configuration>
+                                <target>
+
+                                    <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+
+                                    <if>
+                                        <available file="src/main/java/assets/js"
+                                                   property="files.present"/>
+                                        <then>
+                                            <copy todir="src/main/resources/web/${name}/js" overwrite="true">
+                                                <fileset dir="src/main/java/assets/js">
+                                                    <include name="**/*"/>
+                                                </fileset>
+                                            </copy>
+                                        </then>
+
+                                        <else>
+                                            <echo>The file does not exist</echo>
+                                        </else>
+                                    </if>
+                                </target>
+
+
                             </configuration>
                         </execution>
                         <execution>

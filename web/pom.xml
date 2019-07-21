@@ -260,28 +260,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <groupId>net.tqh.plugins</groupId>
-                <artifactId>uglifyjs-maven-plugin</artifactId>
-                <version>1.0</version>
-                <executions>
-                    <execution>
-                        <id>uglify-js-web</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>uglify</goal>
-                        </goals>
-                        <configuration>
-                            <sourceDirectory>${project.build.sourceDirectory}/assets/js
-                            </sourceDirectory>
-
-                            <outputDirectory>${project.build.resources[0].directory}/web/js
-                            </outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <!-- EXECUTE -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -302,6 +280,24 @@
                         </goals> <configuration> <tasks> <copy todir="src/main/resources/web/js/plugins"
                         flatten="true"> <fileset dir="../"> <include name="plugin-*/src/main/resources/web/js/*.js"
                         /> </fileset> </copy> </tasks> </configuration> </execution> -->
+                    <execution>
+                        <id>copy-plugin-js</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <copy todir="src/main/resources/web/js" overwrite="true">
+                                    <fileset dir="src/main/java/assets/js">
+                                        <include name="**/*"/>
+                                    </fileset>
+                                </copy>
+                            </target>
+
+
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>copy-native</id>
 
@@ -331,18 +327,18 @@
                 <version>2.4.1</version>
                 <!-- The configuration of the plugin -->
                 <executions>
-<!--                    <execution>
-                        <configuration>
-                            &lt;!&ndash; Specifies the configuration file of the assembly plugin &ndash;&gt;
-                            <descriptors>
-                                <descriptor>assembly.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>-->
+                    <!--                    <execution>
+                                            <configuration>
+                                                &lt;!&ndash; Specifies the configuration file of the assembly plugin &ndash;&gt;
+                                                <descriptors>
+                                                    <descriptor>assembly.xml</descriptor>
+                                                </descriptors>
+                                            </configuration>
+                                            <phase>package</phase>
+                                            <goals>
+                                                <goal>single</goal>
+                                            </goals>
+                                        </execution>-->
                     <execution>
                         <id>jar-with-dependencies</id>
                         <phase>package</phase>
