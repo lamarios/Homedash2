@@ -107,11 +107,16 @@ else
 
     cd $APP
     chown -R ${USER}:${GROUP} $APP /data
+
+    JAVA_PATH=java
+
     if [ "${USER}" != "root" ]; then
-        runuser -l ${USER} -c "CONFIG='${CONFIG}' java ${JAVA_OPTS} -Dconfig.file=$CONFIG_FILE -jar homedash.jar"
+        echo "Runing su"
+        su ${USER} -c "CONFIG='${CONFIG}' ${JAVA_PATH} ${JAVA_OPTS} -Dconfig.file=$CONFIG_FILE -jar homedash.jar"
+#        su ${USER} -c 'echo $PATH'
 
     else
-       CONFIG="${CONFIG}" java ${JAVA_OPTS} -Dconfig.file=${CONFIG_FILE} -jar homedash.jar
+       CONFIG="${CONFIG}" ${JAVA_PATH} ${JAVA_OPTS} -Dconfig.file=${CONFIG_FILE} -jar homedash.jar
     fi
 fi
 
