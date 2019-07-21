@@ -2,21 +2,21 @@
  * This file will handle all the websocket related stuff
  */
 var ws;
+var singleModuleSize = null;
 
 $(document).ready(function () {
-    $('#overlay .reload-page').click(function () {
-        location.reload();
-    });
 });
 
 
 function initWebsocket() {
+    singleModuleSize = null;
     var protocol = (location.protocol === 'https:') ? 'wss://' : 'ws://';
     ws = new WebSocket(protocol + window.location.host + '/ws');
     try {
         ws.onmessage = onMessage;
 
         ws.onopen = function (e) {
+            $('#reconnecting-bar').removeClass('showing');
             for (i = 0; i < MODULES.length; i++) {
                 if (MODULES[i] != null && MODULES[i].onConnect != undefined) {
                     MODULES[i].onConnect();
@@ -39,6 +39,8 @@ function initWebsocket() {
 
 
 function initSingleModuleWebSocket(size) {
+    singleModuleSize = size;
+
     var protocol = (location.protocol === 'https:') ? 'wss://' : 'ws://';
     ws = new WebSocket(protocol + window.location.host + '/ws-' + size);
     try {
@@ -49,6 +51,7 @@ function initSingleModuleWebSocket(size) {
         }
 
         ws.onopen = function (e) {
+            $('#reconnecting-bar').removeClass('showing');
             MODULE.onConnect();
             MODULE.documentReady(size);
             sendMessage(MODULE.moduleId, "setModule", "");
@@ -152,8 +155,17 @@ var notificationTimeout;
  Display the overlay when the connection is off
  */
 function showOfflineOverlay() {
-    $('#overlay').addClass('showing');
+    console.log('reconnecting to socket');
+    $('#reconnecting-bar').addClass('showing');
+    setTimeout(function () {
+        if (singleModuleSize !== null) {
+            initSingleModuleWebSocket(singleModuleSize);
+        } else {
+            initWebsocket();
+        }
+    }, 1000);
 }
+
 /**
  * Show a success notification
  * @param message

@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>2019.01.3</version>
+        <version>2019.07.1</version>
     </parent>
 
 
@@ -199,7 +199,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>2019.01.3</version>
+            <version>2019.07.1</version>
         </dependency>
 
         <dependency>
@@ -373,7 +373,7 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        fix issue #7 where the UI wouldn't load on windows JAR distribution
+                        remove full screen overlay when connection to server is lost. Instead will try to reconnect.
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>
@@ -450,7 +450,9 @@
                             <arguments>
                                 <argument>build</argument>
                                 <argument>-t</argument>
-                                <argument>${docker.image.name}</argument>
+                                <argument>${docker.image.name}:latest</argument>
+                                <argument>-t</argument>
+                                <argument>${docker.image.name}:${version}</argument>
                                 <argument>.</argument>
                             </arguments>
                         </configuration>

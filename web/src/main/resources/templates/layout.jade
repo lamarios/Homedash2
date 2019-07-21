@@ -28,11 +28,10 @@ html(lang="en")
             .icon
             .message
 
-        #overlay
-            p.smiley :(
-            p.message Can't connect to the server
-            p
-                button.reload-page.btn.btn-primary Reload
+        #reconnecting-bar
+            p.icon
+                i.fa.fa-refresh.fa-spin
+            p.message Can't connect to the server, retrying
 
         #pages
             div.icons
