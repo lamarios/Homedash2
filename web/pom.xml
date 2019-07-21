@@ -253,10 +253,10 @@
                 </configuration>
                 <executions>
                     <execution>
+                        <phase>generate-resources</phase>
                         <goals>
                             <goal>compile</goal>
                         </goals>
-                        <phase>compile</phase>
                     </execution>
                 </executions>
             </plugin>
