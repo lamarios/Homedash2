@@ -142,10 +142,10 @@ public class Endpoints {
                 res.raw().setContentType(Files.probeContentType(p));
                 res.raw().setHeader("Content-Disposition", "inline; filename=" + p.getFileName());
 
-                if (p.endsWith(".css")) {
+                if (p.toString().endsWith(".css")) {
                     res.raw().setHeader("Content-type", " text/css");
-                } else if (p.endsWith(".js")) {
-                    res.raw().setHeader("Content-type", " text/js");
+                } else if (p.toString().endsWith(".js")) {
+                    res.raw().setHeader("Content-type", " application/javascript");
                 } else {
                     res.raw().setContentType(Files.probeContentType(p));
                 }
