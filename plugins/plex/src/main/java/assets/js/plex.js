@@ -12,17 +12,17 @@ function plex(moduleId) {
 
     this.onMessage = function (size, command, message, extra) {
 
-
         var root = rootElement(this.moduleId);
-        if (message.size == '0') {
+        root.addClass(message.type);
+        if (message.videos === undefined || message.videos.length === 0) {
             root.find('.now-playing').addClass('nothing');
         } else {
             var video;
-            if (message.size == 1) {
+            if (message.videos.length === 1) {
                 video = message.videos[0];
             } else {
                 this.currentIndex++;
-                if (message.size > this.currentIndex) {
+                if (message.videos.size > this.currentIndex) {
                     video = message.videos[this.currentIndex];
                 } else {
                     video = message.videos[0];
@@ -30,33 +30,13 @@ function plex(moduleId) {
                 }
             }
 
-            var name = '', art = video.art;
-            if (video.type == "episode") {
-                if (video.grandparentTitle != '') {
-                    name = video.grandparentTitle + ' - ';
-                }
-                if (video.parentTitle != '') {
-                    name += video.parentTitle + ' - ';
-                }
-                name += video.title;
-
-                if(video.grandparentArt != ''){
-                    art = video.grandparentArt;
-                }
-            }else{
-                name = video.title;
-            }
-
-            var progress = (video.viewOffset / video.duration)*100;
-
             var nowPlaying = root.find('.now-playing');
             nowPlaying.removeClass('nothing');
-            nowPlaying.css('background-image', "url('" + art + "')");
-            nowPlaying.find('.name').html(name);
-            nowPlaying.find('.progress').css('width', progress+'%');
-            nowPlaying.find('.player').html(video.player.title);
+            nowPlaying.css('background-image', "url('" + video.image + "')");
+            nowPlaying.find('.name').html(video.name);
+            nowPlaying.find('.progress').css('width', video.progress + '%');
+            nowPlaying.find('.player').html(video.player);
         }
     }
-
 
 }

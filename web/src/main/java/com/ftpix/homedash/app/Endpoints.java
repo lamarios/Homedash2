@@ -13,14 +13,14 @@ import spark.ModelAndView;
 import spark.Response;
 import spark.Route;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static spark.Spark.get;
@@ -88,17 +88,10 @@ public class Endpoints {
                 response.raw().setContentType("application/octet-stream");
                 response.raw().setHeader("Content-Disposition", "attachment; filename=" + file.getName());
 
-                FileInputStream in = new FileInputStream(file);
-
-                byte[] buffer = new byte[1024];
-                int len;
-                while ((len = in.read(buffer)) > 0) {
-                    response.raw().getOutputStream().write(buffer, 0, len);
+                try (FileInputStream in = new FileInputStream(file)) {
+                    IOUtils.copy(in, response.raw().getOutputStream());
                 }
-
-
-                in.close();
-                return response.raw();
+                return "";
             } else {
                 response.status(404);
                 return "";
@@ -115,16 +108,13 @@ public class Endpoints {
 
 
             if (Constants.DEV_MODE) {
-                String content = getDevStaticResource(req.splat()[0], res);
-
-                if (content != null) {
-                    return content;
-                }
-                //if it's not in the assets we just load it as a normal file
+                getDevStaticResource(req.splat()[0], res);
             }
 
             String fullPath = "web" + req.pathInfo();
-            return getContent(res, fullPath);
+            getContent(res, fullPath);
+
+            return "";
         };
 
 
@@ -142,35 +132,30 @@ public class Endpoints {
      * @param fullPath
      * @return
      */
-    private static String getContent(Response res, String fullPath) {
+    private static void getContent(Response res, String fullPath) {
         try {
             Path p = Paths.get(fullPath);
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            InputStream is = classLoader.getResourceAsStream(fullPath);
+            try (InputStream is = classLoader.getResourceAsStream(fullPath)) {
 
 
-            res.raw().setContentType(Files.probeContentType(p));
-            res.raw().setHeader("Content-Disposition", "inline; filename=" + p.getFileName());
+                res.raw().setContentType(Files.probeContentType(p));
+                res.raw().setHeader("Content-Disposition", "inline; filename=" + p.getFileName());
 
-            if(p.endsWith(".css")){
-                res.raw().setHeader("Content-type"," text/css");
-            }else if (p.endsWith(".js")){
-                res.raw().setHeader("Content-type"," text/js");
+                if (p.endsWith(".css")) {
+                    res.raw().setHeader("Content-type", " text/css");
+                } else if (p.endsWith(".js")) {
+                    res.raw().setHeader("Content-type", " text/js");
+                } else {
+                    res.raw().setContentType(Files.probeContentType(p));
+                }
+
+                IOUtils.copy(is, res.raw().getOutputStream());
+
             }
-
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = is.read(buffer)) > 0) {
-                res.raw().getOutputStream().write(buffer, 0, len);
-            }
-
-            String result = IOUtils.toString(is);
-            is.close();
-            return result.trim();
         } catch (Exception e) {
             logger.error("Error while getting resource", e);
             res.status(500);
-            return "";
         }
     }
 
@@ -188,10 +173,12 @@ public class Endpoints {
             logger.info("/plugin/{}/{}", name, path);
 
             if (Constants.DEV_MODE) {
-                return getDevResource(name, path, res);
+                getDevResource(name, path, res);
+            } else {
+                getContent(res, fullPath);
             }
 
-            return getContent(res, fullPath);
+            return "";
         });
     /*
         get("/plugin/:name/js/*", (req, res) -> {
@@ -272,7 +259,7 @@ public class Endpoints {
 
 
                 return css;
-            }else{
+            } else {
                 return null;
             }
         } else if (file.endsWith("js")) {
@@ -297,7 +284,7 @@ public class Endpoints {
      * @param name
      * @return
      */
-    private static String getDevResource(String plugin, String name, Response res) throws IOException, LessException {
+    private static void getDevResource(String plugin, String name, Response res) throws IOException, LessException {
 
         Path path = Paths.get(".").toAbsolutePath().resolve("plugins").resolve(plugin);
 
@@ -324,18 +311,21 @@ public class Endpoints {
                 res.raw().setContentType("text/css");
                 res.raw().setHeader("Content-Disposition", "inline; filename=" + file.getFileName().toString().replaceAll("less", "css"));
 
-                return css;
+
+                try (PrintWriter p = new PrintWriter(res.raw().getOutputStream())) {
+                    p.println(css);
+                }
 
             } else {
                 res.raw().setContentType(Files.probeContentType(file));
                 res.raw().setHeader("Content-Disposition", "inline; filename=" + file.getFileName());
-                return Files.readAllLines(file)
-                        .stream()
-                        .collect(Collectors.joining("\n"));
+
+                try (FileInputStream fis = new FileInputStream(file.toFile())) {
+                    IOUtils.copy(fis, res.raw().getOutputStream());
+                }
+
             }
 
-        } else {
-            return "";
         }
 
     }

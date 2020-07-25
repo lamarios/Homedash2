@@ -1,16 +1,43 @@
 .form-group
-    label(for="url") Plex server address
-    if settings && settings.containsKey("url")
-        input.form-control(type="text", id="url", name="url", placeholder="URL", value='#{settings.get("url")}')
-    else
-        input.form-control(type="text", id="url", name ="url", placeholder = "URL")
-
+    label(for="type") API Type
+    select.form-control(name="type", id="type")
+        each type, index in {'PLEX':'Plex', 'JELLYFIN':'Jellyfin'}
+            if settings && settings.containsKey("type") && settings.get("type").equalsIgnoreCase(index)
+                option(value=index, selected=true)= type
+            else
+                option(value=index)= type
 .form-group
-    label(for="token")
-        | Authentication token (
-        a(href="https://support.plex.tv/hc/en-us/articles/204059436-Finding-an-authentication-token-X-Plex-Token") get authentication token
-        | )
-    if settings && settings.containsKey("token")
-        input.form-control(type="text", id="token", name="token", placeholder="Token", value='#{settings.get("token")}')
+    label(for="url") Server address
+    if settings && settings.containsKey("url")
+        input.form-control(type="text", id="url", name="url", placeholder="https://jellifinserver.com:8096", value='#{settings.get("url")}')
     else
-        input.form-control(type="text", id="token", name ="token", placeholder = "Token")
+        input.form-control(type="text", id="url", name ="url", placeholder = "https://jellifinserver.com:8096")
+#PLEX.media-server
+    .form-group
+        label(for="token")
+            | Authentication token (
+            a(href="https://support.plex.tv/hc/en-us/articles/204059436-Finding-an-authentication-token-X-Plex-Token") get authentication token
+            | )
+        if settings && settings.containsKey("token")
+            input.form-control(type="text", id="token", name="token", placeholder="Token", value='#{settings.get("token")}')
+        else
+            input.form-control(type="text", id="token", name ="token", placeholder = "Token")
+#JELLYFIN.media-server
+    .form-group
+        label(for="apiKey") Api key
+        if settings && settings.containsKey("apiKey")
+            input.form-control(type="text", id="apiKey", name="apiKey", placeholder="Api key", value='#{settings.get("apiKey")}')
+        else
+            input.form-control(type="text", id="apiKey", name ="apiKey", placeholder = "Api key")
+
+script(type="text/javascript").
+    document.addEventListener("DOMContentLoaded", function() {
+
+        function toggleSettings(){
+           $('.media-server').hide();
+           $('#'+$('#type').val()).show();
+        }
+
+        $('#type').change(toggleSettings);
+        toggleSettings();
+    });

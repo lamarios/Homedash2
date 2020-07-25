@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>2019.07.1</version>
+        <version>2020.1</version>
     </parent>
 
 
@@ -199,7 +199,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>2019.07.1</version>
+            <version>2020.1</version>
         </dependency>
 
         <dependency>
@@ -369,7 +369,7 @@
                 <version>1.1.1</version>
                 <configuration>
                     <description>
-                        remove full screen overlay when connection to server is lost. Instead will try to reconnect.
+                        Add support for Jellyfin
                     </description>
                     <releaseName>${version}</releaseName>
                     <tag>${version}</tag>

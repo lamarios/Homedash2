@@ -1,8 +1,28 @@
 .plex {
-  background: #333 url('../files/images/icon.svg');
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
+  background-color: #000;
+
+  &.PLEX {
+    background-color: #333;
+    background-image: url('../files/images/plex.svg');
+
+    .progress{
+      background: rgb(206, 125, 1);
+    }
+  }
+
+  &.JELLYFIN {
+    background-color: #000;
+    background-image: url('../files/images/jellyfin.png');
+    background-size: contain;
+
+    .progress{
+      background: rgb(26, 158, 224);
+    }
+  }
+
 
   .now-playing {
     position: absolute;
@@ -22,6 +42,7 @@
     background-size: cover;
     background-position: center center;
 
+
     .info {
       background: rgba(0, 0, 0, 0.5);
       position: absolute;
@@ -31,11 +52,10 @@
 
 
       .progress {
-        background: rgb(206, 125, 1);
         height: 5px;
         margin: 0;
-        
-        @progressSpeed:0.25s;
+
+        @progressSpeed: 0.25s;
         -webkit-transition: width @progressSpeed;
         -moz-transition: width @progressSpeed;
         -ms-transition: width @progressSpeed;
@@ -45,14 +65,14 @@
 
       .name {
         padding: 5px;
-        color:white;
+        color: white;
         font-size: 20px;
       }
 
-      .player{
+      .player {
         padding: 5px;
         text-align: right;
-        color:white;
+        color: white;
       }
 
     }
@@ -63,38 +83,38 @@
   }
 }
 
-.plex.size-2x1{
-  .name{
+.plex.size-2x1 {
+  .name {
     font-size: 15px !important;
   }
 
-  .player{
+  .player {
     display: none;
   }
 }
 
-.plex.size-1x1{
-  .info{
-    .name{
+.plex.size-1x1 {
+  .info {
+    .name {
       display: none;
     }
 
-    .player{
+    .player {
       display: none;
     }
   }
 }
 
-.plex.size-kiosk{
-  .progress{
+.plex.size-kiosk {
+  .progress {
     height: 1vh !important;
   }
 
-  .name{
+  .name {
     font-size: 5vh !important;
   }
 
-  .player{
+  .player {
     font-size: 3vh !important;
   }
 }
