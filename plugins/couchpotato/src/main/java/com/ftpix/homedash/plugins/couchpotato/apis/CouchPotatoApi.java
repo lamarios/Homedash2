@@ -21,21 +21,22 @@ import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Function;
 
 import static com.ftpix.homedash.plugins.couchpotato.CouchPotatoPlugin.THUMB_SIZE;
 
 public class CouchPotatoApi extends MovieProviderAPI {
 
-    private Logger logger = LogManager.getLogger();
     private final String API_MOVIE_SEARCH = "/movie.search/?q=";
     private final String API_ADD_MOVIE = "/movie.add/?title=[TITLE]&identifier=[IMDB]";
     private final String API_AVAILABLE = "/app.available";
     private final String API_MOVIE_LIST = "/movie.list/?status=active";
     private final String baseUrl, url, apiKey;
     private final ImagePath imagePath;
+    private Logger logger = LogManager.getLogger();
 
-    public CouchPotatoApi(String baseUrl, String apiKey, ImagePath imagePath) {
-        super(baseUrl, apiKey, imagePath);
+    public CouchPotatoApi(String baseUrl, String apiKey, ImagePath imagePath, Function<String, String> cachePathToUrlPath) {
+        super(cachePathToUrlPath);
         this.baseUrl = baseUrl;
         this.imagePath = imagePath;
 

@@ -1,8 +1,8 @@
 package com.ftpix.homedash.plugins;
 
 import com.ftpix.homedash.Utils.HomeDashClassPathTemplateLoader;
-import com.ftpix.homedash.models.*;
 import com.ftpix.homedash.models.Module;
+import com.ftpix.homedash.models.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mashape.unirest.http.HttpResponse;
@@ -10,7 +10,6 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import de.neuland.jade4j.JadeConfiguration;
 import de.neuland.jade4j.exceptions.JadeException;
-import de.neuland.jade4j.template.ClasspathTemplateLoader;
 import de.neuland.jade4j.template.FileTemplateLoader;
 import de.neuland.jade4j.template.JadeTemplate;
 import de.neuland.jade4j.template.TemplateLoader;
@@ -31,26 +30,16 @@ import java.util.stream.Collectors;
 
 public abstract class Plugin {
 
-    private Logger logger = LogManager.getLogger();
-
-    public static int NEVER = 0, ONE_SECOND = 1, ONE_MINUTE = 60, ONE_HOUR = 60 * ONE_MINUTE;
-
-    private String cacheBase;
-
-    private Module module;
-
-    protected Map<String, String> settings;
-
-    protected Gson gson = new GsonBuilder().create();
-
-    private List<PluginListener> listeners = new ArrayList<>();
-
     private final static String REMOTE_URL = "url", REMOTE_API_KEY = "key", REMOTE_MODULE_ID = "id";
-
-    private AtomicInteger clients = new AtomicInteger(0);
-
-
     private final static boolean DEV_MODE = Boolean.parseBoolean(System.getProperty("dev", "false"));
+    public static int NEVER = 0, ONE_SECOND = 1, ONE_MINUTE = 60, ONE_HOUR = 60 * ONE_MINUTE;
+    protected Map<String, String> settings;
+    protected Gson gson = new GsonBuilder().create();
+    private Logger logger = LogManager.getLogger();
+    private String cacheBase;
+    private Module module;
+    private List<PluginListener> listeners = new ArrayList<>();
+    private AtomicInteger clients = new AtomicInteger(0);
 
     public Plugin() {
     }
@@ -164,8 +153,8 @@ public abstract class Plugin {
     /**
      * Any data that might be useful to the settings screen of the plugin.
      *
-     * @return anything useful, see Dynamic DNS plugin for example
      * @param settings
+     * @return anything useful, see Dynamic DNS plugin for example
      */
     protected Object getSettingsScreenData(Map<String, String> settings) {
         return null;
@@ -191,6 +180,7 @@ public abstract class Plugin {
 
     /**
      * Gets the jadeconfiguration to get templates
+     *
      * @return
      * @throws IOException
      */
@@ -384,6 +374,17 @@ public abstract class Plugin {
         } else {
             throw new NotYetBoundException();
         }
+    }
+
+    /**
+     * Gives the path to use for a given path file
+     *
+     * @param fileCachePath
+     * @return
+     */
+    protected final String getCacheFileUrlPath(String fileCachePath) {
+        final String relativeCacheLocation = fileCachePath.replaceAll(cacheBase, "");
+        return "/cache" + (relativeCacheLocation.startsWith("/") ? "" : "/") + relativeCacheLocation;
     }
 
     /**

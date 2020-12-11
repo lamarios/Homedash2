@@ -380,9 +380,8 @@ body.pages {
   }
 
   position: fixed;
-  bottom: -261px;
+  bottom: @settings-bottom;
   right: 0;
-  left: 0;
   font-size: 16px;
 
   z-index: 200;
@@ -390,7 +389,7 @@ body.pages {
   -webkit-transition: all @transition-speed !important;
   transition: all @transition-speed !important;
 
-  @menu-border-color: #eee;
+  border-color: #eee;
 
   ul {
     list-style: none;
@@ -552,4 +551,10 @@ body.pages {
   bottom: 0;
 }
 
+
+@media only screen and (max-width: @mobile-breakpoint) {
+  #settings {
+    left: 0;
+  }
+}
 

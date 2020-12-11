@@ -59,8 +59,6 @@ public class PushBullet implements NotificationProvider {
 
         int responseCode = con.getResponseCode();
         logger.info("\nSending 'POST' request to URL : " + url);
-        logger.info("Post parameters : " + urlParameters);
-        logger.info("Response Code : " + responseCode);
 
         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String inputLine;
@@ -71,8 +69,6 @@ public class PushBullet implements NotificationProvider {
         }
         in.close();
 
-        // print result
-        logger.info(response.toString());
     }
 
     @Override

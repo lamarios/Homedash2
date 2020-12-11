@@ -3,31 +3,19 @@ package com.ftpix.homedash.plugins.couchpotato;
 import com.ftpix.homedash.models.ModuleExposedData;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
+import com.ftpix.homedash.plugins.couchpotato.apis.CouchPotatoApi;
 import com.ftpix.homedash.plugins.couchpotato.apis.MovieProviderAPI;
+import com.ftpix.homedash.plugins.couchpotato.apis.RadarrApi;
 import com.ftpix.homedash.plugins.couchpotato.models.ImagePath;
 import com.ftpix.homedash.plugins.couchpotato.models.MovieObject;
 import com.ftpix.homedash.plugins.couchpotato.models.MovieRequest;
 import com.ftpix.homedash.plugins.couchpotato.models.Type;
-import com.google.common.io.Files;
-import com.mashape.unirest.http.Unirest;
 
-import org.apache.commons.io.FileUtils;
-import org.imgscalr.Scalr;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Created by gz on 22-Jun-16.
@@ -247,6 +235,10 @@ public class CouchPotatoPlugin extends Plugin {
         if (!url.startsWith("http")) {
             url = "http://" + url;
         }
-        return type.getBuilder().build(url, apiKey, imagePath);
+
+        return switch (type){
+            case RADARR -> new RadarrApi(url,apiKey,imagePath, this::getCacheFileUrlPath);
+            case COUCHPOTATO -> new CouchPotatoApi(url, apiKey, imagePath, this::getCacheFileUrlPath);
+        };
     }
 }

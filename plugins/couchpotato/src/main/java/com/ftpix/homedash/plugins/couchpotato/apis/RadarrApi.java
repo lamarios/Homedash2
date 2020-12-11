@@ -28,19 +28,18 @@ import java.util.function.Function;
 import static com.ftpix.homedash.plugins.couchpotato.CouchPotatoPlugin.THUMB_SIZE;
 
 public class RadarrApi extends MovieProviderAPI {
-    private Logger logger = LogManager.getLogger();
     private final String baseUrl, url, apiKey;
     private final ImagePath imagePath;
-
     private final String API_MOVIE_SEARCH = "movie/lookup";
     private final String API_ADD_MOVIE = "movie.add/?title=[TITLE]&identifier=[IMDB]";
     private final String API_AVAILABLE = "system/status";
     private final String API_PROFILES = "profile";
     private final String API_ROOT_FOLDERS = "rootfolder";
     private final String API_MOVIE_LIST = "movie";
+    private Logger logger = LogManager.getLogger();
 
-    public RadarrApi(String baseUrl, String apiKey, ImagePath imagePath) {
-        super(baseUrl, apiKey, imagePath);
+    public RadarrApi(String baseUrl, String apiKey, ImagePath imagePath, Function<String, String> cachePathToUrlPath) {
+        super(cachePathToUrlPath);
         this.baseUrl = baseUrl;
         this.imagePath = imagePath;
 
@@ -51,7 +50,9 @@ public class RadarrApi extends MovieProviderAPI {
     @Override
     public String getRandomWantedPoster() throws Exception {
 
-        JSONArray movies = new JSONArray(Unirest.get(String.format(url, API_MOVIE_LIST)).asString().getBody());
+        final String apiUrl = String.format(url, API_MOVIE_LIST);
+        final String body = Unirest.get(apiUrl).asString().getBody();
+        JSONArray movies = new JSONArray(body);
         String poster = null;
         List<String> posters = new ArrayList<>();
         for (int i = 0; i < movies.length(); i++) {
@@ -75,6 +76,12 @@ public class RadarrApi extends MovieProviderAPI {
         Collections.shuffle(posters);
         if (posters.size() > 0) {
             String selected = posters.get(0);
+
+            final int uselessParam = selected.indexOf("?");
+            if (uselessParam != -1) {
+                selected = selected.substring(0, uselessParam);
+            }
+
             String fileName = imagePath.get() + selected.replaceAll("[^a-zA-Z0-9]", "") + ".jpg";
             File f = new File(fileName);
             if (!f.exists()) {
@@ -84,7 +91,7 @@ public class RadarrApi extends MovieProviderAPI {
                 BufferedImage resized = Scalr.resize(image, THUMB_SIZE);
                 ImageIO.write(resized, Files.getFileExtension(f.getName()), f);
             }
-            poster = fileName;
+            poster = getCachePathUrl(fileName);
 
         }
 
@@ -174,8 +181,9 @@ public class RadarrApi extends MovieProviderAPI {
         moviesResults.forEach(m -> downloads.add(() -> {
             //setting movie state from library
             library.stream()
-                    .filter(l ->{
-                        return l.imdbId.equalsIgnoreCase(m.imdbId);})
+                    .filter(l -> {
+                        return l.imdbId.equalsIgnoreCase(m.imdbId);
+                    })
                     .findFirst()
                     .ifPresent(l -> {
                         m.inLibrary = l.inLibrary;
@@ -183,7 +191,7 @@ public class RadarrApi extends MovieProviderAPI {
                     });
 
             //If we already have the movie, let's mark it has not wanted, even if in monitored state in Radarr
-            if(m.inLibrary) m.wanted = false;
+            if (m.inLibrary) m.wanted = false;
 
             try {
                 String fileName = imagePath.get() + m.poster.replaceAll("[^a-zA-Z0-9]", "") + ".jpg";
@@ -195,7 +203,7 @@ public class RadarrApi extends MovieProviderAPI {
                     ImageIO.write(resized, Files.getFileExtension(f.getName()), f);
                 }
 
-                m.poster = f.getPath();
+                m.poster = getCachePathUrl(f.getPath());
 
             } catch (Exception e) {
                 logger.info("Couldn't download movie poster at url: [{}]", m.poster);
