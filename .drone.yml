@@ -22,7 +22,6 @@ steps:
       force_tags: true
       context: web/docker
       dockerfile: web/docker/Dockerfile
-      dry_run: true
 trigger:
   branch:
     - master
