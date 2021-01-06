@@ -1,0 +1,30 @@
+kind: pipeline
+type: docker
+name: default
+
+steps:
+  - name: build
+    image: maven:3.6.3
+    commands:
+      - mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.version -q -DforceStdout > .tags
+      - ech ",latest" >> .tags
+      - cat .tags
+      - mvn clean install
+      - mvn clean install -pl web
+      - cp web/target/Homedash-*.jar web/docker/
+  - name: publish
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      repo: gonzague/homedash
+      force_tags: true
+      context: web/docker
+      dry_run: true
+trigger:
+  branch:
+    - master
+  event:
+    - push
