@@ -6,11 +6,11 @@ steps:
   - name: build
     image: maven:3.6.3
     commands:
-      - echo "latest,$(mvn help:evaluate -Dexpression=project.version -q  -DforceStdout)" > .tags
-      - cat .tags
       - mvn clean install
       - mvn clean install -pl web
       - cp web/target/Homedash-*.jar web/docker/
+      - echo "latest,$(mvn help:evaluate -Dexpression=project.version -q  -DforceStdout)" > .tags
+      - cat .tags
   - name: publish
     image: plugins/docker
     settings:
@@ -21,6 +21,7 @@ steps:
       repo: gonzague/homedash
       force_tags: true
       context: web/docker
+      dockerfile: web/docker/Dockerfile
       dry_run: true
 trigger:
   branch:
