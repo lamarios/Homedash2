@@ -19,7 +19,7 @@ steps:
       - mvn clean install  -Dmaven.repo.local=./m2
       - mvn clean install -pl web -Dmaven.repo.local=./m2
       - cp web/target/Homedash-*.jar web/docker/
-      - echo "latest,$(mvn help:evaluate -Dexpression=project.version -q  -DforceStdout)" > .tags
+      - echo "latest,$(mvn help:evaluate -Dexpression=project.version -q  -DforceStdout -Dmaven.repo.local=./m2)" > .tags
       - cat .tags
 
 
