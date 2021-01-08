@@ -3,14 +3,36 @@ type: docker
 name: default
 
 steps:
+  - name: restore-cache
+    image: drillster/drone-volume-cache
+    volumes:
+      - name: cache
+        path: /cache
+    settings:
+      restore: true
+      mount:
+        - ./m2
+
   - name: build
     image: maven:3.6.3
     commands:
-      - mvn clean install
-      - mvn clean install -pl web
+      - mvn clean install  -Dmaven.repo.local=./m2
+      - mvn clean install -pl web -Dmaven.repo.local=./m2
       - cp web/target/Homedash-*.jar web/docker/
       - echo "latest,$(mvn help:evaluate -Dexpression=project.version -q  -DforceStdout)" > .tags
       - cat .tags
+
+
+  - name: rebuild-cache
+    image: drillster/drone-volume-cache
+    volumes:
+      - name: cache
+        path: /cache
+    settings:
+      rebuild: true
+      mount:
+        - ./m2
+
   - name: publish
     image: plugins/docker
     settings:
@@ -27,3 +49,8 @@ trigger:
     - master
   event:
     - push
+
+volumes:
+  - name: cache
+    host:
+      path: /tmp/cache
