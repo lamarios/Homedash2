@@ -1,3 +1,4 @@
+[![Build Status](https://drone.ftpix.com/api/badges/lamarios/Homedash2/status.svg)](https://drone.ftpix.com/lamarios/Homedash2)
 # HomeDash
 
 ## Requirements
