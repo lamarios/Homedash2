@@ -1,10 +1,14 @@
 package com.ftpix.homedash.app.controllers;
 
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.JWTVerifier;
 import com.ftpix.homedash.app.Constants;
 import com.ftpix.homedash.db.DB;
-import com.ftpix.homedash.models.*;
 import com.ftpix.homedash.models.Module;
+import com.ftpix.homedash.models.*;
 import com.ftpix.homedash.models.export.Export;
 import com.ftpix.homedash.models.export.LayoutExport;
 import com.ftpix.homedash.models.export.ModuleExport;
@@ -15,17 +19,20 @@ import com.ftpix.homedash.notifications.implementations.PushOver;
 import com.ftpix.homedash.notifications.implementations.Pushalot;
 import com.ftpix.homedash.utils.HomeDashTemplateEngine;
 import com.google.gson.Gson;
-import com.j256.ormlite.table.TableUtils;
+import com.google.gson.GsonBuilder;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import spark.*;
+import spark.ModelAndView;
+import spark.Request;
+import spark.Response;
+import spark.Spark;
 
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -34,9 +41,9 @@ import java.util.stream.Collectors;
 public enum SettingsController implements Controller<Settings, String> {
     INSTANCE;
 
-    private Logger logger = LogManager.getLogger();
     private final String AUTH_KEY = "auth";
-
+    private Logger logger = LogManager.getLogger();
+    private Gson gson = new GsonBuilder().create();
 
     public void defineEndpoints() {
         /**
@@ -56,6 +63,8 @@ public enum SettingsController implements Controller<Settings, String> {
 
         Spark.get("/export-config", this::exportConfig);
 
+        Spark.get("/config", this::getConfig, gson::toJson);
+
         /**
          * Loging out !
          */
@@ -66,6 +75,48 @@ public enum SettingsController implements Controller<Settings, String> {
             res.redirect("/");
             return null;
         });
+    }
+
+    @Override
+    public Settings get(String id) throws SQLException {
+        return DB.SETTINGS_DAO.queryForId(id);
+    }
+
+    @Override
+    public List<Settings> getAll() throws SQLException {
+        return DB.SETTINGS_DAO.queryForAll();
+    }
+
+    @Override
+    public boolean deleteById(String id) throws SQLException {
+        return DB.SETTINGS_DAO.deleteById(id) == 1;
+    }
+
+    @Override
+    public boolean delete(Settings object) throws SQLException {
+        return DB.SETTINGS_DAO.delete(object) == 1;
+    }
+
+    @Override
+    public boolean update(Settings object) throws SQLException {
+        return DB.SETTINGS_DAO.update(object) == 1;
+    }
+
+    @Override
+    public String create(Settings object) throws SQLException {
+        DB.SETTINGS_DAO.create(object);
+        return object.getName();
+    }
+
+    private Map<String, Object> getConfig(Request request, Response response) throws Exception {
+        Map<String, Object> config = new HashMap<>();
+
+        config.put("auth", Optional.ofNullable(get(Settings.USE_AUTH))
+                .map(Settings::getValue)
+                .map(s -> s.equalsIgnoreCase("1"))
+                .orElse(false));
+
+        return config;
     }
 
     /**
@@ -105,7 +156,6 @@ public enum SettingsController implements Controller<Settings, String> {
         response.header("Content-type", "application/json");
         return gson.toJson(export);
     }
-
 
     /**
      * Imports a JSON as homedash config
@@ -221,6 +271,28 @@ public enum SettingsController implements Controller<Settings, String> {
         return true;
     }
 
+    private String createToken() {
+        Algorithm algorithm = Algorithm.HMAC256(Constants.SALT);
+
+        LocalDateTime expiry = LocalDateTime.now().plusYears(1);
+        return JWT.create()
+                .withIssuer("homedash")
+                .withExpiresAt(Date.from(expiry.atZone(ZoneId.systemDefault()).toInstant()))
+                .sign(algorithm);
+    }
+
+    private boolean verifyToken(String token) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(Constants.SALT);
+            JWTVerifier verifier = JWT.require(algorithm)
+                    .withIssuer("homedash")
+                    .build(); //Reusable verifier instance
+            DecodedJWT jwt = verifier.verify(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     /**
      * Processes a login request.
@@ -238,18 +310,22 @@ public enum SettingsController implements Controller<Settings, String> {
         try {
             if (checkPassword(hash)) {
                 logger.info("Logging in successful, redirecting to main");
-                Session session = req.session(true);
-                session.attribute(AUTH_KEY, hash);
-                res.cookie(AUTH_KEY, hash, 31557600);//one year
+//                Session session = req.session(true);
+//                session.attribute(AUTH_KEY, hash);
+//                res.cookie(AUTH_KEY, hash, 31557600);//one year
 
-                res.redirect("/");
-                return null;
+                Map<String, String> token = new HashMap<String, String>();
+                token.put("token", createToken());
+
+
+                return new ModelAndView(token, "login-success");
             }
         } catch (Exception e) {
             logger.error("Logging in failed due to some error", e);
         }
         Map<String, String> error = new HashMap<String, String>();
         error.put("error", "Wrong username/password");
+        res.status(401);
         return new ModelAndView(error, "login");
     }
 
@@ -346,37 +422,6 @@ public enum SettingsController implements Controller<Settings, String> {
         return new ModelAndView(model, "settings");
     }
 
-    @Override
-    public Settings get(String id) throws SQLException {
-        return DB.SETTINGS_DAO.queryForId(id);
-    }
-
-    @Override
-    public List<Settings> getAll() throws SQLException {
-        return DB.SETTINGS_DAO.queryForAll();
-    }
-
-    @Override
-    public boolean deleteById(String id) throws SQLException {
-        return DB.SETTINGS_DAO.deleteById(id) == 1;
-    }
-
-    @Override
-    public boolean delete(Settings object) throws SQLException {
-        return DB.SETTINGS_DAO.delete(object) == 1;
-    }
-
-    @Override
-    public boolean update(Settings object) throws SQLException {
-        return DB.SETTINGS_DAO.update(object) == 1;
-    }
-
-    @Override
-    public String create(Settings object) throws SQLException {
-        DB.SETTINGS_DAO.create(object);
-        return object.getName();
-    }
-
     public void createOrUpdate(Settings object) throws SQLException {
         DB.SETTINGS_DAO.createOrUpdate(object);
     }
@@ -399,11 +444,16 @@ public enum SettingsController implements Controller<Settings, String> {
      */
     public boolean checkSession(Request req, Response res) {
         try {
-            Settings useAuth = get(Settings.USE_AUTH);
-            if (useAuth != null && useAuth.getValue().equalsIgnoreCase("1")) {
-                logger.info("Auth requested, checking if everything is alright;");
+            if (!req.requestMethod().equalsIgnoreCase("OPTIONS")) {
+                Settings useAuth = get(Settings.USE_AUTH);
+                if (useAuth != null && useAuth.getValue().equalsIgnoreCase("1")) {
+                    logger.info("Auth requested, checking if everything is alright;");
 
-                //checking cookie first
+                    final String token = req.headers("Authorization").replaceAll("Bearer ", "").trim();
+
+
+                    //checking cookie first
+/*
                 if (req.cookies().containsKey(AUTH_KEY)) {
                     return checkPassword(req.cookie(AUTH_KEY));
                 } else if (req.session().attribute(AUTH_KEY) != null) {
@@ -413,8 +463,10 @@ public enum SettingsController implements Controller<Settings, String> {
                     req.session().removeAttribute(AUTH_KEY);
                     return false;
                 }
+*/
+                    return verifyToken(token);
 
-
+                }
             }
 
             return true;

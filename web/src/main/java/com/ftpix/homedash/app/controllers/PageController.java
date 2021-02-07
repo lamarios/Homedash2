@@ -112,7 +112,8 @@ INSTANCE;
 
     @Override
     public List<Page> getAll() throws SQLException {
-        return DB.PAGE_DAO.queryForAll();
+        final List<Page> pages = DB.PAGE_DAO.queryForAll();
+        return pages;
     }
 
     @Override

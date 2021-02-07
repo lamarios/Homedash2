@@ -1,6 +1,5 @@
 package com.ftpix.homedash.app;
 
-import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.ftpix.homedash.app.controllers.SettingsController;
 import com.ftpix.homedash.db.DB;
 import com.ftpix.homedash.jobs.BackgroundRefresh;
@@ -9,31 +8,20 @@ import com.ftpix.homedash.models.Page;
 import com.ftpix.homedash.plugins.SystemInfoPlugin;
 import com.ftpix.homedash.updater.Updater;
 import com.ftpix.homedash.websocket.FullScreenWebSocket;
-import com.ftpix.homedash.websocket.SingleModuleKioskWebSocket;
 import com.ftpix.homedash.websocket.MainWebSocket;
+import com.ftpix.homedash.websocket.SingleModuleKioskWebSocket;
 import com.google.common.io.Files;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jvnet.hk2.internal.ConstantActiveDescriptor;
-import org.quartz.DateBuilder;
-import org.quartz.JobBuilder;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.SchedulerFactory;
-import org.quartz.SimpleScheduleBuilder;
-import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
+import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 
-import javax.swing.text.html.Option;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
@@ -41,7 +29,6 @@ import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import static java.nio.file.Files.deleteIfExists;
 import static spark.Spark.*;
 
 /**
@@ -79,6 +66,10 @@ public class App {
                     res.header("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
                     res.header("Pragma", "no-cache"); // HTTP 1.0.
                     res.header("Expires", "0"); // Proxies.
+                    res.header("Access-Control-Allow-Origin", "*");
+                    res.header("Access-Control-Allow-Method", "POST, GET, PUT, DELETE, OPTIONS, PATCH");
+                    res.header("Access-Control-Allow-Headers", "*");
+
                     logger.info("{} -> {}", req.requestMethod(), req.url());
 
 
@@ -87,7 +78,11 @@ public class App {
                         return;
                     }
 
-                    if (!req.pathInfo().startsWith("/api") && !req.pathInfo().startsWith("/cache") && !req.pathInfo().equalsIgnoreCase("/login") && !SettingsController.INSTANCE.checkSession(req, res)) {
+                    if (!req.pathInfo().startsWith("/api")
+                            && !req.pathInfo().startsWith("/cache")
+                            && !req.pathInfo().equalsIgnoreCase("/login")
+                            && !req.pathInfo().equalsIgnoreCase("/config")
+                            && !SettingsController.INSTANCE.checkSession(req, res)) {
                         res.redirect("/login");
                     }
                 });

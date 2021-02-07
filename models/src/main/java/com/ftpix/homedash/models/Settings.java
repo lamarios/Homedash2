@@ -8,7 +8,7 @@ public class Settings {
 	
 	public static final String USE_AUTH = "use_auth", USERNAME="username", PASSWORD="password", PUSHBULLET="use_pushbullet", PUSHBULLET_API_KEY = "pushbullet_api_key",
 			PUSHALOT="use_pushalot", PUSHALOT_API_KEY = "pushalot_api_key", PUSHOVER = "use_pushover", PUSHOVER_API_KEY = "pushover_api_key", PUSHOVER_APP_TOKEN = "pushover_app_token",
-	USE_REMOTE = "use_remote", REMOTE_API_KEY = "remote_api_key", REMOTE_NAME="remote_name";
+	USE_REMOTE = "use_remote", REMOTE_API_KEY = "remote_api_key", REMOTE_NAME="remote_name", SALT="salt";
 	
 	
 	@DatabaseField(id = true)

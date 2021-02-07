@@ -1,0 +1,165 @@
+[INFO] Scanning for projects...
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.ftpix.homedash:web:jar:2020.3
+[WARNING] 'build.plugins.plugin.(groupId:artifactId)' must be unique but found duplicate declaration of plugin org.codehaus.mojo:exec-maven-plugin @ line 428, column 21
+[WARNING] 'build.plugins.plugin.(groupId:artifactId)' must be unique but found duplicate declaration of plugin org.codehaus.mojo:exec-maven-plugin @ line 455, column 21
+[WARNING] 'build.plugins.plugin.version' for org.lesscss:lesscss-maven-plugin is missing. @ line 239, column 21
+[WARNING] The expression ${version} is deprecated. Please use ${project.version} instead.
+[WARNING] The expression ${version} is deprecated. Please use ${project.version} instead.
+[WARNING] The expression ${version} is deprecated. Please use ${project.version} instead.
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.ftpix.homedash.plugins:systeminfo:jar:2020.3
+[WARNING] 'build.pluginManagement.plugins.plugin.(groupId:artifactId)' must be unique but found duplicate declaration of plugin org.lesscss:lesscss-maven-plugin @ com.ftpix.homedash.plugins:plugins:2020.3, /drone/src/plugins/pom.xml, line 90, column 25
+[WARNING] 'build.pluginManagement.plugins.plugin.(groupId:artifactId)' must be unique but found duplicate declaration of plugin org.apache.maven.plugins:maven-antrun-plugin @ com.ftpix.homedash.plugins:plugins:2020.3, /drone/src/plugins/pom.xml, line 118, column 25
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.ftpix.homedash.plugins:docker:jar:2020.3
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.ftpix.homedash.plugins:sonarrtv:jar:2020.3
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.ftpix.homedash.plugins:harddisk:jar:2020.3
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.ftpix.homedash.plugins:transmission:jar:2020.3
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.ftpix.homedash.plugins:pihole:jar:2020.3
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.ftpix.homedash.plugins:portmapper:jar:2020.3
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.ftpix.homedash.plugins:couchpotato:jar:2020.3
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.ftpix.homedash.plugins:networkmonitor:jar:2020.3
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.ftpix.homedash.plugins:dynamicdns:jar:2020.3
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.ftpix.homedash.plugins:googlepubliccalendar:jar:2020.3
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.ftpix.homedash.plugins:mma:jar:2020.3
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.ftpix.homedash.plugins:dockercompose:jar:2020.3
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.ftpix.homedash.plugins:logreader:jar:2020.3
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.ftpix.homedash.plugins:plex:jar:2020.3
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.ftpix.homedash.plugins:spotify:jar:2020.3
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.ftpix.homedash.plugins:kvm:jar:2020.3
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.ftpix.homedash.plugins:unifi:jar:2020.3
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] The expression ${name} is deprecated. Please use ${project.name} instead.
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.ftpix.homedash.plugins:plugins:pom:2020.3
+[WARNING] 'build.pluginManagement.plugins.plugin.(groupId:artifactId)' must be unique but found duplicate declaration of plugin org.lesscss:lesscss-maven-plugin @ line 90, column 25
+[WARNING] 'build.pluginManagement.plugins.plugin.(groupId:artifactId)' must be unique but found duplicate declaration of plugin org.apache.maven.plugins:maven-antrun-plugin @ line 118, column 25
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] Archetype - homedash                                               [pom]
+[INFO] models                                                             [jar]
+[INFO] notifications                                                      [jar]
+[INFO] updater                                                            [jar]
+[INFO] plugins                                                            [pom]
+[INFO] systeminfo                                                         [jar]
+[INFO] docker                                                             [jar]
+[INFO] plex                                                               [jar]
+[INFO] sonarrtv                                                           [jar]
+[INFO] harddisk                                                           [jar]
+[INFO] transmission                                                       [jar]
+[INFO] pihole                                                             [jar]
+[INFO] portmapper                                                         [jar]
+[INFO] kvm                                                                [jar]
+[INFO] couchpotato                                                        [jar]
+[INFO] networkmonitor                                                     [jar]
+[INFO] dynamicdns                                                         [jar]
+[INFO] googlepubliccalendar                                               [jar]
+[INFO] mma                                                                [jar]
+[INFO] spotify                                                            [jar]
+[INFO] logreader                                                          [jar]
+[INFO] dockercompose                                                      [jar]
+[INFO] unifi                                                              [jar]
+[INFO] web                                                                [jar]
+Downloading from uglifyjs-maven-plugin: https://raw.github.com/tqh/uglifyjs-maven-plugin/master/repo/org/apache/maven/plugins/maven-help-plugin/2.1.1/maven-help-plugin-2.1.1.pom
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-help-plugin/2.1.1/maven-help-plugin-2.1.1.pom
+Progress (1): 2.7/8.3 kBProgress (1): 5.5/8.3 kBProgress (1): 8.2/8.3 kBProgress (1): 8.3 kB                        Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-help-plugin/2.1.1/maven-help-plugin-2.1.1.pom (8.3 kB at 8.6 kB/s)
+Downloading from uglifyjs-maven-plugin: https://raw.github.com/tqh/uglifyjs-maven-plugin/master/repo/org/apache/maven/plugins/maven-plugins/17/maven-plugins-17.pom
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-plugins/17/maven-plugins-17.pom
+Progress (1): 2.7/13 kBProgress (1): 5.5/13 kBProgress (1): 8.2/13 kBProgress (1): 11/13 kB Progress (1): 13 kB                      Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-plugins/17/maven-plugins-17.pom (13 kB at 35 kB/s)
+Downloading from uglifyjs-maven-plugin: https://raw.github.com/tqh/uglifyjs-maven-plugin/master/repo/org/apache/maven/maven-parent/16/maven-parent-16.pom
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/maven-parent/16/maven-parent-16.pom
+Progress (1): 2.7/23 kBProgress (1): 5.5/23 kBProgress (1): 8.2/23 kBProgress (1): 11/23 kB Progress (1): 14/23 kBProgress (1): 16/23 kBProgress (1): 19/23 kBProgress (1): 22/23 kBProgress (1): 23 kB                      Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/maven-parent/16/maven-parent-16.pom (23 kB at 56 kB/s)
+Downloading from uglifyjs-maven-plugin: https://raw.github.com/tqh/uglifyjs-maven-plugin/master/repo/org/apache/apache/7/apache-7.pom
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/apache/7/apache-7.pom
+Progress (1): 2.7/14 kBProgress (1): 5.5/14 kBProgress (1): 8.2/14 kBProgress (1): 11/14 kB Progress (1): 14/14 kBProgress (1): 14 kB                      Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/apache/7/apache-7.pom (14 kB at 39 kB/s)
+Downloading from uglifyjs-maven-plugin: https://raw.github.com/tqh/uglifyjs-maven-plugin/master/repo/org/apache/maven/plugins/maven-help-plugin/2.1.1/maven-help-plugin-2.1.1.jar
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-help-plugin/2.1.1/maven-help-plugin-2.1.1.jar
+Progress (1): 2.7/61 kBProgress (1): 5.5/61 kBProgress (1): 8.2/61 kBProgress (1): 11/61 kB Progress (1): 14/61 kBProgress (1): 16/61 kBProgress (1): 19/61 kBProgress (1): 22/61 kBProgress (1): 25/61 kBProgress (1): 27/61 kBProgress (1): 30/61 kBProgress (1): 33/61 kBProgress (1): 36/61 kBProgress (1): 38/61 kBProgress (1): 41/61 kBProgress (1): 44/61 kBProgress (1): 47/61 kBProgress (1): 49/61 kBProgress (1): 52/61 kBProgress (1): 55/61 kBProgress (1): 58/61 kBProgress (1): 60/61 kBProgress (1): 61 kB                      Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-help-plugin/2.1.1/maven-help-plugin-2.1.1.jar (61 kB at 111 kB/s)
+[INFO] 
+[INFO] --------------------< com.ftpix.homedash:homedash >---------------------
+[INFO] Building Archetype - homedash 2020.3                              [1/24]
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- maven-help-plugin:2.1.1:evaluate (default-cli) @ homedash ---
+Downloading from uglifyjs-maven-plugin: https://raw.github.com/tqh/uglifyjs-maven-plugin/master/repo/org/apache/maven/maven-artifact/2.0.6/maven-artifact-2.0.6.pom
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/maven-artifact/2.0.6/maven-artifact-2.0.6.pom
+Progress (1): 1.6 kB                    Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/maven-artifact/2.0.6/maven-artifact-2.0.6.pom (1.6 kB at 4.3 kB/s)
+Downloading from uglifyjs-maven-plugin: https://raw.github.com/tqh/uglifyjs-maven-plugin/master/repo/org/apache/maven/maven/2.0.6/maven-2.0.6.pom
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/maven/2.0.6/maven-2.0.6.pom
+Progress (1): 2.7/9.0 kBProgress (1): 5.5/9.0 kBProgress (1): 8.2/9.0 kBProgress (1): 9.0 kB                        Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/maven/2.0.6/maven-2.0.6.pom (9.0 kB at 24 kB/s)
+Downloading from uglifyjs-maven-plugin: https://raw.github.com/tqh/uglifyjs-maven-plugin/master/repo/org/apache/maven/maven-parent/5/maven-parent-5.pom
