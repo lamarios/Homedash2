@@ -1,4 +1,5 @@
 import 'package:app/model/page.dart';
+import 'package:app/widgets/dashboard.dart';
 import 'package:flutter/material.dart';
 
 import '../globals.dart' as globals;
@@ -61,7 +62,7 @@ class _MainPageState extends State<MainPage> {
                       },
                     ))
                   ]))),
-          Expanded(child: Text('yo'))
+          Expanded(child: Dashboard(pageId: 1))
         ],
       ),
     );

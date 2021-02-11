@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:app/model/ServerConfig.dart';
 import 'package:app/model/page.dart';
+import 'package:app/model/pageLayout.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,7 +14,6 @@ class Service {
   Service(this.url);
 
   Future<bool> setToken(String token) async {
-
     final prefs = await SharedPreferences.getInstance();
     prefs.setString("token", token);
 
@@ -31,6 +31,17 @@ class Service {
       return ServerConfig.fromJson(toJson(response));
     } else {
       throw Exception("Couldn't get server config");
+    }
+  }
+
+  /// Gets the current page layout based on the screen width
+  Future<PageLayout> getPageLayout(int pageId, int width) async {
+    final response = await http.get(url + '/modules-layout/${pageId}/${width}',
+        headers: headers);
+    if (response.statusCode == 200) {
+      return PageLayout.fromJson(toJson(response));
+    }else{
+      throw Exception("Couldn't get page layout");
     }
   }
 

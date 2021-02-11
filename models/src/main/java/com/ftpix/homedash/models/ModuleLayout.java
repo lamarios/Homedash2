@@ -1,5 +1,6 @@
 package com.ftpix.homedash.models;
 
+import com.google.gson.annotations.Expose;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -9,20 +10,25 @@ public class ModuleLayout {
 	public static final String SIZE_1x1 = "1x1", SIZE_2x1 = "2x1", SIZE_2x2 = "2x2", FULL_SCREEN = "full-screen", KIOSK = "kiosk";
 
 	@DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
+	@Expose
 	private int id;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
 	private Layout layout;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
+	@Expose
 	private Module module;
 
+	@Expose
 	@DatabaseField
 	private int x = 0;
 
+	@Expose
 	@DatabaseField
 	private int y = 0;
 
+	@Expose
 	@DatabaseField
 	private String size;
 

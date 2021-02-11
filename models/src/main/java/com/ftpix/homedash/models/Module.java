@@ -1,5 +1,6 @@
 package com.ftpix.homedash.models;
 
+import com.google.gson.annotations.Expose;
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
@@ -10,18 +11,22 @@ import com.j256.ormlite.table.DatabaseTable;
 public class Module {
 
     @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
+    @Expose
     private int id;
 
     @DatabaseField
+    @Expose
     private String pluginClass;
 
     @DatabaseField(unknownEnumName = "LOCAL")
+    @Expose
     private ModuleLocation location = ModuleLocation.LOCAL;
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
     private Page page;
 
     @DatabaseField(dataType = DataType.BOOLEAN)
+    @Expose
     private boolean onKiosk;
 
     @ForeignCollectionField(eager = false, maxEagerLevel = 0)

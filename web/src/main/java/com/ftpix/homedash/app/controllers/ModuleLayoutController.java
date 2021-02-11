@@ -7,7 +7,6 @@ import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.Page;
 import com.ftpix.homedash.plugins.Plugin;
-import com.ftpix.homedash.utils.HomeDashTemplateEngine;
 import com.google.gson.Gson;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -15,7 +14,6 @@ import com.j256.ormlite.stmt.Where;
 import io.gsonfire.GsonFireBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
@@ -55,23 +53,25 @@ public enum ModuleLayoutController implements Controller<ModuleLayout, Integer> 
      * @return a map with the HTML and the layout information.
      * @throws SQLException
      */
-    private Map<String, Object> layoutForPage(Request req, Response res) throws SQLException {
+    private Map<String, Object> layoutForPage(Request req, Response res) throws Exception {
         int page = Integer.parseInt(req.params("page"));
         int width = Integer.parseInt(req.params("width"));
 
         logger.info("/modules-layout/{}/{}", page, width);
 
         List<ModuleLayout> layouts = generatePageLayout(page, width);
-        Map<String, Object> model = new HashMap<>();
-        model.put("layouts", layouts);
-        model.put("plugins", PluginModuleMaintainer.INSTANCE.PLUGIN_INSTANCES);
+//        Map<String, Object> model = new HashMap<>();
+//        model.put("layouts", layouts);
+//        model.put("plugins", PluginModuleMaintainer.INSTANCE.PLUGIN_INSTANCES);
 
 
-        HomeDashTemplateEngine engine = new HomeDashTemplateEngine();
-        String html = engine.render(new ModelAndView(model, "module-layout"));
+//        HomeDashTemplateEngine engine = new HomeDashTemplateEngine();
+//        String html = engine.render(new ModelAndView(model, "module-layout"));
 
         Map<String, Object> toJson = new HashMap<String, Object>();
-        toJson.put("html", html);
+
+
+        toJson.put("modules", layouts);
         toJson.put("layout", LayoutController.INSTANCE.findClosestLayout(width));
 
         return toJson;
