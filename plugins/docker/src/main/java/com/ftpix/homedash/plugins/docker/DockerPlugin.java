@@ -92,6 +92,11 @@ public class DockerPlugin extends Plugin {
     }
 
     @Override
+    public boolean hasSettings() {
+        return true;
+    }
+
+    @Override
     public WebSocketMessage processCommand(String command, String message, Object extra) {
         WebSocketMessage response = new WebSocketMessage();
         response.setCommand(WebSocketMessage.COMMAND_SUCCESS);

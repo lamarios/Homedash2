@@ -151,6 +151,11 @@ public class HarddiskPlugin extends Plugin {
     }
 
     @Override
+    public boolean hasSettings() {
+        return true;
+    }
+
+    @Override
     protected Object refresh(String size) throws Exception {
         File root = new File(mountPoint.toAbsolutePath().toString());
 

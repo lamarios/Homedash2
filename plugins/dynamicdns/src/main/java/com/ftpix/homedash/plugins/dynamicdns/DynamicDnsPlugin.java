@@ -1,20 +1,17 @@
 package com.ftpix.homedash.plugins.dynamicdns;
 
-import com.ftpix.homedash.plugins.dynamicdns.models.IpFromWeb;
-import com.google.gson.Gson;
-
 import com.ftpix.homedash.models.ModuleExposedData;
 import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.notifications.Notifications;
 import com.ftpix.homedash.plugins.Plugin;
-import com.ftpix.homedash.plugins.dynamicdns.inputs.FormInput;
 import com.ftpix.homedash.plugins.dynamicdns.models.Ip;
+import com.ftpix.homedash.plugins.dynamicdns.models.IpFromWeb;
 import com.ftpix.homedash.plugins.dynamicdns.providers.DynDNSProvider;
 import com.ftpix.homedash.plugins.dynamicdns.providers.implementations.DynDNS;
 import com.ftpix.homedash.plugins.dynamicdns.providers.implementations.NoIP;
 import com.ftpix.homedash.plugins.dynamicdns.providers.implementations.OVH;
-
+import com.google.gson.Gson;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -25,10 +22,8 @@ import org.bitlet.weupnp.GatewayDiscover;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -163,6 +158,11 @@ public class DynamicDnsPlugin extends Plugin {
         } catch (Exception e) {
             logger().error("[DynDNS] Can't get external IP", e);
         }
+    }
+
+    @Override
+    public boolean hasSettings() {
+        return true;
     }
 
     @Override

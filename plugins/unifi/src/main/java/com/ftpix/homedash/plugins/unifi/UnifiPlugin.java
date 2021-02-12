@@ -3,7 +3,6 @@ package com.ftpix.homedash.plugins.unifi;
 import com.ftpix.homedash.models.ModuleExposedData;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -67,6 +66,11 @@ public class UnifiPlugin extends Plugin {
     @Override
     public void doInBackground() {
 
+    }
+
+    @Override
+    public boolean hasSettings() {
+        return true;
     }
 
     @Override

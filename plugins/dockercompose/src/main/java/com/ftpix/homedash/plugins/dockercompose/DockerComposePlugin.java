@@ -8,7 +8,6 @@ import com.ftpix.homedash.plugins.dockercompose.exceptions.CommandException;
 import com.ftpix.homedash.plugins.dockercompose.models.CommandOutput;
 import com.ftpix.homedash.plugins.dockercompose.models.DockerContainer;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -105,6 +104,11 @@ public class DockerComposePlugin extends Plugin {
     @Override
     public void doInBackground() {
 
+    }
+
+    @Override
+    public boolean hasSettings() {
+        return true;
     }
 
     @Override

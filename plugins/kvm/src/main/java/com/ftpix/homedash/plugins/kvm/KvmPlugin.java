@@ -80,6 +80,11 @@ public class KvmPlugin extends Plugin {
     }
 
     @Override
+    public boolean hasSettings() {
+        return true;
+    }
+
+    @Override
     protected Object refresh(String size) throws Exception {
         switch (size) {
             case ModuleLayout.SIZE_1x1:

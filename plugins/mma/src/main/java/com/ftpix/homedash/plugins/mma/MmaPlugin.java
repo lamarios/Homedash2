@@ -19,7 +19,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -27,8 +26,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -186,6 +183,11 @@ public class MmaPlugin extends Plugin {
         } catch (Exception e) {
             logger().error("Error while trying to get the organization");
         }
+    }
+
+    @Override
+    public boolean hasSettings() {
+        return true;
     }
 
     @Override

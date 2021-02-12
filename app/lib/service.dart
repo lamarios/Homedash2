@@ -3,15 +3,35 @@ import 'dart:convert';
 import 'package:app/model/ServerConfig.dart';
 import 'package:app/model/page.dart';
 import 'package:app/model/pageLayout.dart';
+import 'package:app/model/plugin.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class Service {
   String url;
+
+  WebSocketChannel websocket;
   Map<String, String> headers = Map();
 
   Service(this.url);
+
+  /// connect to the websocket
+  Stream getWebsocketStream() {
+    if (websocket == null) {
+      var wsUrl = createWebSocketUrl();
+      print(wsUrl);
+      websocket =
+          WebSocketChannel.connect(Uri.parse(wsUrl));
+    }
+
+    return websocket.stream;
+  }
+
+  String createWebSocketUrl() {
+    return url.replaceFirst("http", "ws") + "/ws?access_token="+headers['Authorization'].replaceAll("Bearer ", "");
+  }
 
   Future<bool> setToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
@@ -40,8 +60,18 @@ class Service {
         headers: headers);
     if (response.statusCode == 200) {
       return PageLayout.fromJson(toJson(response));
-    }else{
+    } else {
       throw Exception("Couldn't get page layout");
+    }
+  }
+
+  /// Get the list of available plugins in the system
+  Future<List<Plugin>> getAvailablePlugins() async {
+    final response = await http.get(url + '/plugins', headers: headers);
+    if (response.statusCode == 200) {
+      return (toJson(response) as List).map((e) => Plugin.fromJson(e)).toList();
+    } else {
+      throw Exception("Couldn't get available plugins");
     }
   }
 
@@ -57,6 +87,19 @@ class Service {
       return List<PluginPage>.from(i.map((e) => PluginPage.fromJson(e)));
     } else {
       throw Exception("Couldn't get pages ${response.body}");
+    }
+  }
+
+  Future<Map<String, String>> saveModule(
+      int page, String clazz, Map<String, String> settings) async {
+    settings.putIfAbsent("class", () => clazz);
+    final response = await http.post(url + "/plugins/" + page.toString(),
+        headers: headers, body: settings);
+
+    if (response.statusCode == 200) {
+      return toJson(response) as Map<String, String>;
+    } else {
+      throw Exception("Couldn't save module ${response.body}");
     }
   }
 

@@ -77,6 +77,11 @@ public class SpotifyPlugin extends Plugin {
     }
 
     @Override
+    public boolean hasSettings() {
+        return true;
+    }
+
+    @Override
     protected Object refresh(String size) throws Exception {
 
         getData(DATA_SPOTIFY_TOKEN, SpotifyToken.class).ifPresent(t -> this.token = (SpotifyToken) t);

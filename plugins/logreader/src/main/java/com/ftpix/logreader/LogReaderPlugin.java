@@ -7,7 +7,6 @@ import com.ftpix.homedash.plugins.Plugin;
 import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -94,6 +93,11 @@ public class LogReaderPlugin extends Plugin implements TailerListener {
                 logger().info("Couldn't read file {}", settings.get(SETTINGS_PATH), e);
             }
         }
+    }
+
+    @Override
+    public boolean hasSettings() {
+        return true;
     }
 
     @Override

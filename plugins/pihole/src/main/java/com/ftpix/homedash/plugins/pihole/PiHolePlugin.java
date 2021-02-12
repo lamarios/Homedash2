@@ -1,9 +1,7 @@
 package com.ftpix.homedash.plugins.pihole;
 
-import com.ftpix.homedash.models.ModuleLayout;
-import com.google.gson.Gson;
-
 import com.ftpix.homedash.models.ModuleExposedData;
+import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.plugins.pihole.models.PiHoleStats;
@@ -13,7 +11,10 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by gz on 11-Jun-16.
@@ -75,6 +76,11 @@ public class PiHolePlugin extends Plugin {
     @Override
     public void doInBackground() {
 
+    }
+
+    @Override
+    public boolean hasSettings() {
+        return true;
     }
 
     @Override

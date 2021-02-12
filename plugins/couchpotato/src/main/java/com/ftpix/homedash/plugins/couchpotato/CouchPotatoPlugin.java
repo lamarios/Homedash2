@@ -19,6 +19,7 @@ import java.util.*;
 
 /**
  * Created by gz on 22-Jun-16.
+ *
  */
 public class CouchPotatoPlugin extends Plugin {
     public static final String URL = "url", API_KEY = "apiKey", TYPE = "type";
@@ -124,6 +125,11 @@ public class CouchPotatoPlugin extends Plugin {
     @Override
     public void doInBackground() {
 
+    }
+
+    @Override
+    public boolean hasSettings() {
+        return true;
     }
 
     @Override

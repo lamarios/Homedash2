@@ -4,33 +4,22 @@ import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.ModuleExposedData;
 import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
-import com.ftpix.homedash.plugins.models.CpuInfo;
-import com.ftpix.homedash.plugins.models.HardwareInfo;
-import com.ftpix.homedash.plugins.models.OsInfo;
 import com.ftpix.homedash.plugins.models.Process;
-import com.ftpix.homedash.plugins.models.RamInfo;
-import com.ftpix.homedash.plugins.models.SystemInfoData;
-
-import java.text.DecimalFormat;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
-import java.util.stream.Stream;
-
+import com.ftpix.homedash.plugins.models.*;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.GlobalMemory;
 import oshi.hardware.Sensors;
 import oshi.software.os.OSProcess;
 import oshi.software.os.OperatingSystem;
+
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+import java.util.stream.Stream;
 
 public class SystemInfoPlugin extends Plugin {
 
@@ -174,6 +163,11 @@ public class SystemInfoPlugin extends Plugin {
         } catch (Exception e) {
             logger().error("[SystemInfo] Error while getting system info", e);
         }
+    }
+
+    @Override
+    public boolean hasSettings() {
+        return true;
     }
 
     @Override

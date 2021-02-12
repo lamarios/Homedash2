@@ -449,7 +449,9 @@ public enum SettingsController implements Controller<Settings, String> {
                 if (useAuth != null && useAuth.getValue().equalsIgnoreCase("1")) {
                     logger.info("Auth requested, checking if everything is alright;");
 
-                    final String token = req.headers("Authorization").replaceAll("Bearer ", "").trim();
+                    final String token = Optional.ofNullable(req.headers("Authorization"))
+                            .map(s ->s.replaceAll("Bearer ", "").trim())
+                            .orElse(req.queryParams("access_token"));
 
 
                     //checking cookie first
@@ -472,6 +474,7 @@ public enum SettingsController implements Controller<Settings, String> {
             return true;
 
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }

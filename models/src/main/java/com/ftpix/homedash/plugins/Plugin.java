@@ -104,6 +104,7 @@ public abstract class Plugin {
      * Do background task if getBackgroundRefreshRate() > 0
      */
     public abstract void doInBackground();
+    public abstract  boolean hasSettings();
 
     /**
      * Get data to send to clients via web socket

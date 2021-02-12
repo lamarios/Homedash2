@@ -77,6 +77,11 @@ public class PlexPlugin extends Plugin {
     }
 
     @Override
+    public boolean hasSettings() {
+        return true;
+    }
+
+    @Override
     protected Object refresh(String size) throws Exception {
         List<NowPlaying> nowPlaying = api.getNowPlaying();
 
@@ -138,7 +143,7 @@ public class PlexPlugin extends Plugin {
 
     private String downloadPicture(String url) {
         try {
-            Path filePath = getImagePath().resolve(DigestUtils.md5Hex(url)+".jpg");
+            Path filePath = getImagePath().resolve(DigestUtils.md5Hex(url) + ".jpg");
 
 
             if (!java.nio.file.Files.exists(filePath)) {
@@ -156,7 +161,7 @@ public class PlexPlugin extends Plugin {
 
 
             }
-            return "/" + filePath.toString().replace("/tmp/","");
+            return "/" + filePath.toString().replace("/tmp/", "");
         } catch (Exception e) {
             logger().error("Couldn't get poster from path [{}]", url, e);
             return "";

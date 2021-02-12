@@ -1,5 +1,6 @@
 import 'package:app/model/page.dart';
 import 'package:app/widgets/dashboard.dart';
+import 'package:app/widgets/leftMenu.dart';
 import 'package:flutter/material.dart';
 
 import '../globals.dart' as globals;
@@ -34,35 +35,8 @@ class _MainPageState extends State<MainPage> {
               width: 300,
               child: Padding(
                   padding: const EdgeInsets.all(20),
-                  child: Column(children: <Widget>[
-                    Container(height: 75, child: Text('Pages')),
-                    Expanded(
-                        child: ListView.builder(
-                      itemCount: pages.length,
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: false,
-                      itemBuilder: (context, index) {
-                        return Container(
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10)),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 2,
-                                    blurRadius: 5,
-                                    offset: Offset(
-                                        2, 2), // changes position of shadow
-                                  ),
-                                ]),
-                            child: Padding(
-                                padding: const EdgeInsets.all(20),
-                                child: Text('Page ${pages[index].name}')));
-                      },
-                    ))
-                  ]))),
-          Expanded(child: Dashboard(pageId: 1))
+                  child: LeftMenu(pages: this.pages))),
+           Container(child: Dashboard(pageId: 1))
         ],
       ),
     );

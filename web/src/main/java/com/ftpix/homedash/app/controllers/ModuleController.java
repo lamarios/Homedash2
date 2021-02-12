@@ -4,8 +4,8 @@ package com.ftpix.homedash.app.controllers;
 import com.ftpix.homedash.app.PluginModuleMaintainer;
 import com.ftpix.homedash.db.DB;
 import com.ftpix.homedash.jobs.BackgroundRefresh;
-import com.ftpix.homedash.models.*;
 import com.ftpix.homedash.models.Module;
+import com.ftpix.homedash.models.*;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.utils.HomeDashTemplateEngine;
 import com.google.gson.Gson;
@@ -32,38 +32,39 @@ import static com.ftpix.homedash.db.DB.MODULE_SETTINGS_DAO;
 public enum ModuleController implements Controller<Module, Integer> {
     INSTANCE;
 
-    private Logger logger = LogManager.getLogger();
-
-    private final Gson gson = new GsonFireBuilder().enableExposeMethodResult().createGsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     public static final String SESSION_NEW_MODULE_PAGE = "new-module-page";
-
+    private final Gson gson = new GsonFireBuilder().enableExposeMethodResult().createGsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+    private Logger logger = LogManager.getLogger();
 
     public void defineEndpoints() {
 
         /*
          * Add module
-		 */
+         */
         Spark.get("/add-module/on-page/:page", this::addModuleOnPage, new HomeDashTemplateEngine());
 
-		/*
+        Spark.get("/plugins", this::listPlugins, gson::toJson);
+        Spark.post("/plugins/:page", this::saveModule, gson::toJson);
+
+        /*
          * Add module with class This will save the module if there are no
-		 * settings to display, otherwise it'll show the settings
-		 */
+         * settings to display, otherwise it'll show the settings
+         */
         Spark.get("/add-module/:pluginclass", this::addModule, new HomeDashTemplateEngine());
 
-		/*
+        /*
          * Add module
-		 */
+         */
         Spark.get("/module/:moduleId/settings", this::getModuleSettings, new HomeDashTemplateEngine());
 
-		/*
+        /*
          * Save a new or edited module
-		 */
-        Spark.post("/save-module", this::saveModule, new HomeDashTemplateEngine());
+         */
+//        Spark.post("/save-module", this::saveModule, new HomeDashTemplateEngine());
 
-		/*
+        /*
          * Deletes a module
-		 */
+         */
         Spark.delete("/module/:moduleId", this::deleteModule);
 
 
@@ -79,6 +80,45 @@ public enum ModuleController implements Controller<Module, Integer> {
         Spark.get("/module/:moduleId/full-screen", this::getFullScreenView, new HomeDashTemplateEngine());
 
         Spark.post("/module/getNextAvailableSize", this::getNextAvailableSize);
+    }
+
+    @Override
+    public Module get(Integer id) throws SQLException {
+        return DB.MODULE_DAO.queryForId(id);
+    }
+
+    @Override
+    public List<Module> getAll() throws SQLException {
+        return DB.MODULE_DAO.queryForAll();
+    }
+
+    @Override
+    public boolean deleteById(Integer id) throws Exception {
+        return delete(get(id));
+    }
+
+    @Override
+    public boolean delete(Module object) throws Exception {
+        deleteModuleLayoutAndSettings(object);
+        DB.MODULE_DATA_DAO.delete(object.getData());
+        return DB.MODULE_DAO.delete(object) == 1;
+    }
+
+    @Override
+    public boolean update(Module object) throws SQLException {
+        return DB.MODULE_DAO.update(object) == 1;
+    }
+
+    @Override
+    public Integer create(Module object) throws SQLException {
+        DB.MODULE_DAO.create(object);
+        return object.getId();
+    }
+
+    private List<PluginSimple> listPlugins(Request request, Response response) {
+        return PluginController.INSTANCE.listAvailablePlugins().stream()
+                .map(p -> new PluginSimple(p.getClass().getName(), p.getDisplayName(), p.getDescription(), p.hasSettings()))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -117,7 +157,6 @@ public enum ModuleController implements Controller<Module, Integer> {
         }
 
     }
-
 
     /**
      * Gets the view for a full screen plugin
@@ -209,25 +248,23 @@ public enum ModuleController implements Controller<Module, Integer> {
      * @param res A Spark response
      * @return the template for the module settings if necessary, redirect to index if the module has no settings.
      */
-    private ModelAndView saveModule(Request req, Response res) {
+    private Map<String, String> saveModule(Request req, Response res) {
+        int page = Integer.parseInt(Optional.ofNullable(req.params("page")).orElse("1"));
 
         logger.info("/save-module");
         try {
 
             //find page
-            int page = 1;
-            if (req.session().attribute(SESSION_NEW_MODULE_PAGE) != null) {
-                page = req.session().attribute(SESSION_NEW_MODULE_PAGE);
-            }
             logger.info("/save-module ({} params)", req.queryMap().toMap().size());
 
             //checking settings
-
             //flattening post query
             Map<String, String> flatSettings = new HashMap<String, String>();
             req.queryMap().toMap().forEach((key, value) -> {
                 flatSettings.put(key, value[0]);
             });
+
+
 
             Plugin plugin;
             boolean editing = false;
@@ -235,7 +272,7 @@ public enum ModuleController implements Controller<Module, Integer> {
                 editing = true;
                 plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(Integer.parseInt(flatSettings.get("module_id")));
             } else {
-                plugin = PluginController.INSTANCE.createPluginFromClass(req.queryParams("class"));
+                plugin = PluginController.INSTANCE.createPluginFromClass(flatSettings.get("class"));
             }
 
 
@@ -243,27 +280,14 @@ public enum ModuleController implements Controller<Module, Integer> {
             //No errors, we're good to go
             if (errors == null || errors.size() == 0) {
                 saveModuleWithSettings(req.queryMap().toMap(), page);
+                return new HashMap<>();
             } else {
-                logger.info("[{}] errors found !", errors.size());
-                Map<String, Object> map = new HashMap<>();
-                if (editing) {
-                    map.put("plugin", plugin);
-                } else {
-                    map.put("pluginClass", plugin.getClass().getCanonicalName());
-                }
-                map.put("pluginName", plugin.getDisplayName());
-                map.put("settings", PluginController.INSTANCE.getPluginSettingsHtml(plugin, flatSettings));
-                map.put("errors", errors);
-
-
-                ((Map<String, String>) map.get("errors")).forEach((k, v) -> logger.info("error {} ->{}", k, v));
-                return new ModelAndView(map, "module-settings");
+                return errors;
             }
         } catch (Exception e) {
             logger.error("Error while saving module", e);
         }
-        res.redirect("/");
-        return null;
+        return new HashMap<>();
     }
 
     /**
@@ -362,39 +386,6 @@ public enum ModuleController implements Controller<Module, Integer> {
             e.printStackTrace();
             return null;
         }
-    }
-
-    @Override
-    public Module get(Integer id) throws SQLException {
-        return DB.MODULE_DAO.queryForId(id);
-    }
-
-    @Override
-    public List<Module> getAll() throws SQLException {
-        return DB.MODULE_DAO.queryForAll();
-    }
-
-    @Override
-    public boolean deleteById(Integer id) throws Exception {
-        return delete(get(id));
-    }
-
-    @Override
-    public boolean delete(Module object) throws Exception {
-        deleteModuleLayoutAndSettings(object);
-        DB.MODULE_DATA_DAO.delete(object.getData());
-        return DB.MODULE_DAO.delete(object) == 1;
-    }
-
-    @Override
-    public boolean update(Module object) throws SQLException {
-        return DB.MODULE_DAO.update(object) == 1;
-    }
-
-    @Override
-    public Integer create(Module object) throws SQLException {
-        DB.MODULE_DAO.create(object);
-        return object.getId();
     }
 
     /**

@@ -4,20 +4,18 @@ import com.ftpix.homedash.models.ModuleExposedData;
 import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
-
 import org.bitlet.weupnp.GatewayDevice;
 import org.bitlet.weupnp.GatewayDiscover;
 import org.bitlet.weupnp.PortMappingEntry;
 import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Created by gz on 12-Jun-16.
@@ -158,6 +156,11 @@ public class PortMapperPlugin extends Plugin {
         } catch (IOException | SAXException e) {
             logger().error("Error while refreshing ports", e);
         }
+    }
+
+    @Override
+    public boolean hasSettings() {
+        return false;
     }
 
     @Override

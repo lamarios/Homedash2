@@ -1,5 +1,9 @@
 package com.ftpix.homedash.plugins;
 
+import ca.benow.transmission.AddTorrentParameters;
+import ca.benow.transmission.TransmissionClient;
+import ca.benow.transmission.model.TorrentStatus;
+import ca.benow.transmission.model.TransmissionSession;
 import com.ftpix.homedash.Utils.ByteUtils;
 import com.ftpix.homedash.models.ModuleExposedData;
 import com.ftpix.homedash.models.ModuleLayout;
@@ -7,7 +11,6 @@ import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.notifications.Notifications;
 import com.ftpix.homedash.plugins.models.TorrentObject;
 import com.ftpix.homedash.plugins.models.TorrentSession;
-
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -16,11 +19,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import ca.benow.transmission.AddTorrentParameters;
-import ca.benow.transmission.TransmissionClient;
-import ca.benow.transmission.model.TorrentStatus;
-import ca.benow.transmission.model.TransmissionSession;
 
 
 /**
@@ -139,6 +137,11 @@ public class TransmissionPlugin extends Plugin {
                 logger().error("Couldn't delete torrents", e);
             }
         }
+    }
+
+    @Override
+    public boolean hasSettings() {
+        return true;
     }
 
     @Override

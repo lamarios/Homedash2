@@ -109,6 +109,11 @@ public class SonarrTvPlugin extends Plugin {
     }
 
     @Override
+    public boolean hasSettings() {
+        return true;
+    }
+
+    @Override
     protected Object refresh(String size) throws Exception {
         Calendar cal = new GregorianCalendar();
         cal.add(Calendar.MONTH, 1);

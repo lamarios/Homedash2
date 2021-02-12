@@ -92,6 +92,11 @@ public class GooglePublicCalendarPlugin extends Plugin {
     }
 
     @Override
+    public boolean hasSettings() {
+        return true;
+    }
+
+    @Override
     protected Object refresh(String size) throws Exception {
 
         try {
