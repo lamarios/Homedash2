@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app/model/moduleMessage.dart';
 import 'package:flutter/cupertino.dart';
 

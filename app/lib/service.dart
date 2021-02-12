@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:app/model/ServerConfig.dart';
+import 'package:app/model/moduleMessage.dart';
 import 'package:app/model/page.dart';
 import 'package:app/model/pageLayout.dart';
 import 'package:app/model/plugin.dart';
@@ -22,15 +23,27 @@ class Service {
     if (websocket == null) {
       var wsUrl = createWebSocketUrl();
       print(wsUrl);
-      websocket =
-          WebSocketChannel.connect(Uri.parse(wsUrl));
+      websocket = WebSocketChannel.connect(Uri.parse(wsUrl));
     }
 
     return websocket.stream;
   }
 
   String createWebSocketUrl() {
-    return url.replaceFirst("http", "ws") + "/ws?access_token="+headers['Authorization'].replaceAll("Bearer ", "");
+    return url.replaceFirst("http", "ws") +
+        "/ws?access_token=" +
+        headers['Authorization'].replaceAll("Bearer ", "");
+  }
+
+  void closeWebSocket() {
+    if (websocket.closeCode != null) {
+      print('closing socket');
+      websocket.sink.close();
+    }
+  }
+
+  void sendWebsocketMessage(ModuleMessage message) {
+    websocket.sink.add(jsonEncode(message.toJson()));
   }
 
   Future<bool> setToken(String token) async {

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:app/model/moduleMessage.dart';
 import 'package:app/model/pageLayout.dart';
@@ -19,8 +20,10 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   PageLayout pageLayout;
-  final double spacing = 10;
+  final double spacing = 15;
   final double sizeOne = 100;
+  Stream<dynamic> stream;
+  StreamSubscription<dynamic> streamSubscription;
 
   Map<int, StreamController<ModuleMessage>> messages = Map();
 
@@ -29,26 +32,51 @@ class _DashboardState extends State<Dashboard> {
     getLayout();
   }
 
-  void initStreams() {
-    this.pageLayout.modules.forEach((module) {
-      messages.putIfAbsent(module.id, () => StreamController<ModuleMessage>());
-    });
+  @override
+  void dispose() {
+    streamSubscription.cancel();
+    globals.service.closeWebSocket();
+    super.dispose();
+  }
 
+  void initStreams() {
     print("${messages.length} streams created");
 
-    globals.service.getWebsocketStream().listen(propagateMessage);
+    Map<int, StreamController<ModuleMessage>> streams = Map();
+    pageLayout.modules.forEach((element) {
+      streams[element.module.id] = StreamController<ModuleMessage>();
+    });
+
+    setState(() {
+      this.messages = streams;
+      print(streams.toString());
+    });
+
+    stream = globals.service.getWebsocketStream();
+    streamSubscription = stream.listen(propagateMessage);
+
+    // initializin the client status for the backend
+    globals.service.sendWebsocketMessage(ModuleMessage(
+        id: -1, command: 'changePage', message: widget.pageId.toString()));
+    globals.service.sendWebsocketMessage(ModuleMessage(
+        id: -1,
+        command: 'changeLayout',
+        message: this.pageLayout.layout.id.toString()));
   }
 
   void propagateMessage(dynamic wsMessage) {
-    print(wsMessage as String);
+    var json = jsonDecode(wsMessage as String);
+    ModuleMessage message = ModuleMessage.fromJson(json);
+
+    messages[message.id].add(message);
   }
 
   void getLayout() async {
     PageLayout pageLayout =
         await globals.service.getPageLayout(widget.pageId, 600);
-    setState(() {
-      this.pageLayout = pageLayout;
-    });
+    // setState(() {
+    this.pageLayout = pageLayout;
+    // });
     // now we init the message stream for each module
     initStreams();
   }
@@ -75,8 +103,12 @@ class _DashboardState extends State<Dashboard> {
               mainAxisSpacing: this.spacing,
               crossAxisCount: this.pageLayout.layout.maxGridWidth,
               itemCount: this.pageLayout.modules.length,
-              itemBuilder: (BuildContext context, int index) =>
-                  DashboardWidget(moduleLayout: this.pageLayout.modules[index]),
+              itemBuilder: (BuildContext context, int index) {
+                var layout = this.pageLayout.modules[index];
+                var stream = messages[layout.module.id];
+
+                return DashboardWidget(moduleLayout: layout, stream: stream);
+              },
               staggeredTileBuilder: (int index) => getModuleSize(index)));
     } else {
       return Text('No layout for this screen size');
