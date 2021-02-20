@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app/globals.dart' as g;
 import 'package:app/model/moduleMessage.dart';
 import 'package:app/widgets/module.dart';
@@ -9,15 +11,32 @@ class CouchPotato extends ModuleWidget {
   @override
   State<StatefulWidget> createState() => CouchPotatoState();
 
-  CouchPotato(ModuleMessage lastMessage) : super(lastMessage: lastMessage);
+  CouchPotato(
+      {Key key, StreamController<ModuleMessage> stream, int width, int height})
+      : super(key: key, stream: stream, width: width, height: height);
 }
 
-class CouchPotatoState extends State<CouchPotato> {
+class CouchPotatoState extends ModuleWidgetState<CouchPotato> {
+  Refresh refresh;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.stream.stream.listen(onMessage);
+  }
+
+  void onMessage(ModuleMessage message) {
+    if (message.command == 'refresh') {
+      Refresh refresh = Refresh.fromJson(message.message);
+      setState(() {
+        this.refresh = refresh;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (widget.lastMessage != null && widget.lastMessage.message != null) {
-      Refresh refresh = Refresh.fromJson(widget.lastMessage.message);
-
+    if (refresh != null) {
       final url = g.service.url + refresh.poster;
       return Container(
           decoration: BoxDecoration(
@@ -26,10 +45,10 @@ class CouchPotatoState extends State<CouchPotato> {
           child: Container(
               color: Color.fromRGBO(0, 0, 0, 0.5),
               child: Stack(
-                children: [Text('yo')],
+                children: [],
               )));
     } else {
-      return Container(child: Text('waiting'));
+      return Center(heightFactor: 1.0, child: CircularProgressIndicator());
     }
   }
 }

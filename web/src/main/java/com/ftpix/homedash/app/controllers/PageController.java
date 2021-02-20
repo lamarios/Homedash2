@@ -44,9 +44,9 @@ INSTANCE;
         Spark.post("/pages/edit/:id", this::renamePage, gson::toJson);
 
         /**
-         * deleete a page  and return all as json
+         * delete a page  and return all as json
          */
-        Spark.delete("/page/:id", this::deletePage, gson::toJson);
+        Spark.delete("/pages/:id", this::deletePage, gson::toJson);
     }
 
     /**

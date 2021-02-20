@@ -1,0 +1,11 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 130" preserveaspectration="true" class="icon" width="500" height="500">
+    <g fill="#e67e22" class="squares">
+        <rect x="18" y="18" width="30" height="30"></rect>
+        <rect x="82" y="18" width="30" height="30"></rect>
+        <rect x="18" y="50" width="62" height="30"></rect>
+        <rect x="82" y="50" width="30" height="30"></rect>
+        <rect x="18" y="82" width="30" height="30"></rect>
+        <rect x="82" y="82" width="30" height="30"></rect>
+    </g>
+
+</svg>

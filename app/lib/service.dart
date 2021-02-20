@@ -5,9 +5,9 @@ import 'package:app/model/moduleMessage.dart';
 import 'package:app/model/page.dart';
 import 'package:app/model/pageLayout.dart';
 import 'package:app/model/plugin.dart';
+import 'package:app/utils/preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class Service {
@@ -47,8 +47,7 @@ class Service {
   }
 
   Future<bool> setToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString("token", token);
+    Preferences.set(Preferences.TOKEN, token);
 
     token = "Bearer " + token;
 
@@ -59,7 +58,7 @@ class Service {
 
   /// Gets the server config, to know if authentication is required for example
   Future<ServerConfig> getConfig() async {
-    final response = await http.get(url + "/config");
+    final response = await http.get(Uri.parse(url + "/config"));
     if (response.statusCode == 200) {
       return ServerConfig.fromJson(toJson(response));
     } else {
@@ -69,7 +68,8 @@ class Service {
 
   /// Gets the current page layout based on the screen width
   Future<PageLayout> getPageLayout(int pageId, int width) async {
-    final response = await http.get(url + '/modules-layout/${pageId}/${width}',
+    final response = await http.get(
+        Uri.parse(url + '/modules-layout/${pageId}/${width}'),
         headers: headers);
     if (response.statusCode == 200) {
       return PageLayout.fromJson(toJson(response));
@@ -80,7 +80,8 @@ class Service {
 
   /// Get the list of available plugins in the system
   Future<List<Plugin>> getAvailablePlugins() async {
-    final response = await http.get(url + '/plugins', headers: headers);
+    final response =
+        await http.get(Uri.parse(url + '/plugins'), headers: headers);
     if (response.statusCode == 200) {
       return (toJson(response) as List).map((e) => Plugin.fromJson(e)).toList();
     } else {
@@ -94,7 +95,8 @@ class Service {
   }
 
   Future<List<PluginPage>> getPages() async {
-    final response = await http.get(url + "/pages", headers: headers);
+    final response =
+        await http.get(Uri.parse(url + "/pages"), headers: headers);
     if (response.statusCode == 200) {
       Iterable i = toJson(response);
       return List<PluginPage>.from(i.map((e) => PluginPage.fromJson(e)));
@@ -106,8 +108,10 @@ class Service {
   Future<Map<String, String>> saveModule(
       int page, String clazz, Map<String, String> settings) async {
     settings.putIfAbsent("class", () => clazz);
-    final response = await http.post(url + "/plugins/" + page.toString(),
-        headers: headers, body: settings);
+    final response = await http.post(
+        Uri.parse(url + "/plugins/" + page.toString()),
+        headers: headers,
+        body: settings);
 
     if (response.statusCode == 200) {
       return toJson(response) as Map<String, String>;
@@ -122,7 +126,7 @@ class Service {
     creds.putIfAbsent("username", () => username);
     creds.putIfAbsent("password", () => password);
 
-    final response = await http.post(url + "/login", body: creds);
+    final response = await http.post(Uri.parse(url + "/login"), body: creds);
 
     if (response.statusCode == 401) {
       throw Exception("Invalid username/password combination");
@@ -136,5 +140,51 @@ class Service {
 
   toJson(http.Response response) {
     return jsonDecode(response.body);
+  }
+
+  Future<List<PluginPage>> addPage(String name) async {
+    Map<String, String> data = new Map();
+    data.putIfAbsent("name", () => name);
+
+    final response = await http.post(Uri.parse(url + "/pages/add"),
+        headers: headers, body: data);
+
+    if (response.statusCode == 200) {
+      Iterable i = toJson(response);
+      return List<PluginPage>.from(i.map((e) => PluginPage.fromJson(e)));
+    } else {
+      throw Exception("Couldn't insert page ${response.body}");
+    }
+  }
+
+  Future<List<PluginPage>> renamePage(int id, String name) async {
+    Map<String, String> data = new Map();
+    data.putIfAbsent("name", () => name);
+
+    final response = await http.post(
+        Uri.parse(url + "/pages/edit/" + id.toString()),
+        headers: headers,
+        body: data);
+
+    if (response.statusCode == 200) {
+      Iterable i = toJson(response);
+      return List<PluginPage>.from(i.map((e) => PluginPage.fromJson(e)));
+    } else {
+      throw Exception("Couldn't insert page ${response.body}");
+    }
+  }
+
+  Future<List<PluginPage>> deletePage(int id) async {
+    final response = await http.delete(
+      Uri.parse(url + "/pages/" + id.toString()),
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      Iterable i = toJson(response);
+      return List<PluginPage>.from(i.map((e) => PluginPage.fromJson(e)));
+    } else {
+      throw Exception("Couldn't insert page ${response.body}");
+    }
   }
 }

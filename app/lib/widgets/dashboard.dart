@@ -20,8 +20,9 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   PageLayout pageLayout;
-  final double spacing = 15;
-  final double sizeOne = 100;
+  double spacing = 20;
+
+  double sizeOne = 100;
   Stream<dynamic> stream;
   StreamSubscription<dynamic> streamSubscription;
 
@@ -29,14 +30,30 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void initState() {
-    getLayout();
+    super.initState();
+    print('dashboard page ${widget.pageId}');
+    setState(() {
+      sizeOne = 100 + spacing;
+    });
+    if (widget.pageId != null) {
+      getLayout();
+    }
   }
 
   @override
   void dispose() {
     streamSubscription.cancel();
     globals.service.closeWebSocket();
+
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(Dashboard oldDashboard) {
+    super.didUpdateWidget(oldDashboard);
+    if (oldDashboard.pageId != widget.pageId) {
+      getLayout();
+    }
   }
 
   void initStreams() {
@@ -53,7 +70,6 @@ class _DashboardState extends State<Dashboard> {
     });
 
     stream = globals.service.getWebsocketStream();
-    streamSubscription = stream.listen(propagateMessage);
 
     // initializin the client status for the backend
     globals.service.sendWebsocketMessage(ModuleMessage(
@@ -62,12 +78,15 @@ class _DashboardState extends State<Dashboard> {
         id: -1,
         command: 'changeLayout',
         message: this.pageLayout.layout.id.toString()));
+
+    if (streamSubscription == null) {
+      streamSubscription = stream.listen(propagateMessage);
+    }
   }
 
   void propagateMessage(dynamic wsMessage) {
     var json = jsonDecode(wsMessage as String);
     ModuleMessage message = ModuleMessage.fromJson(json);
-
     messages[message.id].add(message);
   }
 
@@ -98,6 +117,7 @@ class _DashboardState extends State<Dashboard> {
 
       return Container(
           width: gridWidth,
+          color: Colors.white,
           child: StaggeredGridView.countBuilder(
               crossAxisSpacing: this.spacing,
               mainAxisSpacing: this.spacing,

@@ -19,13 +19,30 @@ class DashboardWidget extends StatefulWidget {
 }
 
 class _DashboardWidgetState extends State<DashboardWidget> {
-  ModuleWidget getModule(Module plugin, ModuleMessage data) {
+  ModuleWidget getModule(Module plugin) {
+    var key = Key(plugin.id.toString());
+
+    var split = widget.moduleLayout.size.split('x');
+    int width = int.parse(split[0]);
+    int height = int.parse(split[1]);
+
+    ModuleWidget moduleWidget;
     switch (plugin.pluginClass) {
       case "com.ftpix.homedash.plugins.couchpotato.CouchPotatoPlugin":
-        return CouchPotato(data);
+        moduleWidget = CouchPotato(
+          key: key,
+          stream: widget.stream,
+          width: width,
+          height: height,
+        );
+        break;
       case "com.ftpix.homedash.plugins.SystemInfoPlugin":
-        return SystemInfo(data);
+        moduleWidget = SystemInfo(
+            key: key, stream: widget.stream, width: width, height: height);
+        break;
     }
+
+    return moduleWidget;
   }
 
   @override
@@ -52,16 +69,6 @@ class _DashboardWidgetState extends State<DashboardWidget> {
             ]),
         child: ClipRRect(
             borderRadius: BorderRadius.circular(5),
-            child: StreamBuilder<ModuleMessage>(
-              stream: widget.stream.stream,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return getModule(widget.moduleLayout.module, snapshot.data);
-                } else {
-                  return Center(
-                      heightFactor: 1.0, child: CircularProgressIndicator());
-                }
-              },
-            )));
+            child: getModule(widget.moduleLayout.module)));
   }
 }

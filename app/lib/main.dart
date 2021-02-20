@@ -1,9 +1,9 @@
 import 'package:app/pages/mainPage.dart';
 import 'package:app/service.dart';
+import 'package:app/utils/preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'globals.dart' as globals;
 
+import 'globals.dart' as globals;
 import 'model/ServerConfig.dart';
 
 void main() {
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.deepOrange,
         backgroundColor: Colors.white,
       ),
       home: MyHomePage(title: 'Flutter demo  yo Home  Page'),
@@ -66,9 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   getServerUrl() async {
-    final prefs = await SharedPreferences.getInstance();
-    final key = 'server_url';
-    final value = prefs.getString(key) ?? "";
+    final value = await Preferences.get(Preferences.SERVER_URL);
     print('read: $value');
 
     globals.service = Service(value);
@@ -78,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       config = await globals.service.getConfig();
       if (config.useAuth) {
-        final token = prefs.getString("token");
+        final token = await Preferences.get(Preferences.TOKEN);
 
         if (token != null && !Service.isTokenExpired(token)) {
           await globals.service.setToken(token);
@@ -91,9 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   saveServerUrl(value) async {
-    final prefs = await SharedPreferences.getInstance();
-    final key = 'server_url';
-    prefs.setString(key, value);
+    Preferences.set(Preferences.SERVER_URL, value);
     print('saved $value');
 
     globals.service = Service(value);
@@ -244,11 +240,13 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
+/*
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
+*/
       body: Center(
         widthFactor: 100,
         // Center is a layout widget. It takes a single child and positions it
@@ -270,6 +268,14 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Padding(
+              padding: EdgeInsets.all(100.0),
+              child: Image.asset(
+                'images/logo.png',
+                width: 200,
+                height: 200,
+              ),
+            ),
             Padding(
                 padding: EdgeInsets.all(100.0),
                 child: Form(

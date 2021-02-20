@@ -67,8 +67,9 @@ public class App {
                     res.header("Pragma", "no-cache"); // HTTP 1.0.
                     res.header("Expires", "0"); // Proxies.
                     res.header("Access-Control-Allow-Origin", "*");
-                    res.header("Access-Control-Allow-Method", "POST, GET, PUT, DELETE, OPTIONS, PATCH");
+                    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
                     res.header("Access-Control-Allow-Headers", "*");
+                    res.header("Access-Control-Allow-Credentials", "true");
 
                     logger.info("{} -> {}", req.requestMethod(), req.url());
 
