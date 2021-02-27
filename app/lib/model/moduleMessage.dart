@@ -1,3 +1,8 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'moduleMessage.g.dart';
+
+@JsonSerializable()
 class ModuleMessage {
   String command;
   dynamic message;
@@ -5,14 +10,8 @@ class ModuleMessage {
 
   ModuleMessage({this.id, this.command, this.message});
 
-  Map<String, dynamic> toJson() {
-    return {'id': id, 'command': command, 'message': message};
-  }
+  factory ModuleMessage.fromJson(Map<String, dynamic> json) =>
+      _$ModuleMessageFromJson(json);
 
-  factory ModuleMessage.fromJson(Map<String, dynamic> json) {
-    return ModuleMessage(
-        id: json['id'] as int,
-        message: json['message'],
-        command: json['command'] as String);
-  }
+  Map<String, dynamic> toJson() => _$ModuleMessageToJson(this);
 }

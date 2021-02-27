@@ -10,6 +10,8 @@ import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import 'model/moduleLayout.dart';
+
 class Service {
   String url;
 
@@ -78,6 +80,22 @@ class Service {
     }
   }
 
+  Future<PageLayout> setPageLayout(
+      int pageId, int width, List<ModuleLayout> moduleLayouts) async {
+    print(
+        'json: ${json.encode(moduleLayouts.map((e) => e.toJson()).toList())}');
+    final response = await http.post(
+        Uri.parse(url + '/modules-layout/${pageId}/${width}'),
+        body: json.encode(moduleLayouts.map((e) => e.toJson()).toList()),
+        headers: headers);
+
+    if (response.statusCode == 200) {
+      return PageLayout.fromJson(toJson(response));
+    } else {
+      throw Exception("Couldn't save page layout");
+    }
+  }
+
   /// Get the list of available plugins in the system
   Future<List<Plugin>> getAvailablePlugins() async {
     final response =
@@ -102,6 +120,37 @@ class Service {
       return List<PluginPage>.from(i.map((e) => PluginPage.fromJson(e)));
     } else {
       throw Exception("Couldn't get pages ${response.body}");
+    }
+  }
+
+  Future<String> getModuleNextAvailableSize(
+      String currentSize, int moduleId, int maxWidth) async {
+    final response =
+        await http.post(Uri.parse(url + "/module/getNextAvailableSize"),
+            body: {
+              "currentSize": currentSize,
+              "moduleId": moduleId.toString(),
+              "availableWidth": maxWidth.toString(),
+            },
+            headers: headers);
+
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception("Couldn't get module next size ${response.body}");
+    }
+  }
+
+  Future<void> saveModuleSize(int moduleLayoutId, String size) async {
+    final response = await http.get(
+        Uri.parse(url +
+            "/save-module-size/" +
+            moduleLayoutId.toString() +
+            "/" +
+            size),
+        headers: headers);
+    if (response.statusCode != 200) {
+      throw Exception("Couldn't save module size ${response.body}");
     }
   }
 

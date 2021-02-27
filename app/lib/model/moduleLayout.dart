@@ -1,5 +1,9 @@
 import 'package:app/model/module.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'moduleLayout.g.dart';
+
+@JsonSerializable(explicitToJson: true)
 class ModuleLayout {
   Module module;
   int id;
@@ -9,12 +13,7 @@ class ModuleLayout {
 
   ModuleLayout({this.module, this.id, this.x, this.y, this.size});
 
-  factory ModuleLayout.fromJson(Map<String, dynamic> json) {
-    return ModuleLayout(
-        id: json['id'] as int,
-        x: json['x'] as int,
-        y: json['y'] as int,
-        size: json['size'] as String,
-        module: Module.fromJson(json['module'] as Map<String, dynamic>));
-  }
+  factory ModuleLayout.fromJson(Map<String, dynamic> json) => _$ModuleLayoutFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ModuleLayoutToJson(this);
 }

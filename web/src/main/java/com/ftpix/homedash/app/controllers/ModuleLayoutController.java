@@ -7,6 +7,7 @@ import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.Page;
 import com.ftpix.homedash.plugins.Plugin;
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -20,6 +21,7 @@ import spark.Spark;
 
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by gz on 04-Jun-16.
@@ -27,54 +29,23 @@ import java.util.*;
 public enum ModuleLayoutController implements Controller<ModuleLayout, Integer> {
     INSTANCE;
 
-    private Logger logger = LogManager.getLogger();
     private final Gson gson = new GsonFireBuilder().enableExposeMethodResult().createGsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-
+    private Logger logger = LogManager.getLogger();
 
     @Override
     public void defineEndpoints() {
         /*
          * Gets the layout of the modules for the current page
-		 */
+         */
         Spark.get("/modules-layout/:page/:width", "application/json", this::layoutForPage, gson::toJson);
-
+        Spark.post("/modules-layout/:page/:width", "application/json", this::saveLayout, gson::toJson);
 
         /**
          * save a layout grid
          */
         Spark.post("/save-module-positions/:layoutId", (req, res) -> savePositions(Integer.parseInt(req.params("layoutId")), req.queryParams("data")), gson::toJson);
-    }
+        Spark.get("/save-module-size/:moduleLayoutId/:size", (req, res) -> saveModulePosition(Integer.parseInt(req.params("moduleLayoutId")), req.params("size")));
 
-    /**
-     * Gets the layout of the modules for the current page.
-     *
-     * @param req a Spark request {@link Request}
-     * @param res a Spark response {@link Response}
-     * @return a map with the HTML and the layout information.
-     * @throws SQLException
-     */
-    private Map<String, Object> layoutForPage(Request req, Response res) throws Exception {
-        int page = Integer.parseInt(req.params("page"));
-        int width = Integer.parseInt(req.params("width"));
-
-        logger.info("/modules-layout/{}/{}", page, width);
-
-        List<ModuleLayout> layouts = generatePageLayout(page, width);
-//        Map<String, Object> model = new HashMap<>();
-//        model.put("layouts", layouts);
-//        model.put("plugins", PluginModuleMaintainer.INSTANCE.PLUGIN_INSTANCES);
-
-
-//        HomeDashTemplateEngine engine = new HomeDashTemplateEngine();
-//        String html = engine.render(new ModelAndView(model, "module-layout"));
-
-        Map<String, Object> toJson = new HashMap<String, Object>();
-
-
-        toJson.put("modules", layouts);
-        toJson.put("layout", LayoutController.INSTANCE.findClosestLayout(width));
-
-        return toJson;
     }
 
     @Override
@@ -106,6 +77,87 @@ public enum ModuleLayoutController implements Controller<ModuleLayout, Integer> 
     public Integer create(ModuleLayout object) throws SQLException {
         DB.MODULE_LAYOUT_DAO.create(object);
         return object.getId();
+    }
+
+    private boolean saveModulePosition(int moduleLayoutId, String size) throws Exception {
+
+        ModuleLayout layout = DB.MODULE_LAYOUT_DAO.queryForId(moduleLayoutId);
+        if (layout != null) {
+            layout.setSize(size);
+            DB.MODULE_LAYOUT_DAO.update(layout);
+
+            return true;
+        } else {
+            throw new Exception("Module Layout not found");
+        }
+
+    }
+
+    private Map<String, Object> saveLayout(Request req, Response res) throws Exception {
+
+        int page = Integer.parseInt(req.params("page"));
+        int width = Integer.parseInt(req.params("width"));
+
+        List<ModuleLayout> layouts = gson.fromJson(req.body(), new TypeToken<List<ModuleLayout>>() {
+        }.getType());
+
+        if(layouts != null) {
+            layouts.forEach(l -> {
+                final ModuleLayout layout;
+                try {
+                    layout = DB.MODULE_LAYOUT_DAO.queryForId(l.getId());
+                    if (layout != null) {
+                        layout.setX(l.getX());
+                        DB.MODULE_LAYOUT_DAO.update(layout);
+                    }
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
+
+        return layoutForPage(page, width);
+    }
+
+    /**
+     * Gets the layout of the modules for the current page.
+     *
+     * @param req a Spark request {@link Request}
+     * @param res a Spark response {@link Response}
+     * @return a map with the HTML and the layout information.
+     * @throws SQLException
+     */
+    private Map<String, Object> layoutForPage(Request req, Response res) throws Exception {
+
+        int page = Integer.parseInt(req.params("page"));
+        int width = Integer.parseInt(req.params("width"));
+
+        return layoutForPage(page, width);
+    }
+
+
+    private Map<String, Object> layoutForPage(int page, int width) throws Exception {
+
+        logger.info("/modules-layout/{}/{}", page, width);
+
+        List<ModuleLayout> layouts = generatePageLayout(page, width).stream()
+                .sorted(Comparator.comparingInt(ModuleLayout::getX))
+                .collect(Collectors.toList());
+//        Map<String, Object> model = new HashMap<>();
+//        model.put("layouts", layouts);
+//        model.put("plugins", PluginModuleMaintainer.INSTANCE.PLUGIN_INSTANCES);
+
+
+//        HomeDashTemplateEngine engine = new HomeDashTemplateEngine();
+//        String html = engine.render(new ModelAndView(model, "module-layout"));
+
+        Map<String, Object> toJson = new HashMap<String, Object>();
+
+
+        toJson.put("modules", layouts);
+        toJson.put("layout", LayoutController.INSTANCE.findClosestLayout(width));
+
+        return toJson;
     }
 
     public boolean deleteMany(Collection<ModuleLayout> objects) throws SQLException {

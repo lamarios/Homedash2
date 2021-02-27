@@ -3,16 +3,36 @@ import 'dart:async';
 import 'package:app/model/module.dart';
 import 'package:app/model/moduleLayout.dart';
 import 'package:app/model/moduleMessage.dart';
+import 'package:app/model/pageLayout.dart';
 import 'package:app/plugins/couchpotato/module.dart';
 import 'package:app/plugins/systemInfo/module.dart';
 import 'package:app/widgets/module.dart';
+import 'package:app/widgets/moduleOverlay.dart';
 import 'package:flutter/material.dart';
 
 class DashboardWidget extends StatefulWidget {
   ModuleLayout moduleLayout;
   StreamController<ModuleMessage> stream;
+  bool editMode;
+  int selectedId;
+  Function selectForEdit, refreshLayout;
+  PageLayout pageLayout;
+  Key key;
 
-  DashboardWidget({Key key, this.stream, this.moduleLayout});
+  DashboardWidget(
+      {this.key,
+      this.stream,
+      this.moduleLayout,
+      this.editMode,
+      this.selectedId,
+      this.selectForEdit,
+      this.refreshLayout,
+      this.pageLayout});
+
+
+  setEditMode(bool editMode){
+    this.editMode = editMode;
+  }
 
   @override
   _DashboardWidgetState createState() => _DashboardWidgetState();
@@ -54,7 +74,18 @@ class _DashboardWidgetState extends State<DashboardWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    List<Widget> stackChildren = <Widget>[
+      getModule(widget.moduleLayout.module)
+    ];
+
+    if (widget.editMode) {
+      stackChildren.add(ModuleOverlay(
+          pageLayout: widget.pageLayout,
+          layout: widget.moduleLayout,
+          refreshLayout: widget.refreshLayout,
+          selected: widget.selectedId == widget.moduleLayout.module.id));
+    }
+
     return Container(
         decoration: BoxDecoration(
             color: Colors.white,
@@ -69,6 +100,8 @@ class _DashboardWidgetState extends State<DashboardWidget> {
             ]),
         child: ClipRRect(
             borderRadius: BorderRadius.circular(5),
-            child: getModule(widget.moduleLayout.module)));
+            child: Stack(
+              children: stackChildren,
+            )));
   }
 }

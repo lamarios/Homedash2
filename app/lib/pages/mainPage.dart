@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 
 import '../globals.dart' as globals;
 
+const EDIT_LAYOUT = "edit-layout";
+
 class MainPage extends StatefulWidget {
   @override
   _MainPageState createState() => _MainPageState();
@@ -15,6 +17,7 @@ class _MainPageState extends State<MainPage> {
   List<PluginPage> pages = <PluginPage>[];
   int currentPage;
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  bool editMode = false;
 
   @override
   void initState() {
@@ -24,6 +27,17 @@ class _MainPageState extends State<MainPage> {
       });
       getPages();
     });
+  }
+
+  popUpSelect(String s) {
+    print("Selected $s");
+    switch (s) {
+      case EDIT_LAYOUT:
+        setState(() {
+          editMode = !editMode;
+        });
+        break;
+    }
   }
 
   getPages() async {
@@ -75,6 +89,14 @@ class _MainPageState extends State<MainPage> {
           },
         ),
         backgroundColor: Colors.white,
+        actions: [
+          PopupMenuButton<String>(
+              onSelected: this.popUpSelect,
+              itemBuilder: (itemBuilder) => [
+                    PopupMenuItem(
+                        value: EDIT_LAYOUT, child: Text('Edit Layout'))
+                  ])
+        ],
       ),
       body: Row(
         children: <Widget>[
@@ -82,7 +104,7 @@ class _MainPageState extends State<MainPage> {
               color: Colors.white,
               child: Padding(
                   padding: const EdgeInsets.all(20),
-                  child: Dashboard(pageId: this.currentPage))),
+                  child: Dashboard(pageId: this.currentPage, editMode: editMode))),
           Expanded(child: Container(color: Colors.white))
         ],
       ),
