@@ -154,16 +154,19 @@ class Service {
     }
   }
 
-  Future<Map<String, String>> saveModule(
+  Future<Map<String, dynamic>> saveModule(
       int page, String clazz, Map<String, String> settings) async {
     settings.putIfAbsent("class", () => clazz);
+    print("Pre send: $settings");
     final response = await http.post(
         Uri.parse(url + "/plugins/" + page.toString()),
         headers: headers,
         body: settings);
 
     if (response.statusCode == 200) {
-      return toJson(response) as Map<String, String>;
+      var decode = json.decode(response.body);
+      print("$decode");
+      return decode;
     } else {
       throw Exception("Couldn't save module ${response.body}");
     }
@@ -234,6 +237,21 @@ class Service {
       return List<PluginPage>.from(i.map((e) => PluginPage.fromJson(e)));
     } else {
       throw Exception("Couldn't insert page ${response.body}");
+    }
+  }
+
+  Future<void> moveModule(int moduleLayoutId, bool forward, int pageId) async {
+    final response = await http.get(
+        Uri.parse(url +
+            "/move-module/" +
+            moduleLayoutId.toString() +
+            "/" +
+            forward.toString() +
+            "/page/" +
+            pageId.toString()),
+        headers: headers);
+    if (response.statusCode != 200) {
+      throw Exception("Couldn't move module ${response.body}");
     }
   }
 }

@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:app/model/moduleMessage.dart';
 import 'package:app/model/pageLayout.dart';
+import 'package:app/utils/debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
@@ -23,12 +24,15 @@ class _DashboardState extends State<Dashboard> {
   PageLayout pageLayout;
   double spacing = 20;
 
+  int screenWidth;
+
   double sizeOne = 100;
   Stream<dynamic> stream;
   StreamSubscription<dynamic> streamSubscription;
 
   List<DashboardWidget> modules = [];
   List<StaggeredTile> tiles = [];
+  Debouncer debouncer = new Debouncer(milliseconds: 500);
 
   Map<int, StreamController<ModuleMessage>> messages = Map();
 
@@ -61,7 +65,7 @@ class _DashboardState extends State<Dashboard> {
 
     if (oldDashboard.editMode != widget.editMode) {
       print('editmode changed');
-      // getModules(context);
+      setModules(context);
     }
   }
 
@@ -99,39 +103,28 @@ class _DashboardState extends State<Dashboard> {
     messages[message.id].add(message);
   }
 
-  void swapModules(int oldIndex, int newIndex) async {
-    print("${oldIndex} => ${newIndex}");
-
-    var old = this.pageLayout.modules;
-    old.insert(newIndex, old.removeAt(oldIndex));
-
-    for (int i = 0; i < old.length; i++) {
-      old[i].x = i;
-    }
-
-    var layouts = await globals.service.setPageLayout(widget.pageId, 600, old);
-
-    setLayout(layouts);
-  }
-
   void setLayout(PageLayout layout) {
     this.pageLayout = layout;
     // we init the streams then we set modules for the tile render
     initStreams();
-    // getModules(context);
-    // getTiles();
+    setModules(context);
     print("we have ${modules.length} modules and ${tiles.length} tiles");
   }
 
   void getLayout() async {
-    print("GETTING LAYOUT");
-    PageLayout pageLayout =
-        await globals.service.getPageLayout(widget.pageId, 600);
+    var _screenWidth = MediaQuery.of(context).size.width;
+
+    print("GETTING LAYOUT screenwidth = $_screenWidth");
+    setState(() {
+      screenWidth = _screenWidth.floor();
+    });
+    PageLayout pageLayout = await globals.service
+        .getPageLayout(widget.pageId, _screenWidth.floor());
 
     setLayout(pageLayout);
   }
 
-  StaggeredTile getModuleSize(int index){
+  StaggeredTile getModuleSize(int index) {
     var layout = this.pageLayout.modules[index];
     var split = layout.size.split("x");
     int x = int.tryParse(split[0]);
@@ -139,10 +132,25 @@ class _DashboardState extends State<Dashboard> {
     return StaggeredTile.count(x, y);
   }
 
-  getTiles() {
-    print('Getting tiles');
+  setModules(BuildContext context) {
+    List<DashboardWidget> widgets = [];
     List<StaggeredTile> tiles = [];
     this.pageLayout.modules.forEach((layout) {
+      var stream = messages[layout.module.id];
+
+      var dashboardWidget = DashboardWidget(
+          key: Key(pageLayout.layout.maxGridWidth.toString() +
+              '-' +
+              layout.module.id.toString()),
+          pageLayout: pageLayout,
+          moduleLayout: layout,
+          stream: stream,
+          refreshLayout: getLayout,
+          pageId: widget.pageId,
+          editMode: widget.editMode);
+
+      widgets.add(dashboardWidget);
+
       var split = layout.size.split("x");
       int x = int.tryParse(split[0]);
       int y = int.parse(split[1]);
@@ -150,30 +158,31 @@ class _DashboardState extends State<Dashboard> {
     });
 
     setState(() {
+      this.modules = widgets;
       this.tiles = tiles;
     });
   }
 
-  getModules(BuildContext context) {
-    List<DashboardWidget> widgets = [];
-    this.pageLayout.modules.forEach((layout) {
-      var stream = messages[layout.module.id];
+  checkNeedGridResize(BuildContext context) {
+    if (this.pageLayout != null) {
+      debouncer.run(() {
+        var _screenWidth = MediaQuery.of(context).size.width.floor();
 
-      widgets.add(DashboardWidget(
-          key: Key(layout.id.toString()),
-          pageLayout: pageLayout,
-          moduleLayout: layout,
-          stream: stream,
-          refreshLayout: getLayout,
-          editMode: widget.editMode));
-    });
-    setState(() {
-      this.modules = widgets;
-    });
+        if (_screenWidth != this.screenWidth) {
+          // calculating how many grid units we need
+          var required = (_screenWidth / sizeOne).ceil();
+          print(
+              'required: $required current: ${pageLayout.layout.maxGridWidth}');
+          getLayout();
+        }
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    print('building');
+    checkNeedGridResize(context);
     // TODO: implement build
     if (this.pageLayout != null && this.pageLayout.layout != null) {
       var gridWidth =
@@ -182,16 +191,14 @@ class _DashboardState extends State<Dashboard> {
       return Container(
           width: gridWidth,
           color: Colors.white,
-          /*      child: ReorderableItemsView(
-            children: modules,
-            staggeredTiles: tiles,
-            isGrid: true,
+          child: StaggeredGridView.count(
             crossAxisSpacing: this.spacing,
             mainAxisSpacing: this.spacing,
             crossAxisCount: this.pageLayout.layout.maxGridWidth,
-            onReorder: swapModules,
-          )*/
-
+            staggeredTiles: tiles,
+            children: modules,
+          ));
+/*
           child: StaggeredGridView.countBuilder(
               crossAxisSpacing: this.spacing,
               mainAxisSpacing: this.spacing,
@@ -202,14 +209,18 @@ class _DashboardState extends State<Dashboard> {
                 var stream = messages[layout.module.id];
 
                 return DashboardWidget(
+                    key: Key(pageLayout.layout.maxGridWidth.toString() +
+                        '-' +
+                        layout.module.id.toString()),
                     pageLayout: pageLayout,
                     moduleLayout: layout,
                     stream: stream,
                     refreshLayout: getLayout,
+                    pageId: widget.pageId,
                     editMode: widget.editMode);
               },
-              staggeredTileBuilder: (int index) => getModuleSize(index))
-          );
+              staggeredTileBuilder: (int index) => getModuleSize(index)));
+*/
     } else {
       return Text('No layout for this screen size');
     }

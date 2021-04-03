@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:app/globals.dart' as globals;
 import 'package:app/model/moduleLayout.dart';
 import 'package:app/model/pageLayout.dart';
@@ -11,25 +13,43 @@ class ModuleOverlay extends StatefulWidget {
 
   PageLayout pageLayout;
   Function refreshLayout;
+  int pageId;
 
   ModuleOverlay(
-      {this.selected, this.layout, this.pageLayout, this.refreshLayout});
+      {this.selected,
+      this.layout,
+      this.pageLayout,
+      this.refreshLayout,
+      this.pageId});
 
   @override
   State<StatefulWidget> createState() => ModuleOverlayState();
 }
 
 class ModuleOverlayState extends State<ModuleOverlay>
-    with TickerProviderStateMixin {
-  int resizeArrowAngle;
+    with SingleTickerProviderStateMixin {
+  double resizeArrowAngle;
   String nextSize;
-  AnimationController animationController;
-  Animation<double> animation;
+  AnimationController _controller;
+  int maxX = 0;
 
   @override
   void initState() {
+    widget.pageLayout.modules.forEach((element) => maxX = max(element.x, maxX));
+
     super.initState();
     setNextModuleSize();
+    _controller = AnimationController(
+      vsync: this, // the SingleTickerProviderStateMixin
+      duration: Duration(milliseconds: 500),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    print('disposing');
+    super.dispose();
   }
 
   setNextModuleSize() async {
@@ -37,8 +57,6 @@ class ModuleOverlayState extends State<ModuleOverlay>
         widget.layout.size,
         widget.layout.module.id,
         widget.pageLayout.layout.maxGridWidth);
-    print(
-        " max grid width ${widget.pageLayout.layout.maxGridWidth} nextSize: $nextSize");
 
     List<String> split = nextSize.split('x');
     int newWidth = int.parse(split[0]);
@@ -60,7 +78,7 @@ class ModuleOverlayState extends State<ModuleOverlay>
             : -1;
 
     //base chevron direction is right (so already 90 degrees set)
-    int angle;
+    double angle;
     if (widthDiff == 0 && heightDiff == 0) {
       angle = null;
     } else {
@@ -91,20 +109,22 @@ class ModuleOverlayState extends State<ModuleOverlay>
       }
     }
 
+    _controller.animateTo(angle / 360,
+        duration: Duration(milliseconds: 250), curve: Curves.fastOutSlowIn);
+
     setState(() {
-      resizeArrowAngle = angle;
+      resizeArrowAngle = angle / 360;
       this.nextSize = nextSize;
-      animationController = AnimationController(
-          vsync: this,
-          value: angle / 360,
-          duration: const Duration(milliseconds: 500));
-      animation = CurvedAnimation(
-          parent: animationController, curve: Curves.elasticInOut);
     });
   }
 
   changeModuleSize() async {
     await globals.service.saveModuleSize(widget.layout.id, nextSize);
+    widget.refreshLayout();
+  }
+
+  moveModule(bool forward) async {
+    await globals.service.moveModule(widget.layout.id, forward, widget.pageId);
     widget.refreshLayout();
   }
 
@@ -127,16 +147,34 @@ class ModuleOverlayState extends State<ModuleOverlay>
           Row(
             children: [Text('title')],
           ),
-          Expanded(child: Container(child: Text('center'))),
+          Expanded(
+              child: Row(
+            children: [
+              widget.layout.x > 0
+                  ? IconButton(
+                      icon: FaIcon(FontAwesomeIcons.arrowLeft,
+                          color: Colors.white),
+                      onPressed: () => moveModule(false))
+                  : SizedBox.shrink(),
+              Expanded(child: SizedBox.shrink()),
+              widget.layout.x < maxX
+                  ? IconButton(
+                      icon: FaIcon(FontAwesomeIcons.arrowRight,
+                          color: Colors.white),
+                      onPressed: () => moveModule(true))
+                  : SizedBox.shrink()
+            ],
+          )),
           Row(
             children: [
+              Expanded(child: SizedBox.shrink()),
               resizeArrowAngle != null
                   ? RotationTransition(
-                      turns: animation,
+                      turns: _controller,
                       child: IconButton(
                         onPressed: changeModuleSize,
                         icon: FaIcon(
-                          FontAwesomeIcons.arrowRight,
+                          FontAwesomeIcons.chevronRight,
                           color: Colors.white,
                         ),
                       ),

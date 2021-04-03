@@ -44,32 +44,60 @@ class AvailableModulesState extends State<AvailableModules> {
 
   @override
   Widget build(BuildContext context) {
+    var _screenWidth = MediaQuery.of(context).size.width;
+
+    var crossAxisCount = 3;
+    if (_screenWidth < 700) {
+      crossAxisCount = 1;
+    } else if (_screenWidth < 1000) {
+      crossAxisCount = 2;
+    } else if (_screenWidth < 1500) {
+      crossAxisCount = 3;
+    } else if (_screenWidth < 2000) {
+      crossAxisCount = 4;
+    } else {
+      crossAxisCount = 5;
+    }
+
     return Scaffold(
         appBar: AppBar(
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
           title: Text('Add module'),
         ),
-        body: Column(
-          children: [
-            Text('Select the module to add'),
-            Expanded(
-                child: ListView.builder(
-                    itemCount: plugins.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      var plugin = plugins[index];
-                      return Column(
-                        children: [
-                          Text(plugin.displayName),
-                          Text(plugin.description),
-                          TextButton(
-                              onPressed: () => addModule(plugin),
-                              child:
-                                  Text(plugin.settings ? 'Configure' : 'Add'))
-                        ],
-                      );
-                    }))
-          ],
-        ));
+        body: GridView.builder(
+            padding: EdgeInsets.all(20),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                childAspectRatio: 3,
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: 20,
+                mainAxisSpacing: 20),
+            itemCount: plugins.length,
+            itemBuilder: (BuildContext context, int index) {
+              var plugin = plugins[index];
+              return Card(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                    Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Text(plugin.displayName,style: TextStyle(
+                          color: Theme.of(context).accentColor,
+                          fontWeight: FontWeight.bold
+                        ),)),
+                    Expanded(
+                        child: Padding(
+                            padding: EdgeInsets.all(10),
+                            child: Text(plugin.description))),
+                    Row(
+                      children: [
+                        Expanded(child: SizedBox.shrink()),
+                        TextButton(
+                            onPressed: () => addModule(plugin),
+                            child: Text(plugin.settings ? 'Configure' : 'Add'))
+                      ],
+                    )
+                  ]));
+            }));
   }
 }

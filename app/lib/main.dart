@@ -161,7 +161,8 @@ class _MyHomePageState extends State<MyHomePage> {
         autocorrect: false,
         controller: urlController,
         decoration: const InputDecoration(
-          hintText: 'Enter your Homedash server URL',
+          labelText: 'Enter your Homedash server URL',
+          hintText: 'http://myserver.com:4567'
         ),
         validator: (value) {
           if (value.isEmpty) {
@@ -198,7 +199,7 @@ class _MyHomePageState extends State<MyHomePage> {
       widgets.insertAll(1, <Widget>[
         TextFormField(
           decoration: const InputDecoration(
-            hintText: 'Username',
+            labelText: 'Username',
           ),
           enableSuggestions: false,
           autocorrect: false,
@@ -215,7 +216,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         TextFormField(
           decoration: const InputDecoration(
-            hintText: 'Password',
+            labelText: 'Password',
           ),
           enableSuggestions: false,
           autocorrect: false,

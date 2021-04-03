@@ -45,6 +45,7 @@ public enum ModuleLayoutController implements Controller<ModuleLayout, Integer> 
          */
         Spark.post("/save-module-positions/:layoutId", (req, res) -> savePositions(Integer.parseInt(req.params("layoutId")), req.queryParams("data")), gson::toJson);
         Spark.get("/save-module-size/:moduleLayoutId/:size", (req, res) -> saveModulePosition(Integer.parseInt(req.params("moduleLayoutId")), req.params("size")));
+        Spark.get("/move-module/:moduleLayoutId/:forward/page/:pageId", (req, res) -> moveModule(Integer.parseInt(req.params("moduleLayoutId")), Boolean.parseBoolean(req.params("forward")), Integer.parseInt(req.params("pageId"))));
 
     }
 
@@ -93,6 +94,38 @@ public enum ModuleLayoutController implements Controller<ModuleLayout, Integer> 
 
     }
 
+
+    private boolean moveModule(int moduleLayoutId, boolean forward, int pageId) throws SQLException {
+        ModuleLayout layout = DB.MODULE_LAYOUT_DAO.queryForId(moduleLayoutId);
+
+        List<ModuleLayout> pageModules= generatePageLayout(pageId, layout.getLayout().getActualSize()).stream()
+                .sorted(Comparator.comparingInt(ModuleLayout::getX))
+                .collect(Collectors.toList());
+
+        ModuleLayout[] array = pageModules.toArray(new ModuleLayout[0]);
+
+
+        final int index = pageModules.indexOf(layout);
+
+        // we don't do anything if we have the first element and try to move it back or the last element and try to move it forward
+        if (index == 0 && !forward || index == pageModules.size() - 1 && forward) {
+            return true;
+        }
+
+        int newIndex = forward ? index + 1 : index - 1;
+        ModuleLayout temp = array[newIndex];
+        array[newIndex] = array[index];
+        array[index] = temp;
+
+        for (int i = 0; i < array.length; i++) {
+            ModuleLayout current = array[i];
+            current.setX(i);
+            DB.MODULE_LAYOUT_DAO.update(current);
+        }
+
+        return true;
+    }
+
     private Map<String, Object> saveLayout(Request req, Response res) throws Exception {
 
         int page = Integer.parseInt(req.params("page"));
@@ -101,7 +134,7 @@ public enum ModuleLayoutController implements Controller<ModuleLayout, Integer> 
         List<ModuleLayout> layouts = gson.fromJson(req.body(), new TypeToken<List<ModuleLayout>>() {
         }.getType());
 
-        if(layouts != null) {
+        if (layouts != null) {
             layouts.forEach(l -> {
                 final ModuleLayout layout;
                 try {

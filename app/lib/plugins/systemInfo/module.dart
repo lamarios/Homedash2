@@ -46,8 +46,6 @@ class SystemInfoState extends ModuleWidgetState<SystemInfo> {
 
   @override
   Widget build(BuildContext context) {
-    print('stream ${widget.stream == null} ${widget.stream.stream == null}');
-
     var color = Color.fromRGBO(16, 207, 189, 1.0);
 
     return Container(
@@ -72,14 +70,18 @@ class SystemInfoState extends ModuleWidgetState<SystemInfo> {
                               barWidth: 1,
                               spots: getRamData(refresh.ramInfo, 20),
                               colors: [Color.fromRGBO(10, 127, 116, 0.2)],
-                              belowBarData: BarAreaData(show: true, colors:[Color.fromRGBO(10, 127, 116, 0.2)]),
+                              belowBarData: BarAreaData(
+                                  show: true,
+                                  colors: [Color.fromRGBO(10, 127, 116, 0.2)]),
                               dotData: FlDotData(show: false)),
                           LineChartBarData(
                               isCurved: false,
                               barWidth: 1,
                               spots: getCpuData(refresh.cpuInfo, 20),
                               colors: [Color.fromRGBO(5, 64, 58, 0.2)],
-                              belowBarData: BarAreaData(show: true, colors:[Color.fromRGBO(5, 64, 58, 0.2)]),
+                              belowBarData: BarAreaData(
+                                  show: true,
+                                  colors: [Color.fromRGBO(5, 64, 58, 0.2)]),
                               dotData: FlDotData(show: false))
                         ]),
                     swapAnimationDuration: Duration(milliseconds: 0),
@@ -103,7 +105,9 @@ class SystemInfoState extends ModuleWidgetState<SystemInfo> {
                                         .cpuUsage
                                         .toString() +
                                     '%',
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
                               )
                             ])),
                             RichText(
@@ -119,17 +123,22 @@ class SystemInfoState extends ModuleWidgetState<SystemInfo> {
                                         .percentageUsed
                                         .toString() +
                                     '%',
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
                               )
                             ])),
                           ]))
                 ]);
               } else {
-                return Center(
-                    heightFactor: 1.0,
-                    child: CircularProgressIndicator(
-                      backgroundColor: Colors.white,
-                    ));
+                return Container(
+                    height: double.infinity,
+                    color: color,
+                    child: Center(
+                        heightFactor: 1.0,
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation(Colors.white),
+                        )));
               }
             }));
   }

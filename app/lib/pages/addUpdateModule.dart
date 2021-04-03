@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:app/model/plugin.dart';
 import 'package:app/widgets/pluginSettings.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +21,13 @@ class AddUpdateModuleState extends State<AddUpdateModule> {
         appBar: AppBar(
           title: Text(widget.plugin.displayName + " settings"),
         ),
-        body: Column(children: [PluginSettings(plugin: widget.plugin, pageId: widget.pageId)]));
+        body: Padding(
+            padding: EdgeInsets.symmetric(
+                vertical: 0,
+                horizontal:
+                    max((MediaQuery.of(context).size.width - 600) / 2, 0)),
+            child: Column(children: [
+              PluginSettings(plugin: widget.plugin, pageId: widget.pageId)
+            ])));
   }
 }

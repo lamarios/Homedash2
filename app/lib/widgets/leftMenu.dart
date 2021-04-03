@@ -262,7 +262,7 @@ class LeftMenuState extends State<LeftMenu> {
                       ]))));
         },
       )),
-      TextButton(child: Text('Add module'), onPressed: goToPluginList)
+      ElevatedButton(child: Text('Add module'), onPressed: goToPluginList)
     ]);
   }
 }

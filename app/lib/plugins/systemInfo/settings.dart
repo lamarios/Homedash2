@@ -7,6 +7,10 @@ class SystemInfoSettings extends PluginSettingsParent {
   @override
   State<StatefulWidget> createState() => SystemInfoSettingsState();
 
+  SystemInfoSettings(Map<String, String> settings){
+    restoreSettings(settings);
+  }
+
   void setNotified(value) {
     this.notify = value;
   }

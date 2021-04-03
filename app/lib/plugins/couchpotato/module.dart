@@ -48,7 +48,14 @@ class CouchPotatoState extends ModuleWidgetState<CouchPotato> {
                 children: [],
               )));
     } else {
-      return Center(heightFactor: 1.0, child: CircularProgressIndicator());
+      return Container(
+          height: double.infinity,
+          color: Color(0xff37474F),
+          child: Center(
+              heightFactor: 1.0,
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation(Colors.white),
+              )));
     }
   }
 }

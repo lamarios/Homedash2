@@ -18,9 +18,11 @@ class DashboardWidget extends StatefulWidget {
   Function selectForEdit, refreshLayout;
   PageLayout pageLayout;
   Key key;
+  int pageId;
 
   DashboardWidget(
       {this.key,
+      this.pageId,
       this.stream,
       this.moduleLayout,
       this.editMode,
@@ -29,8 +31,7 @@ class DashboardWidget extends StatefulWidget {
       this.refreshLayout,
       this.pageLayout});
 
-
-  setEditMode(bool editMode){
+  setEditMode(bool editMode) {
     this.editMode = editMode;
   }
 
@@ -83,6 +84,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
           pageLayout: widget.pageLayout,
           layout: widget.moduleLayout,
           refreshLayout: widget.refreshLayout,
+          pageId: widget.pageId,
           selected: widget.selectedId == widget.moduleLayout.module.id));
     }
 
