@@ -1,5 +1,6 @@
 import 'package:app/globals.dart' as globals;
 import 'package:app/model/plugin.dart';
+import 'package:app/pages/mainPage.dart';
 import 'package:app/plugins/couchpotato/settings.dart';
 import 'package:app/plugins/systemInfo/settings.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +43,7 @@ class PluginSettingsState extends State<PluginSettings> {
 
     if (errors.isEmpty) {
       int count = 0;
+      MainPageState.dashboardKey.currentState.getLayout(true);
       Navigator.popUntil(context, (route) {
         return count++ == 3;
       });

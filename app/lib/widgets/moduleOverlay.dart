@@ -120,12 +120,46 @@ class ModuleOverlayState extends State<ModuleOverlay>
 
   changeModuleSize() async {
     await globals.service.saveModuleSize(widget.layout.id, nextSize);
-    widget.refreshLayout();
+    widget.refreshLayout(false);
   }
 
   moveModule(bool forward) async {
     await globals.service.moveModule(widget.layout.id, forward, widget.pageId);
-    widget.refreshLayout();
+    widget.refreshLayout(false);
+  }
+
+  deleteModule() async {
+    await globals.service.deleteModule(widget.layout.module.id);
+    widget.refreshLayout(false);
+  }
+
+  showDeleteDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete module ?'),
+          content: Text("Are You Sure Want To Proceed ?"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("YES"),
+              onPressed: () {
+                //Put your code here which you want to execute on Yes button click.
+                deleteModule();
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text("NO"),
+              onPressed: () {
+                //Put your code here which you want to execute on No button click.
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -140,25 +174,37 @@ class ModuleOverlayState extends State<ModuleOverlay>
 
   @override
   Widget build(BuildContext context) {
+    double iconSize = 15;
     return Container(
       color: Theme.of(context).accentColor.withOpacity(0.8),
       child: Column(
         children: [
           Row(
-            children: [Text('title')],
+            children: [
+              Text('title'),
+              IconButton(
+                icon: FaIcon(FontAwesomeIcons.times),
+                onPressed: () => showDeleteDialog(context),
+              )
+            ],
           ),
           Expanded(
               child: Row(
             children: [
               widget.layout.x > 0
                   ? IconButton(
-                      icon: FaIcon(FontAwesomeIcons.arrowLeft,
-                          color: Colors.white),
+                      iconSize: iconSize,
+                      icon: FaIcon(
+                        FontAwesomeIcons.arrowLeft,
+                        color: Colors.white,
+                        size: iconSize,
+                      ),
                       onPressed: () => moveModule(false))
                   : SizedBox.shrink(),
               Expanded(child: SizedBox.shrink()),
               widget.layout.x < maxX
                   ? IconButton(
+                      iconSize: iconSize,
                       icon: FaIcon(FontAwesomeIcons.arrowRight,
                           color: Colors.white),
                       onPressed: () => moveModule(true))
@@ -172,6 +218,7 @@ class ModuleOverlayState extends State<ModuleOverlay>
                   ? RotationTransition(
                       turns: _controller,
                       child: IconButton(
+                        iconSize: iconSize,
                         onPressed: changeModuleSize,
                         icon: FaIcon(
                           FontAwesomeIcons.chevronRight,

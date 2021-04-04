@@ -254,4 +254,13 @@ class Service {
       throw Exception("Couldn't move module ${response.body}");
     }
   }
+
+  Future<void> deleteModule(int id) async {
+    final response = await http
+        .delete(Uri.parse(url + "/module/" + id.toString()), headers: headers);
+
+    if (response.statusCode != 200) {
+      throw Exception("Couldn't delete module ${response.body}");
+    }
+  }
 }

@@ -17,14 +17,16 @@ class Dashboard extends StatefulWidget {
   const Dashboard({Key key, this.pageId, this.editMode}) : super(key: key);
 
   @override
-  _DashboardState createState() => _DashboardState();
+  DashboardState createState() => DashboardState();
+
 }
 
-class _DashboardState extends State<Dashboard> {
+class DashboardState extends State<Dashboard> {
   PageLayout pageLayout;
   double spacing = 20;
 
   int screenWidth;
+  bool loading;
 
   double sizeOne = 100;
   Stream<dynamic> stream;
@@ -44,7 +46,7 @@ class _DashboardState extends State<Dashboard> {
       sizeOne = 100 + spacing;
     });
     if (widget.pageId != null) {
-      getLayout();
+      getLayout(true);
     }
   }
 
@@ -60,7 +62,7 @@ class _DashboardState extends State<Dashboard> {
   void didUpdateWidget(Dashboard oldDashboard) {
     super.didUpdateWidget(oldDashboard);
     if (oldDashboard.pageId != widget.pageId) {
-      getLayout();
+      getLayout(true);
     }
 
     if (oldDashboard.editMode != widget.editMode) {
@@ -107,11 +109,19 @@ class _DashboardState extends State<Dashboard> {
     this.pageLayout = layout;
     // we init the streams then we set modules for the tile render
     initStreams();
+
+    globals.service.sendWebsocketMessage(
+        ModuleMessage(command: "changeLayout", message: layout.layout.id));
     setModules(context);
     print("we have ${modules.length} modules and ${tiles.length} tiles");
   }
 
-  void getLayout() async {
+  void getLayout(bool showLoading) async {
+    if (showLoading) {
+      setState(() {
+        loading = true;
+      });
+    }
     var _screenWidth = MediaQuery.of(context).size.width;
 
     print("GETTING LAYOUT screenwidth = $_screenWidth");
@@ -122,6 +132,10 @@ class _DashboardState extends State<Dashboard> {
         .getPageLayout(widget.pageId, _screenWidth.floor());
 
     setLayout(pageLayout);
+
+    setState(() {
+      loading = false;
+    });
   }
 
   StaggeredTile getModuleSize(int index) {
@@ -165,32 +179,42 @@ class _DashboardState extends State<Dashboard> {
 
   checkNeedGridResize(BuildContext context) {
     if (this.pageLayout != null) {
-      debouncer.run(() {
-        var _screenWidth = MediaQuery.of(context).size.width.floor();
+      var _screenWidth = MediaQuery.of(context).size.width.floor();
 
-        if (_screenWidth != this.screenWidth) {
+      if (_screenWidth != this.screenWidth) {
+        setState(() {
+          loading = true;
+        });
+        debouncer.run(() {
           // calculating how many grid units we need
           var required = (_screenWidth / sizeOne).ceil();
           print(
               'required: $required current: ${pageLayout.layout.maxGridWidth}');
-          getLayout();
-        }
-      });
+          getLayout(true);
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    print('building');
     checkNeedGridResize(context);
     // TODO: implement build
-    if (this.pageLayout != null && this.pageLayout.layout != null) {
+
+    if (loading) {
+      return Container(
+          child: Center(heightFactor: 1.0, child: CircularProgressIndicator()));
+    }
+
+    if (!this.loading &&
+        this.pageLayout != null &&
+        this.pageLayout.layout != null) {
       var gridWidth =
           this.pageLayout.layout.maxGridWidth.toDouble() * this.sizeOne;
 
       return Container(
           width: gridWidth,
-          color: Colors.white,
+          // color: Colors.white,
           child: StaggeredGridView.count(
             crossAxisSpacing: this.spacing,
             mainAxisSpacing: this.spacing,

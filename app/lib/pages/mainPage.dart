@@ -10,13 +10,14 @@ const EDIT_LAYOUT = "edit-layout";
 
 class MainPage extends StatefulWidget {
   @override
-  _MainPageState createState() => _MainPageState();
+  MainPageState createState() => MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class MainPageState extends State<MainPage> {
   List<PluginPage> pages = <PluginPage>[];
   int currentPage;
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  static final dashboardKey = GlobalKey<DashboardState>();
   bool editMode = false;
 
   @override
@@ -98,16 +99,13 @@ class _MainPageState extends State<MainPage> {
                   ])
         ],
       ),
-      body: Row(
-        children: <Widget>[
-          Container(
-              color: Colors.white,
-              child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Dashboard(pageId: this.currentPage, editMode: editMode))),
-          Expanded(child: Container(color: Colors.white))
-        ],
-      ),
+      body: Center(
+          child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Dashboard(
+                  key: dashboardKey,
+                  pageId: this.currentPage,
+                  editMode: editMode))),
     );
   }
 }
