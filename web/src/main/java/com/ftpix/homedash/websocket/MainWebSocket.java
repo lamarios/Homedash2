@@ -1,7 +1,5 @@
 package com.ftpix.homedash.websocket;
 
-import com.google.gson.Gson;
-
 import com.ftpix.homedash.app.PluginModuleMaintainer;
 import com.ftpix.homedash.app.controllers.ModuleLayoutController;
 import com.ftpix.homedash.db.DB;
@@ -11,7 +9,8 @@ import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.models.WebSocketSession;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.utils.Predicates;
-
+import com.google.gson.Gson;
+import io.gsonfire.GsonFireBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.websocket.api.Session;
@@ -31,8 +30,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import io.gsonfire.GsonFireBuilder;
-
 @WebSocket
 public class MainWebSocket {
 
@@ -45,6 +42,18 @@ public class MainWebSocket {
     private ExecutorService commandProcessor = Executors.newCachedThreadPool();
 
     public MainWebSocket() {
+
+    }
+
+    /**
+     * Refresh a single module
+     */
+    public static WebSocketMessage refreshSingleModule(int moduleId, String size) throws Exception {
+
+        Plugin plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(moduleId);
+        WebSocketMessage response = plugin.refreshPlugin(size);
+
+        return response;
 
     }
 
@@ -131,18 +140,6 @@ public class MainWebSocket {
     }
 
     /**
-     * Refresh a single module
-     */
-    public static WebSocketMessage refreshSingleModule(int moduleId, String size) throws Exception {
-
-        Plugin plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(moduleId);
-        WebSocketMessage response = plugin.refreshPlugin(size);
-
-        return response;
-
-    }
-
-    /**
      * Send a command to a module
      */
     private void sendCommandToModule(WebSocketSession session, WebSocketMessage message) {
@@ -193,6 +190,9 @@ public class MainWebSocket {
                             // finding which clients to send to and sending
                             // the
                             // message
+                            if (exec == null) {
+                                exec = createExecutor();
+                            }
                             exec.execute(() -> {
                                 try {
                                     logger.info("Refreshing plugin [{}] for layout[{}]", plugin.getId(), ml.getLayout().getName());
@@ -212,6 +212,7 @@ public class MainWebSocket {
                         }
 
                     } catch (Exception e) {
+                        logger.error("Couldn't refresh module", e);
                     }
                 });
 
@@ -254,6 +255,10 @@ public class MainWebSocket {
 //        return layoutsToServe;
     }
 
+    private ExecutorService createExecutor() throws Exception {
+        return Executors.newFixedThreadPool(PluginModuleMaintainer.INSTANCE.getAllPluginInstances().size() + 1);
+    }
+
     /**
      * Start refreshing the modules
      */
@@ -273,7 +278,7 @@ public class MainWebSocket {
             logger.info("Start refresh of modules");
             refresh = true;
 
-            exec = Executors.newFixedThreadPool(PluginModuleMaintainer.INSTANCE.getAllPluginInstances().size() + 1);
+            exec = createExecutor();
 
             exec.execute(this::refreshModules);
         }
@@ -321,7 +326,6 @@ public class MainWebSocket {
      * Sends a message to clients
      */
     public void sendMessage(String message, ModuleLayout ml) {
-        logger.info("Message to send from implementation !!!");
         sessions.stream().filter(s -> {
             try {
                 return (s.getLayout() != null)
@@ -336,7 +340,6 @@ public class MainWebSocket {
         }).forEach(s -> {
             try {
                 boolean done = s.getSession().getRemote().sendStringByFuture(message).isDone();
-                logger.info("Sending to client {}, isdone ? {}", message, done);
             } catch (Exception e) {
                 logger.error("Errror while sending response", e);
             }

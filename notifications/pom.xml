@@ -4,7 +4,7 @@
     <parent>
         <artifactId>homedash</artifactId>
         <groupId>com.ftpix.homedash</groupId>
-        <version>2020.3</version>
+        <version>2021.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
