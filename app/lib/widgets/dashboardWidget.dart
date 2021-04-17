@@ -12,7 +12,8 @@ import 'package:flutter/material.dart';
 
 class DashboardWidget extends StatefulWidget {
   ModuleLayout moduleLayout;
-  StreamController<ModuleMessage> stream;
+  final StreamController<ModuleMessage> stream =
+      StreamController<ModuleMessage>();
   bool editMode;
   int selectedId;
   Function selectForEdit, refreshLayout;
@@ -23,7 +24,6 @@ class DashboardWidget extends StatefulWidget {
   DashboardWidget(
       {this.key,
       this.pageId,
-      this.stream,
       this.moduleLayout,
       this.editMode,
       this.selectedId,
@@ -33,6 +33,14 @@ class DashboardWidget extends StatefulWidget {
 
   setEditMode(bool editMode) {
     this.editMode = editMode;
+  }
+
+  setLastMessage(ModuleMessage message) {
+    if (!stream.isClosed) stream.add(message);
+  }
+
+  int getModuleId() {
+    return this.moduleLayout.module.id;
   }
 
   @override
@@ -70,7 +78,9 @@ class _DashboardWidgetState extends State<DashboardWidget> {
   void dispose() {
     super.dispose();
     print('disposing');
-    widget.stream.close();
+    if (!widget.stream.isClosed) {
+      widget.stream.close();
+    }
   }
 
   @override

@@ -18,7 +18,6 @@ class Dashboard extends StatefulWidget {
 
   @override
   DashboardState createState() => DashboardState();
-
 }
 
 class DashboardState extends State<Dashboard> {
@@ -36,7 +35,7 @@ class DashboardState extends State<Dashboard> {
   List<StaggeredTile> tiles = [];
   Debouncer debouncer = new Debouncer(milliseconds: 500);
 
-  Map<int, StreamController<ModuleMessage>> messages = Map();
+  // Map<int, StreamController<ModuleMessage>> messages = Map();
 
   @override
   void initState() {
@@ -72,18 +71,6 @@ class DashboardState extends State<Dashboard> {
   }
 
   void initStreams() {
-    print("${messages.length} streams created");
-
-    Map<int, StreamController<ModuleMessage>> streams = Map();
-    pageLayout.modules.forEach((element) {
-      streams[element.module.id] = StreamController<ModuleMessage>();
-    });
-
-    setState(() {
-      this.messages = streams;
-      print(streams.toString());
-    });
-
     stream = globals.service.getWebsocketStream();
 
     // initializin the client status for the backend
@@ -102,7 +89,10 @@ class DashboardState extends State<Dashboard> {
   void propagateMessage(dynamic wsMessage) {
     var json = jsonDecode(wsMessage as String);
     ModuleMessage message = ModuleMessage.fromJson(json);
-    messages[message.id].add(message);
+
+    var module =
+        this.modules.firstWhere((m) => m.getModuleId() == message.id);
+    module.setLastMessage(message);
   }
 
   void setLayout(PageLayout layout) {
@@ -150,15 +140,12 @@ class DashboardState extends State<Dashboard> {
     List<DashboardWidget> widgets = [];
     List<StaggeredTile> tiles = [];
     this.pageLayout.modules.forEach((layout) {
-      var stream = messages[layout.module.id];
-
       var dashboardWidget = DashboardWidget(
           key: Key(pageLayout.layout.maxGridWidth.toString() +
               '-' +
               layout.module.id.toString()),
           pageLayout: pageLayout,
           moduleLayout: layout,
-          stream: stream,
           refreshLayout: getLayout,
           pageId: widget.pageId,
           editMode: widget.editMode);

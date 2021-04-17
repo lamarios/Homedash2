@@ -9,6 +9,7 @@ import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.models.WebSocketSession;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.utils.Predicates;
+import com.google.common.util.concurrent.Striped;
 import com.google.gson.Gson;
 import io.gsonfire.GsonFireBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -27,21 +28,36 @@ import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 @WebSocket
 public class MainWebSocket {
 
+    private static final ExecutorService exec = Executors.newFixedThreadPool(Math.max(2, Runtime.getRuntime().availableProcessors()));
+    private static final ExecutorService commandProcessor = Executors.newCachedThreadPool();
+    private static final Striped<Lock> locks = Striped.lock(200);
+
     private final List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
     protected Logger logger = LogManager.getLogger();
     private boolean refresh = false;
     private long time = 0;
-    private Gson gson = new GsonFireBuilder().enableExposeMethodResult().createGsonBuilder().excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT, Modifier.VOLATILE).serializeSpecialFloatingPointValues().create();
-    private ExecutorService exec;
-    private ExecutorService commandProcessor = Executors.newCachedThreadPool();
+    private final Gson gson = new GsonFireBuilder().enableExposeMethodResult().createGsonBuilder().excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT, Modifier.VOLATILE).serializeSpecialFloatingPointValues().create();
 
     public MainWebSocket() {
+
+    }
+
+    /**
+     * Refresh a single module
+     */
+    public static WebSocketMessage refreshSingleModule(int moduleId, String size) throws Exception {
+
+        Plugin plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(moduleId);
+        WebSocketMessage response = plugin.refreshPlugin(size);
+
+        return response;
 
     }
 
@@ -128,18 +144,6 @@ public class MainWebSocket {
     }
 
     /**
-     * Refresh a single module
-     */
-    public static WebSocketMessage refreshSingleModule(int moduleId, String size) throws Exception {
-
-        Plugin plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(moduleId);
-        WebSocketMessage response = plugin.refreshPlugin(size);
-
-        return response;
-
-    }
-
-    /**
      * Send a command to a module
      */
     private void sendCommandToModule(WebSocketSession session, WebSocketMessage message) {
@@ -189,11 +193,10 @@ public class MainWebSocket {
                         Plugin plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(ml.getModule());
                         if (plugin.getRefreshRate(ml.getSize()) > Plugin.NEVER && time % plugin.getRefreshRate(ml.getSize()) == 0) {
 
-                            if(exec == null){
-                                exec = createExecutionPool();
-                            }
                             exec.execute(() -> {
+                                final var lock = locks.get(ml.getModule().getId());
                                 try {
+                                    lock.lock();
                                     logger.info("Refreshing plugin [{}] for layout[{}]", plugin.getId(), ml.getLayout().getName());
 
                                     WebSocketMessage response = refreshSingleModule(ml.getModule().getId(), ml.getSize());
@@ -204,6 +207,8 @@ public class MainWebSocket {
 
                                 } catch (Exception e) {
                                     logger.error("Can't refresh module #" + ml.getModule().getId(), e);
+                                }finally {
+                                    lock.unlock();
                                 }
 
                             });
@@ -211,7 +216,7 @@ public class MainWebSocket {
                         }
 
                     } catch (Exception e) {
-                        logger.error("Couldn't refresh module",e);
+                        logger.error("Couldn't refresh module", e);
                     }
                 });
 
@@ -269,42 +274,24 @@ public class MainWebSocket {
 
         logger.info("{}/{} clients are ready", readyClients, sessions.size());
 
-        if (!refresh && exec == null && readyClients > 0) {
+        if (!refresh && readyClients > 0) {
             logger.info("Start refresh of modules");
             refresh = true;
-
-            exec = createExecutionPool();
 
             exec.execute(this::refreshModules);
         }
     }
 
     private ExecutorService createExecutionPool() throws Exception {
-       return Executors.newFixedThreadPool(PluginModuleMaintainer.INSTANCE.getAllPluginInstances().size() + 1);
+        return Executors.newFixedThreadPool(PluginModuleMaintainer.INSTANCE.getAllPluginInstances().size() + 1);
     }
 
     /**
      * Stop the refreshing madness
      */
     private void stopRefresh() {
-        try {
-            if (exec != null) {
-                refresh = false;
+        refresh = false;
 
-                logger.info("Stopping refresh of modules");
-                exec.shutdown();
-                logger.info("WAITING TO SHUTDOWN");
-                exec.awaitTermination(5, TimeUnit.SECONDS);
-                logger.info("FINALLY STOPPED");
-
-
-            }
-        } catch (Exception e) {
-            logger.error("Error while shutting down pool", e);
-            exec.shutdownNow();
-        }
-
-        exec = null;
         time = 0;
     }
 

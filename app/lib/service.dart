@@ -42,6 +42,7 @@ class Service {
       print('closing socket');
       websocket.sink.close();
     }
+
   }
 
   void sendWebsocketMessage(ModuleMessage message) {

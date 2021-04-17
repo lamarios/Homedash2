@@ -40,7 +40,6 @@ public class Endpoints {
         ModuleSettingsController.INSTANCE.defineEndpoints();
         RemoteController.INSTANCE.defineEndpoints();
         APIController.INSTANCE.defineEndpoints();
-        UpdateController.INSTANCE.defineEndpoints();
         KioskController.INSTANCE.defineEndpoints();
         PluginUrlController.INSTANCE.defineEndPoints();
 

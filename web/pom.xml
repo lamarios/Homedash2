@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ftpix.homedash</groupId>
         <artifactId>homedash</artifactId>
-        <version>2020.3</version>
+        <version>2021.1</version>
     </parent>
 
 
@@ -94,18 +94,6 @@
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>notifications</artifactId>
             <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.ftpix.homedash</groupId>
-            <artifactId>updater</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jackson-databind</artifactId>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -198,7 +186,7 @@
         <dependency>
             <groupId>com.ftpix.homedash</groupId>
             <artifactId>models</artifactId>
-            <version>2020.3</version>
+            <version>2021.1</version>
         </dependency>
 
         <dependency>

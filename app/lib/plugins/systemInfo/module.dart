@@ -55,6 +55,7 @@ class SystemInfoState extends ModuleWidgetState<SystemInfo> {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 Refresh refresh = Refresh.fromJson(snapshot.data.message);
+
                 return Stack(children: [
                   LineChart(
                     LineChartData(

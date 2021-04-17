@@ -416,8 +416,6 @@ public enum SettingsController implements Controller<Settings, String> {
 
         Map<String, Object> model = new HashMap<>();
         model.put("settings", map);
-        model.put("about", UpdateController.INSTANCE.getVersion());
-
 
         return new ModelAndView(model, "settings");
     }

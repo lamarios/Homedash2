@@ -6,7 +6,6 @@ import com.ftpix.homedash.jobs.BackgroundRefresh;
 import com.ftpix.homedash.models.Layout;
 import com.ftpix.homedash.models.Page;
 import com.ftpix.homedash.plugins.SystemInfoPlugin;
-import com.ftpix.homedash.updater.Updater;
 import com.ftpix.homedash.websocket.FullScreenWebSocket;
 import com.ftpix.homedash.websocket.MainWebSocket;
 import com.ftpix.homedash.websocket.SingleModuleKioskWebSocket;
@@ -35,8 +34,8 @@ import static spark.Spark.*;
  * Hello world!
  */
 public class App {
-    private static Logger logger = LogManager.getLogger();
     private final static String NATIVE_LIBS_FOLDER_NAME = "native-libs";
+    private static Logger logger = LogManager.getLogger();
 
     public static void main(String[] args) {
         try {
@@ -175,11 +174,9 @@ public class App {
             System.out.println("Configuration file " + p.toAbsolutePath().toString() + " already exists");
         } else {
             try {
-                var updater = new Updater();
-                updater.getCurrentVersion();
                 java.nio.file.Files.write(p, sb.toString().getBytes());
                 System.out.println("Configuration created, you can start Homedash using the following command:");
-                System.out.println("java -Dconfig.file=" + p.toAbsolutePath().toString() + " -jar Homedash-" + updater.getCurrentVersion() + ".jar");
+                System.out.println("java -Dconfig.file=" + p.toAbsolutePath().toString() + " -jar Homedash-<current version>.jar");
             } catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("Couldn't write file " + p.toAbsolutePath().toString() + " make sure you have write permission on working dir");
