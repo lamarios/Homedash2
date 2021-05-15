@@ -18,6 +18,8 @@
 
 ### From JAR file
 
+Download the latest Homedash-version.jar from the [release page](https://github.com/lamarios/Homedash2/releases).
+
 First time you run the application, you'll need to generate a config file.
 ```
 java -jar Homedash-{version}.jar -create-config
