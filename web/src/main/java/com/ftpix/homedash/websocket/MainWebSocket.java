@@ -250,7 +250,7 @@ public class MainWebSocket {
                         return new ArrayList<ModuleLayout>().stream();
                     }
                 })
-                .filter(Predicates.distinctByKey(l -> l.getId()))
+                .filter(Predicates.distinctByKey(ModuleLayout::getId))
                 .collect(Collectors.toList());
 
 //        List<ModuleLayout> layoutsToServe = layouts.stream().filter(Predicates.distinctByKey(l -> l.getId())).collect(Collectors.toList());
