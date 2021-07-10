@@ -11,8 +11,8 @@ class SystemInfo extends ModuleWidget {
   State<StatefulWidget> createState() => SystemInfoState();
 
   SystemInfo(
-      {Key key, StreamController<ModuleMessage> stream, int width, int height})
-      : super(key: key, stream: stream, width: width, height: height);
+      {Key key, StreamController<ModuleMessage> stream})
+      : super(key: key, stream: stream);
 }
 
 class SystemInfoState extends ModuleWidgetState<SystemInfo> {

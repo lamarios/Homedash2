@@ -99,7 +99,7 @@ class MainPageState extends State<MainPage> {
                   ])
         ],
       ),
-      body: Center(
+      body: Container(
           child: Padding(
               padding: const EdgeInsets.all(20),
               child: Dashboard(

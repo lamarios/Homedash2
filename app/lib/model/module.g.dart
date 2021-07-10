@@ -12,6 +12,7 @@ Module _$ModuleFromJson(Map<String, dynamic> json) {
     pluginClass: json['pluginClass'] as String,
     location: json['location'] as String,
     onKiosk: json['onKiosk'] as bool,
+    order: json['order'] as int,
   );
 }
 
@@ -20,4 +21,5 @@ Map<String, dynamic> _$ModuleToJson(Module instance) => <String, dynamic>{
       'pluginClass': instance.pluginClass,
       'location': instance.location,
       'onKiosk': instance.onKiosk,
+      'order': instance.order,
     };

@@ -29,14 +29,16 @@ public class Module {
     @Expose
     private boolean onKiosk;
 
+    @DatabaseField
+    @Expose
+    private int order;
+
     @ForeignCollectionField(eager = false, maxEagerLevel = 0)
     public ForeignCollection<ModuleSettings> settings;
 
     @ForeignCollectionField(eager = false, maxEagerLevel = 0)
-    public ForeignCollection<ModuleLayout> layouts;
-
-    @ForeignCollectionField(eager = false, maxEagerLevel = 0)
     public ForeignCollection<ModuleData> data;
+
 
     public int getId() {
         return id;
@@ -74,14 +76,6 @@ public class Module {
         this.settings = settings;
     }
 
-    public ForeignCollection<ModuleLayout> getLayouts() {
-        return layouts;
-    }
-
-    public void setLayouts(ForeignCollection<ModuleLayout> layouts) {
-        this.layouts = layouts;
-    }
-
     public ForeignCollection<ModuleData> getData() {
         return data;
     }
@@ -100,5 +94,13 @@ public class Module {
 
     public void setOnKiosk(boolean onKiosk) {
         this.onKiosk = onKiosk;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
     }
 }

@@ -1,7 +1,6 @@
 package com.ftpix.homedash.plugins.dockercompose;
 
 import com.ftpix.homedash.models.ModuleExposedData;
-import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.plugins.dockercompose.exceptions.CommandException;
@@ -51,11 +50,6 @@ public class DockerComposePlugin extends Plugin {
         dockerComposeFolder = Paths.get(settings.get(SETTINGS_PATH)).toAbsolutePath();
         dockerComposeFile = dockerComposeFolder.resolve(DOCKER_COMPOSE_FILE_NAME).toAbsolutePath();
         logger().info("Docker compose initiated with compose file :[{}]", dockerComposeFile.toString());
-    }
-
-    @Override
-    public String[] getSizes() {
-        return new String[]{ModuleLayout.SIZE_1x1, ModuleLayout.SIZE_2x1, ModuleLayout.FULL_SCREEN};
     }
 
     @Override
@@ -112,8 +106,8 @@ public class DockerComposePlugin extends Plugin {
     }
 
     @Override
-    protected Object refresh(String size) throws Exception {
-        if (size.equals(ModuleLayout.SIZE_1x1) || size.equals(ModuleLayout.SIZE_2x1)) {
+    protected Object refresh(boolean fullScreen) throws Exception {
+        if (!fullScreen) {
             Map<String, String> result = new HashMap<>();
             result.put("count", Long.toString(countContainers()));
             result.put("folder", dockerComposeFolder.toString());
@@ -126,8 +120,8 @@ public class DockerComposePlugin extends Plugin {
     }
 
     @Override
-    public int getRefreshRate(String size) {
-        if (size.equals(ModuleLayout.SIZE_1x1) || size.equals(ModuleLayout.SIZE_2x1)) {
+    public int getRefreshRate(boolean fullScreen) {
+        if (!fullScreen) {
             return ONE_MINUTE * 5;
         } else {//full screen
             return ONE_SECOND * 10;
@@ -177,6 +171,11 @@ public class DockerComposePlugin extends Plugin {
     @Override
     protected Map<String, Object> getSettingsModel() {
         return null;
+    }
+
+    @Override
+    public boolean hasFullScreen() {
+        return true;
     }
 
 
@@ -302,7 +301,6 @@ public class DockerComposePlugin extends Plugin {
                 errorOutput.add(line);
             }
         }
-
 
 
         output.setErrorOutput(errorOutput);

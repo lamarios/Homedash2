@@ -20,17 +20,17 @@ public class SingleModuleWebSocket {
     private Map<Session, InnerSocketClass> sessions = new HashMap<>();
     private Logger logger = LogManager.getLogger();
 
-    private final String SIZE;
+    private final boolean fullScreen;
 
-    public SingleModuleWebSocket(String size) {
-        SIZE = size;
+    public SingleModuleWebSocket(boolean fullScreen) {
+        this.fullScreen = fullScreen;
     }
 
 
     @OnWebSocketConnect
     public void connected(Session session) {
 
-        sessions.put(session, new InnerSocketClass(session, SIZE));
+        sessions.put(session, new InnerSocketClass(session, fullScreen));
         logger.info("New Client ! [{}]", session.getLocalAddress().getHostString());
     }
 

@@ -1,7 +1,6 @@
 package com.ftpix.homedash.plugins.dynamicdns;
 
 import com.ftpix.homedash.models.ModuleExposedData;
-import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.notifications.Notifications;
 import com.ftpix.homedash.plugins.Plugin;
@@ -104,11 +103,6 @@ public class DynamicDnsPlugin extends Plugin {
     }
 
     @Override
-    public String[] getSizes() {
-        return new String[]{"2x1"};
-    }
-
-    @Override
     public int getBackgroundRefreshRate() {
         return ONE_MINUTE;
     }
@@ -166,7 +160,7 @@ public class DynamicDnsPlugin extends Plugin {
     }
 
     @Override
-    protected Object refresh(String size) throws Exception {
+    protected Object refresh(boolean fullScreen) throws Exception {
 
         Map<String, Object> data = new HashMap<String, Object>();
         data.put(IP, ip);
@@ -176,8 +170,8 @@ public class DynamicDnsPlugin extends Plugin {
     }
 
     @Override
-    public int getRefreshRate(String size) {
-        if (size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)) {
+    public int getRefreshRate(boolean fullScreen) {
+        if (fullScreen) {
             return ONE_SECOND * 3;
         } else {
             return ONE_MINUTE;
@@ -225,6 +219,11 @@ public class DynamicDnsPlugin extends Plugin {
     @Override
     protected Map<String, Object> getSettingsModel() {
         return null;
+    }
+
+    @Override
+    public boolean hasFullScreen() {
+        return true;
     }
     /// plugin methods
 

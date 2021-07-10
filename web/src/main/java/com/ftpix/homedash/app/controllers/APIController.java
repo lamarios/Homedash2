@@ -10,7 +10,6 @@ import com.ftpix.homedash.plugins.Plugin;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.codec.digest.DigestUtils;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import spark.Request;
@@ -26,13 +25,9 @@ import java.util.*;
 public enum APIController {
     INSTANCE;
 
-    private Logger logger = LogManager.getLogger();
-
-
     public static final String HEADER_AUTHORIZATION = "Authorization";
-
+    private Logger logger = LogManager.getLogger();
     private Gson gson = new GsonBuilder().create();
-
 
 
     public void defineEndpoints() {
@@ -49,7 +44,7 @@ public enum APIController {
         /**
          * Refresh a remote module
          */
-        Spark.get("/api/refresh/:moduleId/size/:size", "application/json", this::refreshModule, gson::toJson);
+        Spark.get("/api/refresh/:moduleId/fullScreen/:fullScreen", "application/json", this::refreshModule, gson::toJson);
 
 
         /**
@@ -141,11 +136,11 @@ public enum APIController {
      */
     private WebSocketMessage refreshModule(Request req, Response res) throws Exception {
 
-        String size = req.params("size");
-        Integer moduleId = Integer.parseInt(req.params("moduleId"));
+        boolean fullScreen = req.params("fullScreen").equalsIgnoreCase("1");
+        int moduleId = Integer.parseInt(req.params("moduleId"));
         Plugin plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(moduleId);
 
-        return plugin.refreshPlugin(size);
+        return plugin.refreshPlugin(fullScreen);
     }
 
     /**

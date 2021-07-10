@@ -97,26 +97,6 @@ public enum PluginController {
         return plugin.getSettingsHtml();
     }
 
-    /**
-     * Get the smallest available size for a plugin
-     *
-     * @param plugin
-     */
-    public String getSmallestAvailableSize(Plugin plugin) {
-        logger.info("getSmallestAvailableSize [{}]", plugin.getId());
-        String[] sizes = plugin.getSizes();
-        Arrays.sort(sizes);
-        logger.info("Smallest size: {}", sizes[0]);
-        return sizes[0];
-    }
-
-
-    public String[] getPluginSizes(Plugin modulePlugin) {
-        String[] sizes = modulePlugin.getSizes();
-        Arrays.sort(sizes);
-        return sizes;
-    }
-
     public Plugin createPluginFromClass(String className) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         return (Plugin) Class.forName(className).newInstance();
     }

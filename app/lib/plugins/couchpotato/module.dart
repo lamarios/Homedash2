@@ -12,8 +12,8 @@ class CouchPotato extends ModuleWidget {
   State<StatefulWidget> createState() => CouchPotatoState();
 
   CouchPotato(
-      {Key key, StreamController<ModuleMessage> stream, int width, int height})
-      : super(key: key, stream: stream, width: width, height: height);
+      {Key key, StreamController<ModuleMessage> stream})
+      : super(key: key, stream: stream);
 }
 
 class CouchPotatoState extends ModuleWidgetState<CouchPotato> {

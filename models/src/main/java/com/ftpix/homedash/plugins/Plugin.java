@@ -81,15 +81,6 @@ public abstract class Plugin {
     protected abstract void init();
 
     /**
-     * Get the sizes available for this module
-     * Each size should have the format "{width}x{height}" ex 2x4 or 1x1
-     * If your module handles full screen view getSizes should contain ModuleLayout.FULL_SCREEN
-     *
-     * @return an
-     */
-    public abstract String[] getSizes();
-
-    /**
      * How often (in second) this module should be refreshed in the background ,
      * 0 = never
      */
@@ -104,21 +95,22 @@ public abstract class Plugin {
      * Do background task if getBackgroundRefreshRate() > 0
      */
     public abstract void doInBackground();
-    public abstract  boolean hasSettings();
+
+    public abstract boolean hasSettings();
 
     /**
      * Get data to send to clients via web socket
      *
-     * @param size of the module
+     * @param fullScreen getting data for full screen view
      */
-    protected abstract Object refresh(String size) throws Exception;
+    protected abstract Object refresh(boolean fullScreen) throws Exception;
 
     /**
      * Get refresh rate in seconds for main page display
      *
-     * @param size size of the module being refreshed
+     * @param fullScreen getting data for full screen view
      */
-    public abstract int getRefreshRate(String size);
+    public abstract int getRefreshRate(boolean fullScreen);
 
     /**
      * Validates a given set of settings when user adds the plugin
@@ -162,24 +154,6 @@ public abstract class Plugin {
     }
 
     /**
-     * Gets the html for a specific size
-     */
-    public final String getView(String size) throws JadeException, IOException {
-
-
-        JadeConfiguration config = defaultTemplateConfig();
-        Map<String, Object> model = new HashMap<String, Object>();
-        model.put("module", module);
-
-        logger().info("id:[{}]", getId());
-        logger().info("size:[{}]", size);
-        JadeTemplate template = config.getTemplate("templates/" + getId() + "-" + size + ".jade");
-
-        return config.renderTemplate(template, model);
-    }
-
-
-    /**
      * Gets the jadeconfiguration to get templates
      *
      * @return
@@ -198,17 +172,17 @@ public abstract class Plugin {
     /**
      * Refresh called from the websocket
      */
-    public final WebSocketMessage refreshPlugin(String size) throws Exception {
+    public final WebSocketMessage refreshPlugin(boolean fullScreen) throws Exception {
         WebSocketMessage result = new WebSocketMessage();
         result.setCommand(WebSocketMessage.COMMAND_REFRESH);
 
         try {
             switch (module.getLocation()) {
                 case LOCAL:
-                    result.setMessage(refresh(size));
+                    result.setMessage(refresh(fullScreen));
                     break;
                 case REMOTE:
-                    result.setMessage(refreshRemote(size));
+                    result.setMessage(refreshRemote(fullScreen));
                     break;
                 default:
                     return null;
@@ -398,9 +372,7 @@ public abstract class Plugin {
     /**
      * Boolean to check if an array has full screen view
      */
-    public final boolean hasFullScreen() {
-        return Arrays.stream(getSizes()).anyMatch((s) -> s.equalsIgnoreCase(ModuleLayout.FULL_SCREEN));
-    }
+    public abstract boolean hasFullScreen();
 
     /**
      * Adds a listener to the plugin listeners
@@ -493,10 +465,10 @@ public abstract class Plugin {
     /**
      * Refresh a remote module
      */
-    private final Object refreshRemote(String size) {
+    private final Object refreshRemote(boolean fullScreen) {
 
         if (module != null && module.getLocation() == ModuleLocation.REMOTE) {
-            String url = settings.get(REMOTE_URL) + "api/refresh/" + settings.get(REMOTE_MODULE_ID) + "/size/" + size;
+            String url = settings.get(REMOTE_URL) + "api/refresh/" + settings.get(REMOTE_MODULE_ID) + "/fullScreen/" + (fullScreen ? "1" : "0");
             String apiKey = settings.get(REMOTE_API_KEY);
 
             try {

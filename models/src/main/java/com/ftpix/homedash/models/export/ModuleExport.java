@@ -4,18 +4,15 @@ import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.ModuleLocation;
 import com.ftpix.homedash.models.Page;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ModuleExport {
     public int page;
-
+    public int order;
     public String pluginClass;
     public boolean onKiosk;
 
-    public List<ModuleLayoutExport> layouts = new ArrayList<>();
 
     public Map<String, String> settings = new HashMap<>();
 
@@ -28,10 +25,7 @@ public class ModuleExport {
         export.page = module.getPage().getId();
         export.pluginClass = module.getPluginClass();
         export.onKiosk = module.isOnKiosk();
-
-        module.getLayouts().stream()
-                .map(ModuleLayoutExport::fromModel)
-                .forEach(export.layouts::add);
+        export.order = module.getOrder();
 
 
         module.getSettings()
@@ -47,6 +41,7 @@ public class ModuleExport {
         module.setPluginClass(export.pluginClass);
         module.setOnKiosk(export.onKiosk);
         module.setLocation(export.location);
+        module.setOrder(export.order);
 
         Page page = new Page();
         page.setId(export.page);

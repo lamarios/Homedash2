@@ -1,7 +1,6 @@
 package com.ftpix.homedash.plugins.mma;
 
 import com.ftpix.homedash.models.ModuleExposedData;
-import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.notifications.Notifications;
 import com.ftpix.homedash.plugins.Plugin;
@@ -79,10 +78,6 @@ public class MmaPlugin extends Plugin {
         sherdog = new Sherdog.Builder().withPictureProcessor(processor).build();
     }
 
-    @Override
-    public String[] getSizes() {
-        return new String[]{"3x2", "3x4", "4x4", ModuleLayout.FULL_SCREEN, ModuleLayout.KIOSK};
-    }
 
     @Override
     public int getBackgroundRefreshRate() {
@@ -191,8 +186,8 @@ public class MmaPlugin extends Plugin {
     }
 
     @Override
-    protected Object refresh(String size) throws Exception {
-        if (size != ModuleLayout.FULL_SCREEN) {
+    protected Object refresh(boolean fullScreen) throws Exception {
+        if (!fullScreen) {
             ZonedDateTime today = ZonedDateTime.now().minus(1, ChronoUnit.DAYS);
 
             return search(e -> today.isBefore(e.getDate()));
@@ -202,8 +197,8 @@ public class MmaPlugin extends Plugin {
     }
 
     @Override
-    public int getRefreshRate(String size) {
-        if (size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)) {
+    public int getRefreshRate(boolean fullScreen) {
+        if (fullScreen) {
             return ONE_SECOND * 3;
         } else {
             return ONE_HOUR;
@@ -267,6 +262,11 @@ public class MmaPlugin extends Plugin {
     @Override
     protected Map<String, Object> getSettingsModel() {
         return null;
+    }
+
+    @Override
+    public boolean hasFullScreen() {
+        return true;
     }
 
     private Organization search(Predicate<Event> filter) {

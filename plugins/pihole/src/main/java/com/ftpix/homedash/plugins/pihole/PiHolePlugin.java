@@ -1,7 +1,6 @@
 package com.ftpix.homedash.plugins.pihole;
 
 import com.ftpix.homedash.models.ModuleExposedData;
-import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.plugins.pihole.models.PiHoleStats;
@@ -59,11 +58,6 @@ public class PiHolePlugin extends Plugin {
     }
 
     @Override
-    public String[] getSizes() {
-        return new String[]{"2x2", "1x1", "3x2", "4x2", ModuleLayout.KIOSK, ModuleLayout.FULL_SCREEN};
-    }
-
-    @Override
     public int getBackgroundRefreshRate() {
         return NEVER;
     }
@@ -84,8 +78,8 @@ public class PiHolePlugin extends Plugin {
     }
 
     @Override
-    protected Object refresh(String size) throws Exception {
-        if (size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)) {
+    protected Object refresh(boolean fullScreen) throws Exception {
+        if (fullScreen) {
             return client.getQueries();
         } else {
             return client.getStats();
@@ -93,8 +87,8 @@ public class PiHolePlugin extends Plugin {
     }
 
     @Override
-    public int getRefreshRate(String size) {
-        if (size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)) {
+    public int getRefreshRate(boolean fullScreen) {
+        if (fullScreen) {
             return ONE_SECOND;
         } else {
             return ONE_MINUTE;
@@ -170,6 +164,11 @@ public class PiHolePlugin extends Plugin {
     @Override
     protected Map<String, Object> getSettingsModel() {
         return null;
+    }
+
+    @Override
+    public boolean hasFullScreen() {
+        return true;
     }
     // /////////////////////////////
     // //Plugin Methods

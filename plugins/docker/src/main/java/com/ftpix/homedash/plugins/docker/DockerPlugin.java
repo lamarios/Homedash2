@@ -3,7 +3,6 @@ package com.ftpix.homedash.plugins.docker;
 import com.ftpix.homedash.Utils.ByteUtils;
 import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.ModuleExposedData;
-import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.plugins.docker.models.DockerInfo;
@@ -76,12 +75,6 @@ public class DockerPlugin extends Plugin {
         }
 
     }
-
-    @Override
-    public String[] getSizes() {
-        return new String[]{ModuleLayout.SIZE_1x1, ModuleLayout.FULL_SCREEN};
-    }
-
     @Override
     public int getBackgroundRefreshRate() {
         return NEVER;
@@ -106,29 +99,29 @@ public class DockerPlugin extends Plugin {
                 case ACTION_START:
                     startContainer(message);
                     response.setMessage(String.format(SUCCESS_MESSAGE_CONTAINER, command));
-                    response.setExtra(refresh(ModuleLayout.FULL_SCREEN));
+                    response.setExtra(refresh(true));
                     break;
                 case ACTION_RESTART:
                     restartContainer(message);
                     response.setMessage(String.format(SUCCESS_MESSAGE_CONTAINER, command));
-                    response.setExtra(refresh(ModuleLayout.FULL_SCREEN));
+                    response.setExtra(refresh(true));
                     break;
                 case ACTION_STOP:
                     stopContainer(message);
                     response.setMessage(String.format(SUCCESS_MESSAGE_CONTAINER, command));
-                    response.setExtra(refresh(ModuleLayout.FULL_SCREEN));
+                    response.setExtra(refresh(true));
                     break;
                 case ACTION_KILL:
                     killContainer(message);
                     response.setMessage(String.format(SUCCESS_MESSAGE_CONTAINER, command));
-                    response.setExtra(refresh(ModuleLayout.FULL_SCREEN));
+                    response.setExtra(refresh(true));
                     break;
                 case ACTION_REMOVE:
                     removeContainer(message);
                     //shitty trick because remove finishes with a e and will bug with String formatting...
                     command = command.substring(0, command.length() - 1);
                     response.setMessage(String.format(SUCCESS_MESSAGE_CONTAINER, command));
-                    response.setExtra(refresh(ModuleLayout.FULL_SCREEN));
+                    response.setExtra(refresh(true));
                     break;
                 case ACTION_CONTAINER_DETAILS:
                     response.setCommand(ACTION_CONTAINER_DETAILS);
@@ -138,12 +131,12 @@ public class DockerPlugin extends Plugin {
                 case ACTION_REMOVE_IMAGE:
                     client.removeImage(message);
                     response.setMessage(String.format(SUCCESS_MESSAGE_IMAGE, ACTION_REMOVE));
-                    response.setExtra(refresh(ModuleLayout.FULL_SCREEN));
+                    response.setExtra(refresh(true));
                     break;
                 case ACTION_REMOVE_IMAGE_FORCE:
                     client.removeImage(message, true, true);
                     response.setMessage(String.format(SUCCESS_MESSAGE_IMAGE, ACTION_REMOVE));
-                    response.setExtra(refresh(ModuleLayout.FULL_SCREEN));
+                    response.setExtra(refresh(true));
                     break;
                 case ACTION_LOGS:
                     response.setCommand(ACTION_LOGS);
@@ -161,8 +154,8 @@ public class DockerPlugin extends Plugin {
 
 
     @Override
-    public Object refresh(String size) throws Exception {
-        if (!size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)) {
+    public Object refresh(boolean fullScreen) throws Exception {
+        if (!fullScreen) {
             return client.listContainers().size();
         } else {
 
@@ -175,9 +168,9 @@ public class DockerPlugin extends Plugin {
     }
 
     @Override
-    public int getRefreshRate(String size) {
+    public int getRefreshRate(boolean fullScreen) {
         // TODO Auto-generated method stub
-        if (size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)) {
+        if (fullScreen) {
             return ONE_MINUTE;
         } else {
             return ONE_MINUTE * 10;
@@ -252,6 +245,11 @@ public class DockerPlugin extends Plugin {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public boolean hasFullScreen() {
+        return true;
     }
 
 

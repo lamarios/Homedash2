@@ -6,7 +6,6 @@ import ca.benow.transmission.model.TorrentStatus;
 import ca.benow.transmission.model.TransmissionSession;
 import com.ftpix.homedash.Utils.ByteUtils;
 import com.ftpix.homedash.models.ModuleExposedData;
-import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.notifications.Notifications;
 import com.ftpix.homedash.plugins.models.TorrentObject;
@@ -66,11 +65,6 @@ public class TransmissionPlugin extends Plugin {
         autoRemoveFile = settings.getOrDefault(SETTING_AUTO_REMOVE_FILE, "0").equalsIgnoreCase("1");
 
         logger().info("Transmission client ready !");
-    }
-
-    @Override
-    public String[] getSizes() {
-        return new String[]{"3x2", "2x1", "2x2", ModuleLayout.FULL_SCREEN, ModuleLayout.KIOSK};
     }
 
     @Override
@@ -145,9 +139,9 @@ public class TransmissionPlugin extends Plugin {
     }
 
     @Override
-    protected Object refresh(String size) throws Exception {
+    protected Object refresh(boolean fullScreen) throws Exception {
         try {
-            if (size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)) {
+            if (fullScreen) {
                 return fullScreenRefresh();
             } else {
                 return getSessionStats();
@@ -159,7 +153,7 @@ public class TransmissionPlugin extends Plugin {
     }
 
     @Override
-    public int getRefreshRate(String size) {
+    public int getRefreshRate(boolean fullScreen) {
         return ONE_SECOND * 5;
     }
 
@@ -225,6 +219,11 @@ public class TransmissionPlugin extends Plugin {
     @Override
     protected Map<String, Object> getSettingsModel() {
         return null;
+    }
+
+    @Override
+    public boolean hasFullScreen() {
+        return true;
     }
 
     //////////////////////////////////////////////////////

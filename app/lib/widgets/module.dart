@@ -5,10 +5,8 @@ import 'package:flutter/cupertino.dart';
 
 abstract class ModuleWidget extends StatefulWidget {
   StreamController<ModuleMessage> stream;
-  int width;
-  int height;
 
-  ModuleWidget({Key key, this.stream, this.width, this.height});
+  ModuleWidget({Key key, this.stream});
 }
 
 abstract class ModuleWidgetState<T extends ModuleWidget> extends State<T> {}

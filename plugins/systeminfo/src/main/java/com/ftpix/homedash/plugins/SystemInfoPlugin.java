@@ -2,7 +2,6 @@ package com.ftpix.homedash.plugins;
 
 import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.ModuleExposedData;
-import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.models.Process;
 import com.ftpix.homedash.plugins.models.*;
@@ -89,17 +88,12 @@ public class SystemInfoPlugin extends Plugin {
     }
 
     @Override
-    public String[] getSizes() {
-        return new String[]{ModuleLayout.FULL_SCREEN, ModuleLayout.SIZE_2x1, ModuleLayout.SIZE_1x1, ModuleLayout.KIOSK};
-    }
-
-    @Override
     public int getBackgroundRefreshRate() {
         return ONE_SECOND * 3;
     }
 
     @Override
-    public int getRefreshRate(String size) {
+    public int getRefreshRate(boolean fullScreen) {
         return ONE_SECOND * 3;
     }
 
@@ -194,7 +188,7 @@ public class SystemInfoPlugin extends Plugin {
 
 
     @Override
-    protected Object refresh(String size) throws Exception {
+    protected Object refresh(boolean fullScreen) throws Exception {
         SystemInfoData data = new SystemInfoData();
 
         if (cpuInfo.size() > 0 && ramInfo.size() > 0) {
@@ -202,7 +196,7 @@ public class SystemInfoPlugin extends Plugin {
             data.ramInfo = this.ramInfo;
         }
 
-        if (size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)) {
+        if (fullScreen) {
             data.hardwareInfo = hardwareInfo;
 
             data.osInfo = osInfo;
@@ -229,6 +223,11 @@ public class SystemInfoPlugin extends Plugin {
     @Override
     protected Map<String, Object> getSettingsModel() {
         return null;
+    }
+
+    @Override
+    public boolean hasFullScreen() {
+        return true;
     }
     // ////////////
     // Class method

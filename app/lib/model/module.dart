@@ -8,8 +8,8 @@ class Module {
   String pluginClass;
   String location;
   bool onKiosk;
-
-  Module({this.id, this.pluginClass, this.location, this.onKiosk});
+int order;
+  Module({this.id, this.pluginClass, this.location, this.onKiosk, this.order});
 
   factory Module.fromJson(Map<String, dynamic> json) => _$ModuleFromJson(json);
   Map<String, dynamic> toJson() => _$ModuleToJson(this);

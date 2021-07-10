@@ -2,7 +2,6 @@ package com.ftpix.homedash.plugins.networkmonitor;
 
 import com.ftpix.homedash.Utils.ByteUtils;
 import com.ftpix.homedash.models.ModuleExposedData;
-import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.plugins.networkmonitor.models.NetworkInfo;
@@ -47,11 +46,6 @@ public class NetworkMonitorPlugin extends Plugin {
     }
 
     @Override
-    public String[] getSizes() {
-        return new String[]{"2x1", "3x2", ModuleLayout.KIOSK};
-    }
-
-    @Override
     public int getBackgroundRefreshRate() {
         return ONE_SECOND * 2;
     }
@@ -77,12 +71,12 @@ public class NetworkMonitorPlugin extends Plugin {
     }
 
     @Override
-    protected Object refresh(String size) throws Exception {
+    protected Object refresh(boolean fullScreen) throws Exception {
         return networkInfos;
     }
 
     @Override
-    public int getRefreshRate(String size) {
+    public int getRefreshRate(boolean fullScreen) {
         return ONE_SECOND * 2;
     }
 
@@ -136,6 +130,11 @@ public class NetworkMonitorPlugin extends Plugin {
     @Override
     protected Map<String, Object> getSettingsModel() {
         return Stream.of(systemInfo.getHardware().getNetworkIFs()).collect(Collectors.toMap(NetworkIF::getName, netIf -> String.join(", ", netIf.getIPv4addr())));
+    }
+
+    @Override
+    public boolean hasFullScreen() {
+        return false;
     }
 
     //////// plugin methods

@@ -10,7 +10,6 @@ import com.ftpix.homedash.db.DB;
 import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.*;
 import com.ftpix.homedash.models.export.Export;
-import com.ftpix.homedash.models.export.LayoutExport;
 import com.ftpix.homedash.models.export.ModuleExport;
 import com.ftpix.homedash.models.export.PageExport;
 import com.ftpix.homedash.notifications.Notifications;
@@ -136,10 +135,6 @@ public enum SettingsController implements Controller<Settings, String> {
                 .map(PageExport::fromModel)
                 .forEach(export.boards::add);
 
-        DB.LAYOUT_DAO.queryForAll()
-                .stream()
-                .map(LayoutExport::fromModel)
-                .forEach(export.layouts::add);
 
         DB.MODULE_DAO.queryForAll()
                 .stream()
@@ -197,22 +192,9 @@ public enum SettingsController implements Controller<Settings, String> {
                     }
                 });
 
-        DB.clearTable(Layout.class);
-        export.layouts
-                .stream()
-                .map(LayoutExport::toModel)
-                .forEach(l -> {
-                    try {
-                        DB.LAYOUT_DAO.create(l);
-                    } catch (SQLException e) {
-                        logger.error("Error while creating layout", e);
-                        throw new RuntimeException(e);
-                    }
-                });
 
         DB.clearTable(Module.class);
         DB.clearTable(ModuleSettings.class);
-        DB.clearTable(ModuleLayout.class);
         export.modules
                 .forEach(e -> {
 
@@ -236,29 +218,6 @@ public enum SettingsController implements Controller<Settings, String> {
                                 throw new RuntimeException(e1);
                             }
                         });
-
-                        e.layouts
-                                .forEach(l -> {
-                                    ModuleLayout ml = new ModuleLayout();
-                                    ml.setSize(l.size);
-                                    ml.setX(l.x);
-                                    ml.setY(l.y);
-
-                                    Layout layout = new Layout();
-                                    layout.setId(l.layoutId);
-
-                                    ml.setLayout(layout);
-                                    ml.setModule(m);
-
-                                    try {
-                                        DB.MODULE_LAYOUT_DAO.create(ml);
-                                        logger.info("created module layout id[{}]  for module [{}]", ml.getId(), m.getId());
-                                    } catch (SQLException e1) {
-
-                                        logger.error("Error while creating module layout", e1);
-                                        throw new RuntimeException(e1);
-                                    }
-                                });
 
                     } catch (SQLException ex) {
                         logger.error("Error while creating module", ex);

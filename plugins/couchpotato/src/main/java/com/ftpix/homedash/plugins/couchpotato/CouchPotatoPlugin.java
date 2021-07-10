@@ -65,12 +65,6 @@ public class CouchPotatoPlugin extends Plugin {
         movieAPI = createMovieProviderApiFromSettings(settings);
 
     }
-
-    @Override
-    public String[] getSizes() {
-        return new String[]{"1x1", "1x3", "2x1", "2x2", "2x3", "3x2", "3x3",};
-    }
-
     @Override
     public int getBackgroundRefreshRate() {
         return 0;
@@ -133,7 +127,7 @@ public class CouchPotatoPlugin extends Plugin {
     }
 
     @Override
-    protected Object refresh(String size) throws Exception {
+    protected Object refresh(boolean fullScreen) throws Exception {
         Map<String, String> map = new HashMap<>();
         map.put("poster", movieAPI.getRandomWantedPoster());
         map.put("name", movieAPI.getName());
@@ -141,7 +135,7 @@ public class CouchPotatoPlugin extends Plugin {
     }
 
     @Override
-    public int getRefreshRate(String size) {
+    public int getRefreshRate(boolean fullScreen) {
         return ONE_MINUTE * 10;
     }
 
@@ -193,6 +187,11 @@ public class CouchPotatoPlugin extends Plugin {
     @Override
     protected Map<String, Object> getSettingsModel() {
         return null;
+    }
+
+    @Override
+    public boolean hasFullScreen() {
+        return false;
     }
 
     ////////////

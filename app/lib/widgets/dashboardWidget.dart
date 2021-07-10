@@ -1,9 +1,7 @@
 import 'dart:async';
 
 import 'package:app/model/module.dart';
-import 'package:app/model/moduleLayout.dart';
 import 'package:app/model/moduleMessage.dart';
-import 'package:app/model/pageLayout.dart';
 import 'package:app/plugins/couchpotato/module.dart';
 import 'package:app/plugins/systemInfo/module.dart';
 import 'package:app/widgets/module.dart';
@@ -11,25 +9,25 @@ import 'package:app/widgets/moduleOverlay.dart';
 import 'package:flutter/material.dart';
 
 class DashboardWidget extends StatefulWidget {
-  ModuleLayout moduleLayout;
+  Module module;
   final StreamController<ModuleMessage> stream =
       StreamController<ModuleMessage>();
   bool editMode;
   int selectedId;
   Function selectForEdit, refreshLayout;
-  PageLayout pageLayout;
   Key key;
   int pageId;
+  bool isLast;
 
   DashboardWidget(
       {this.key,
       this.pageId,
-      this.moduleLayout,
+      this.module,
       this.editMode,
       this.selectedId,
       this.selectForEdit,
       this.refreshLayout,
-      this.pageLayout});
+      this.isLast});
 
   setEditMode(bool editMode) {
     this.editMode = editMode;
@@ -40,7 +38,7 @@ class DashboardWidget extends StatefulWidget {
   }
 
   int getModuleId() {
-    return this.moduleLayout.module.id;
+    return this.module.id;
   }
 
   @override
@@ -51,23 +49,16 @@ class _DashboardWidgetState extends State<DashboardWidget> {
   ModuleWidget getModule(Module plugin) {
     var key = Key(plugin.id.toString());
 
-    var split = widget.moduleLayout.size.split('x');
-    int width = int.parse(split[0]);
-    int height = int.parse(split[1]);
-
     ModuleWidget moduleWidget;
     switch (plugin.pluginClass) {
       case "com.ftpix.homedash.plugins.couchpotato.CouchPotatoPlugin":
         moduleWidget = CouchPotato(
           key: key,
           stream: widget.stream,
-          width: width,
-          height: height,
         );
         break;
       case "com.ftpix.homedash.plugins.SystemInfoPlugin":
-        moduleWidget = SystemInfo(
-            key: key, stream: widget.stream, width: width, height: height);
+        moduleWidget = SystemInfo(key: key, stream: widget.stream);
         break;
     }
 
@@ -85,17 +76,15 @@ class _DashboardWidgetState extends State<DashboardWidget> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> stackChildren = <Widget>[
-      getModule(widget.moduleLayout.module)
-    ];
+    List<Widget> stackChildren = <Widget>[getModule(widget.module)];
 
     if (widget.editMode) {
       stackChildren.add(ModuleOverlay(
-          pageLayout: widget.pageLayout,
-          layout: widget.moduleLayout,
+          module: widget.module,
           refreshLayout: widget.refreshLayout,
           pageId: widget.pageId,
-          selected: widget.selectedId == widget.moduleLayout.module.id));
+          isLast: widget.isLast,
+          selected: widget.selectedId == widget.module.id));
     }
 
     return Container(

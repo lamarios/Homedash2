@@ -1,7 +1,6 @@
 package com.ftpix.logreader;
 
 import com.ftpix.homedash.models.ModuleExposedData;
-import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
 import org.apache.commons.io.input.ReversedLinesFileReader;
@@ -55,11 +54,6 @@ public class LogReaderPlugin extends Plugin implements TailerListener {
     }
 
     @Override
-    public String[] getSizes() {
-        return new String[]{ModuleLayout.SIZE_1x1, ModuleLayout.FULL_SCREEN};
-    }
-
-    @Override
     public int getBackgroundRefreshRate() {
         return ONE_MINUTE * 10;
     }
@@ -101,8 +95,8 @@ public class LogReaderPlugin extends Plugin implements TailerListener {
     }
 
     @Override
-    protected Object refresh(String size) throws Exception {
-        if (size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)) {
+    protected Object refresh(boolean fullScreen) throws Exception {
+        if (fullScreen) {
             Map<String, Object> data = new HashMap<>();
             data.put("lines", lines);
             data.put("file", settings.get(SETTINGS_PATH));
@@ -119,7 +113,7 @@ public class LogReaderPlugin extends Plugin implements TailerListener {
     }
 
     @Override
-    public int getRefreshRate(String size) {
+    public int getRefreshRate(boolean fullScreen) {
         return ONE_SECOND;
     }
 
@@ -177,6 +171,11 @@ public class LogReaderPlugin extends Plugin implements TailerListener {
     @Override
     protected Map<String, Object> getSettingsModel() {
         return null;
+    }
+
+    @Override
+    public boolean hasFullScreen() {
+        return true;
     }
 
     //File tail

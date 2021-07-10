@@ -3,7 +3,6 @@ package com.ftpix.homedash.plugins.harddisk;
 
 import com.ftpix.homedash.Utils.ByteUtils;
 import com.ftpix.homedash.models.ModuleExposedData;
-import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -26,15 +25,14 @@ import java.util.stream.Stream;
  * Created by gz on 06-Jun-16.
  */
 public class HarddiskPlugin extends Plugin {
+    public static final String COMMAND_CALCULATE = "calculate";
     private final static String MOUNT = "mount", COMMAND_BROWSE = "browse", COMMAND_DELETE = "delete", COMMAND_RENAME = "rename",
             COMMAND_MOVE = "move", COMMAND_COPY = "copy", COMMAND_NEW_FOLDER = "newFolder", COMMAND_UPLOAD_FILE = "uploadFile",
             COMMAND_ADD_CLIPBOARD = "addClipboard", COMMAND_REMOVE_CLIPBOARD = "removeClipboard";
     private final static int MAX_DATA = 100;
-    public static final String COMMAND_CALCULATE = "calculate";
+    private final Map<String, FileOperation> clipBoard = new HashMap<>();
     private SystemInfo systemInfo = new SystemInfo();
     private Path mountPoint;
-    private final Map<String, FileOperation> clipBoard = new HashMap<>();
-
 
     @Override
     public String getId() {
@@ -62,11 +60,6 @@ public class HarddiskPlugin extends Plugin {
     }
 
     @Override
-    public String[] getSizes() {
-        return new String[]{"1x1", "2x1", ModuleLayout.FULL_SCREEN, ModuleLayout.KIOSK};
-    }
-
-    @Override
     public int getBackgroundRefreshRate() {
         return 0;
     }
@@ -81,14 +74,14 @@ public class HarddiskPlugin extends Plugin {
                 case COMMAND_REMOVE_CLIPBOARD:
                     clipBoard.remove(message);
                     webSocketMessage.setCommand(WebSocketMessage.COMMAND_REFRESH);
-                    webSocketMessage.setMessage(refresh(""));
+                    webSocketMessage.setMessage(refresh(true));
                     break;
                 case COMMAND_ADD_CLIPBOARD:
                     if (!clipBoard.containsKey(message)) {
                         this.clipBoard.put(message, new FileOperation());
                     }
                     webSocketMessage.setCommand(WebSocketMessage.COMMAND_REFRESH);
-                    webSocketMessage.setMessage(refresh(""));
+                    webSocketMessage.setMessage(refresh(true));
                     break;
                 case COMMAND_BROWSE:
                     List<DiskFile> diskFiles = browse(message);
@@ -156,7 +149,7 @@ public class HarddiskPlugin extends Plugin {
     }
 
     @Override
-    protected Object refresh(String size) throws Exception {
+    protected Object refresh(boolean fullScreen) throws Exception {
         File root = new File(mountPoint.toAbsolutePath().toString());
 
         long usedSpace = root.getTotalSpace() - root.getFreeSpace();
@@ -175,8 +168,8 @@ public class HarddiskPlugin extends Plugin {
     }
 
     @Override
-    public int getRefreshRate(String size) {
-        if (size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)) {
+    public int getRefreshRate(boolean fullScreen) {
+        if (fullScreen) {
             return ONE_SECOND;
         } else {
             return ONE_MINUTE;
@@ -231,6 +224,11 @@ public class HarddiskPlugin extends Plugin {
             File f = new File(fs.getMount());
             return f.exists() && f.canRead();
         }).collect(Collectors.toMap(OSFileStore::getMount, Function.identity(), (o, o2) -> o));
+    }
+
+    @Override
+    public boolean hasFullScreen() {
+        return true;
     }
 
     /**

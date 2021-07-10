@@ -1,7 +1,6 @@
 package com.ftpix.homedash.plugins.kvm;
 
 import com.ftpix.homedash.models.ModuleExposedData;
-import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
 import org.libvirt.*;
@@ -39,11 +38,6 @@ public class KvmPlugin extends Plugin {
     @Override
     protected void init() {
 
-    }
-
-    @Override
-    public String[] getSizes() {
-        return new String[]{"1x1", ModuleLayout.FULL_SCREEN};
     }
 
     @Override
@@ -85,26 +79,17 @@ public class KvmPlugin extends Plugin {
     }
 
     @Override
-    protected Object refresh(String size) throws Exception {
-        switch (size) {
-            case ModuleLayout.SIZE_1x1:
-                return countRunningVMs();
-            case ModuleLayout.FULL_SCREEN:
-                return getAllVMInfo();
+    protected Object refresh(boolean fullScreen) throws Exception {
+        if (!fullScreen) {
+            return countRunningVMs();
+        } else {
+            return getAllVMInfo();
         }
-        return null;
     }
 
-
     @Override
-    public int getRefreshRate(String size) {
-        switch (size) {
-            case ModuleLayout.FULL_SCREEN:
-                return ONE_SECOND * 10;
-            case ModuleLayout.SIZE_1x1:
-            default:
-                return ONE_MINUTE;
-        }
+    public int getRefreshRate(boolean fullScreen) {
+        return fullScreen ? ONE_SECOND * 10 : ONE_MINUTE;
     }
 
     @Override
@@ -157,6 +142,11 @@ public class KvmPlugin extends Plugin {
     @Override
     protected Map<String, Object> getSettingsModel() {
         return null;
+    }
+
+    @Override
+    public boolean hasFullScreen() {
+        return true;
     }
 
 

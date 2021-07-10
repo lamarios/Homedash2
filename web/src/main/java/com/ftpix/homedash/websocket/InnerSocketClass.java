@@ -4,7 +4,6 @@ import com.ftpix.homedash.app.PluginModuleMaintainer;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
 import com.google.gson.Gson;
-import com.kenai.jnr.x86asm.SIZE;
 import io.gsonfire.GsonFireBuilder;
 import org.eclipse.jetty.websocket.api.Session;
 
@@ -14,7 +13,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Inner class, seems like spark can only have one instance per websocket instance so we create
@@ -27,15 +25,15 @@ public class InnerSocketClass {
     protected long time = 0;
     protected Gson gson = new GsonFireBuilder().enableExposeMethodResult().createGson();
     protected ExecutorService exec;
-    private final String SIZE;
+    private final boolean fullScreen;
     private int moduleId;
 
     private ExecutorService commandProcessor = Executors.newCachedThreadPool();
 
 
-    InnerSocketClass(Session session, String size) {
+    InnerSocketClass(Session session, boolean fullScreen) {
         this.session = session;
-        SIZE = size;
+        this.fullScreen = fullScreen;
     }
 
     public void processMessage(String message) {
@@ -48,7 +46,7 @@ public class InnerSocketClass {
 
                 switch (socketMessage.getCommand()) {
                     case WebSocketMessage.COMMAND_REFRESH:
-                        WebSocketMessage response = MainWebSocket.refreshSingleModule(socketMessage.getModuleId(), (String) socketMessage.getMessage());
+                        WebSocketMessage response = MainWebSocket.refreshSingleModule(socketMessage.getModuleId(), fullScreen);
                         final String jsonResponse = gson.toJson(response);
                         session.getRemote().sendString(jsonResponse);
                         break;
@@ -102,14 +100,14 @@ public class InnerSocketClass {
     protected void refreshModule() {
         try {
             Plugin plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(this.moduleId);
-            while (refresh && plugin.getRefreshRate(SIZE) > Plugin.NEVER) {
+            while (refresh && plugin.getRefreshRate(fullScreen) > Plugin.NEVER) {
                 logger.info("Refreshing module");
                 try {
 
                     try {
                         logger.info("Refreshing plugin [{}]", moduleId);
 
-                        WebSocketMessage response = MainWebSocket.refreshSingleModule(this.moduleId, SIZE);
+                        WebSocketMessage response = MainWebSocket.refreshSingleModule(this.moduleId, fullScreen);
 
                         final String jsonResponse = gson.toJson(response);
                         logger.info("session:{}, response:[{}]", session, jsonResponse);
@@ -126,8 +124,8 @@ public class InnerSocketClass {
                 }
 
                 try {
-                    Thread.sleep(plugin.getRefreshRate(SIZE) * 1000);
-                    time += plugin.getRefreshRate(SIZE);
+                    Thread.sleep(plugin.getRefreshRate(fullScreen) * 1000);
+                    time += plugin.getRefreshRate(fullScreen);
                 } catch (Exception e) {
                     logger.error("Error while sleeping", e);
                 }

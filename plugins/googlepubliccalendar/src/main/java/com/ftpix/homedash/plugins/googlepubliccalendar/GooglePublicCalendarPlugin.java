@@ -1,7 +1,6 @@
 package com.ftpix.homedash.plugins.googlepubliccalendar;
 
 import com.ftpix.homedash.models.ModuleExposedData;
-import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
 import com.mashape.unirest.http.Unirest;
@@ -70,12 +69,6 @@ public class GooglePublicCalendarPlugin extends Plugin {
             logger().error("Error while encoding calendar id", e);
         }
     }
-
-    @Override
-    public String[] getSizes() {
-        return new String[]{"3x1", "3x4", "4x4", ModuleLayout.FULL_SCREEN};
-    }
-
     @Override
     public int getBackgroundRefreshRate() {
         return 0;
@@ -97,7 +90,7 @@ public class GooglePublicCalendarPlugin extends Plugin {
     }
 
     @Override
-    protected Object refresh(String size) throws Exception {
+    protected Object refresh(boolean fullScreen) throws Exception {
 
         try {
 
@@ -111,7 +104,7 @@ public class GooglePublicCalendarPlugin extends Plugin {
     }
 
     @Override
-    public int getRefreshRate(String size) {
+    public int getRefreshRate(boolean fullScreen) {
         return ONE_HOUR;
     }
 
@@ -202,6 +195,11 @@ public class GooglePublicCalendarPlugin extends Plugin {
     @Override
     protected Map<String, Object> getSettingsModel() {
         return null;
+    }
+
+    @Override
+    public boolean hasFullScreen() {
+        return false;
     }
 
     /// plugin methods

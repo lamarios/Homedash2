@@ -1,7 +1,6 @@
 package com.ftpix.homedash.plugins;
 
 import com.ftpix.homedash.models.ModuleExposedData;
-import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.api.SonarrApi;
 import com.ftpix.homedash.plugins.api.SonarrUnauthorizedException;
@@ -61,11 +60,6 @@ public class SonarrTvPlugin extends Plugin {
     }
 
     @Override
-    public String[] getSizes() {
-        return new String[]{ModuleLayout.SIZE_2x2, "3x3", "4x4", "3x1", ModuleLayout.FULL_SCREEN, ModuleLayout.KIOSK};
-    }
-
-    @Override
     public int getBackgroundRefreshRate() {
         return 0;
     }
@@ -114,7 +108,7 @@ public class SonarrTvPlugin extends Plugin {
     }
 
     @Override
-    protected Object refresh(String size) throws Exception {
+    protected Object refresh(boolean fullScreen) throws Exception {
         Calendar cal = new GregorianCalendar();
         cal.add(Calendar.MONTH, 1);
         List<SonarrCalendar> calendar = api.getCalendar(null, cal.getTime(), false);
@@ -128,8 +122,8 @@ public class SonarrTvPlugin extends Plugin {
     }
 
     @Override
-    public int getRefreshRate(String size) {
-        if (size.equalsIgnoreCase(ModuleLayout.FULL_SCREEN)) {
+    public int getRefreshRate(boolean fullScreen) {
+        if (fullScreen) {
             return Plugin.NEVER;
         } else {
             return ONE_HOUR;
@@ -218,6 +212,11 @@ public class SonarrTvPlugin extends Plugin {
     @Override
     protected Map<String, Object> getSettingsModel() {
         return null;
+    }
+
+    @Override
+    public boolean hasFullScreen() {
+        return true;
     }
     //////////////////////////
     /////plugin methods

@@ -31,16 +31,13 @@ public class Endpoints {
 
     public static void define() {
 
-        LayoutController.INSTANCE.defineEndpoints();
         ModuleController.INSTANCE.defineEndpoints();
         PageController.INSTANCE.defineEndpoints();
         PluginController.INSTANCE.defineEndpoints();
         SettingsController.INSTANCE.defineEndpoints();
-        ModuleLayoutController.INSTANCE.defineEndpoints();
         ModuleSettingsController.INSTANCE.defineEndpoints();
         RemoteController.INSTANCE.defineEndpoints();
         APIController.INSTANCE.defineEndpoints();
-        KioskController.INSTANCE.defineEndpoints();
         PluginUrlController.INSTANCE.defineEndPoints();
 
         /*

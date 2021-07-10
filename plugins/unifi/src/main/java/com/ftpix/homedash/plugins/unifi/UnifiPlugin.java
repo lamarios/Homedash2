@@ -49,11 +49,6 @@ public class UnifiPlugin extends Plugin {
     }
 
     @Override
-    public String[] getSizes() {
-        return new String[]{"1x1"};
-    }
-
-    @Override
     public int getBackgroundRefreshRate() {
         return 0;
     }
@@ -74,18 +69,18 @@ public class UnifiPlugin extends Plugin {
     }
 
     @Override
-    protected Object refresh(String size) throws Exception {
+    protected Object refresh(boolean fullScreen) throws Exception {
 
         if (api.login(username, password)) {
             return api.getThroughput();
         }
 
-        throw  new Exception("Couldn't login to unifi controller");
+        throw new Exception("Couldn't login to unifi controller");
 
     }
 
     @Override
-    public int getRefreshRate(String size) {
+    public int getRefreshRate(boolean fullScreen) {
         return ONE_SECOND * 3;
     }
 
@@ -136,6 +131,11 @@ public class UnifiPlugin extends Plugin {
     @Override
     protected Map<String, Object> getSettingsModel() {
         return null;
+    }
+
+    @Override
+    public boolean hasFullScreen() {
+        return false;
     }
 
 

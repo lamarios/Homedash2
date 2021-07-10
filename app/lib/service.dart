@@ -3,14 +3,13 @@ import 'dart:convert';
 import 'package:app/model/ServerConfig.dart';
 import 'package:app/model/moduleMessage.dart';
 import 'package:app/model/page.dart';
-import 'package:app/model/pageLayout.dart';
 import 'package:app/model/plugin.dart';
 import 'package:app/utils/preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import 'model/moduleLayout.dart';
+import 'model/module.dart';
 
 class Service {
   String url;
@@ -42,7 +41,6 @@ class Service {
       print('closing socket');
       websocket.sink.close();
     }
-
   }
 
   void sendWebsocketMessage(ModuleMessage message) {
@@ -70,28 +68,28 @@ class Service {
   }
 
   /// Gets the current page layout based on the screen width
-  Future<PageLayout> getPageLayout(int pageId, int width) async {
-    final response = await http.get(
-        Uri.parse(url + '/modules-layout/${pageId}/${width}'),
-        headers: headers);
+  Future<List<Module>> getModules(int pageId) async {
+    final response = await http
+        .get(Uri.parse(url + '/module/for-page/$pageId'), headers: headers);
+
+    print('Getting page $pageId, response ${response.statusCode}');
     if (response.statusCode == 200) {
-      return PageLayout.fromJson(toJson(response));
+      return (toJson(response) as List).map((e) => Module.fromJson(e)).toList();
     } else {
       throw Exception("Couldn't get page layout");
     }
   }
 
-  Future<PageLayout> setPageLayout(
-      int pageId, int width, List<ModuleLayout> moduleLayouts) async {
-    print(
-        'json: ${json.encode(moduleLayouts.map((e) => e.toJson()).toList())}');
+  Future<List<Module>> setModulesOrder(int pageId, List<Module> modules) async {
+    print('json: ${json.encode(modules.map((e) => e.toJson()).toList())}');
+    print('setting modules order $pageId, $modules');
     final response = await http.post(
-        Uri.parse(url + '/modules-layout/${pageId}/${width}'),
-        body: json.encode(moduleLayouts.map((e) => e.toJson()).toList()),
+        Uri.parse(url + '/module/set-order/$pageId'),
+        body: json.encode(modules.map((e) => e.toJson()).toList()),
         headers: headers);
 
     if (response.statusCode == 200) {
-      return PageLayout.fromJson(toJson(response));
+      return (toJson(response) as List).map((e) => Module.fromJson(e)).toList();
     } else {
       throw Exception("Couldn't save page layout");
     }
@@ -124,36 +122,6 @@ class Service {
     }
   }
 
-  Future<String> getModuleNextAvailableSize(
-      String currentSize, int moduleId, int maxWidth) async {
-    final response =
-        await http.post(Uri.parse(url + "/module/getNextAvailableSize"),
-            body: {
-              "currentSize": currentSize,
-              "moduleId": moduleId.toString(),
-              "availableWidth": maxWidth.toString(),
-            },
-            headers: headers);
-
-    if (response.statusCode == 200) {
-      return response.body;
-    } else {
-      throw Exception("Couldn't get module next size ${response.body}");
-    }
-  }
-
-  Future<void> saveModuleSize(int moduleLayoutId, String size) async {
-    final response = await http.get(
-        Uri.parse(url +
-            "/save-module-size/" +
-            moduleLayoutId.toString() +
-            "/" +
-            size),
-        headers: headers);
-    if (response.statusCode != 200) {
-      throw Exception("Couldn't save module size ${response.body}");
-    }
-  }
 
   Future<Map<String, dynamic>> saveModule(
       int page, String clazz, Map<String, String> settings) async {
@@ -241,18 +209,18 @@ class Service {
     }
   }
 
-  Future<void> moveModule(int moduleLayoutId, bool forward, int pageId) async {
+  Future<void> moveModule(int moduleId, bool forward, int pageId) async {
     final response = await http.get(
         Uri.parse(url +
-            "/move-module/" +
-            moduleLayoutId.toString() +
-            "/" +
+            "/module/" +
+            moduleId.toString() +
+            "/move/" +
             forward.toString() +
             "/page/" +
             pageId.toString()),
         headers: headers);
     if (response.statusCode != 200) {
-      throw Exception("Couldn't move module ${response.body}");
+      throw Exception("Couldn't move module ${response.request.url} \n ${response.body}");
     }
   }
 

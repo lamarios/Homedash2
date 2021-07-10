@@ -1,7 +1,6 @@
 package com.ftpix.homedash.plugins.portmapper;
 
 import com.ftpix.homedash.models.ModuleExposedData;
-import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
 import org.bitlet.weupnp.GatewayDevice;
@@ -60,11 +59,6 @@ public class PortMapperPlugin extends Plugin {
 
         forcedPorts = ports;
         logger().info("Init with [{}] ports", ports.size());
-    }
-
-    @Override
-    public String[] getSizes() {
-        return new String[]{"2x1", "5x5", "6x5", ModuleLayout.FULL_SCREEN};
     }
 
     @Override
@@ -164,7 +158,7 @@ public class PortMapperPlugin extends Plugin {
     }
 
     @Override
-    protected Object refresh(String size) throws Exception {
+    protected Object refresh(boolean fullScreen) throws Exception {
         Map<String, Object> returnValue = new Hashtable<String, Object>();
         try {
             if (this.router != null) {
@@ -183,7 +177,7 @@ public class PortMapperPlugin extends Plugin {
     }
 
     @Override
-    public int getRefreshRate(String size) {
+    public int getRefreshRate(boolean fullScreen) {
         return ONE_SECOND * 10;
     }
 
@@ -226,6 +220,11 @@ public class PortMapperPlugin extends Plugin {
     @Override
     protected Map<String, Object> getSettingsModel() {
         return null;
+    }
+
+    @Override
+    public boolean hasFullScreen() {
+        return true;
     }
     /////////////////////////////////
     ///// plugin methods

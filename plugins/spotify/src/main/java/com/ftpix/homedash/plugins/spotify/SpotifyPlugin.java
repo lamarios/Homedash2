@@ -2,7 +2,6 @@ package com.ftpix.homedash.plugins.spotify;
 
 import com.ftpix.homedash.models.ExternalEndPointDefinition;
 import com.ftpix.homedash.models.ModuleExposedData;
-import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.plugins.spotify.models.Error;
@@ -57,11 +56,6 @@ public class SpotifyPlugin extends Plugin {
     }
 
     @Override
-    public String[] getSizes() {
-        return new String[]{"1x1", "2x1", "2x2", "3x2", "3x3", "4x4", ModuleLayout.KIOSK};
-    }
-
-    @Override
     public int getBackgroundRefreshRate() {
         return 0;
     }
@@ -82,7 +76,7 @@ public class SpotifyPlugin extends Plugin {
     }
 
     @Override
-    protected Object refresh(String size) throws Exception {
+    protected Object refresh(boolean fullScreen) throws Exception {
 
         getData(DATA_SPOTIFY_TOKEN, SpotifyToken.class).ifPresent(t -> this.token = (SpotifyToken) t);
 
@@ -95,7 +89,7 @@ public class SpotifyPlugin extends Plugin {
                 } else {
                     if (error.get().message.equals(MESSAGE_TOKEN_EXPIRED)) {
                         refreshToken();
-                        return refresh(size);
+                        return refresh(fullScreen);
                     } else {
                         return needAuth();
                     }
@@ -111,7 +105,7 @@ public class SpotifyPlugin extends Plugin {
     }
 
     @Override
-    public int getRefreshRate(String size) {
+    public int getRefreshRate(boolean fullScreen) {
         return ONE_SECOND * 5;
     }
 
@@ -143,6 +137,11 @@ public class SpotifyPlugin extends Plugin {
     @Override
     protected Map<String, Object> getSettingsModel() {
         return null;
+    }
+
+    @Override
+    public boolean hasFullScreen() {
+        return false;
     }
 
 

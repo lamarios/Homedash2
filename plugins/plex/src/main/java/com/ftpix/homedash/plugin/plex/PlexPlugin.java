@@ -1,7 +1,6 @@
 package com.ftpix.homedash.plugin.plex;
 
 import com.ftpix.homedash.models.ModuleExposedData;
-import com.ftpix.homedash.models.ModuleLayout;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.plugin.plex.api.ApiType;
 import com.ftpix.homedash.plugin.plex.api.MediaServerApi;
@@ -57,11 +56,6 @@ public class PlexPlugin extends Plugin {
 
 
     @Override
-    public String[] getSizes() {
-        return new String[]{"1x1", "2x1", "3x2", "3x3", "4x4", ModuleLayout.KIOSK};
-    }
-
-    @Override
     public int getBackgroundRefreshRate() {
         return 0;
     }
@@ -82,7 +76,7 @@ public class PlexPlugin extends Plugin {
     }
 
     @Override
-    protected Object refresh(String size) throws Exception {
+    protected Object refresh(boolean fullScreen) throws Exception {
         List<NowPlaying> nowPlaying = api.getNowPlaying();
 
         nowPlaying.forEach(np -> np.setImage(downloadPicture(np.getImage())));
@@ -95,7 +89,7 @@ public class PlexPlugin extends Plugin {
     }
 
     @Override
-    public int getRefreshRate(String size) {
+    public int getRefreshRate(boolean fullScreen) {
         return ONE_SECOND * 5;
     }
 
@@ -128,6 +122,11 @@ public class PlexPlugin extends Plugin {
     @Override
     protected Map<String, Object> getSettingsModel() {
         return null;
+    }
+
+    @Override
+    public boolean hasFullScreen() {
+        return false;
     }
 
     //PLUGIN METHODS

@@ -1,6 +1,5 @@
 package com.ftpix.homedash.websocket;
 
-import com.ftpix.homedash.models.ModuleLayout;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
 /**
@@ -9,6 +8,6 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 @WebSocket(maxTextMessageSize = Integer.MAX_VALUE)
 public class FullScreenWebSocket extends SingleModuleWebSocket {
     public FullScreenWebSocket() {
-        super(ModuleLayout.FULL_SCREEN);
+        super(true);
     }
 }

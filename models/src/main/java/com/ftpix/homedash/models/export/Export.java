@@ -8,7 +8,6 @@ import java.util.Map;
 public class Export {
 
     public List<PageExport> boards = new ArrayList<>();
-    public List<LayoutExport> layouts = new ArrayList<>();
     public List<ModuleExport> modules = new ArrayList<>();
     public Map<String, String> settings = new HashMap<>();
 

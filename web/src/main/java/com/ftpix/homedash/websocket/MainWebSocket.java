@@ -1,15 +1,13 @@
 package com.ftpix.homedash.websocket;
 
 import com.ftpix.homedash.app.PluginModuleMaintainer;
-import com.ftpix.homedash.app.controllers.ModuleLayoutController;
+import com.ftpix.homedash.app.controllers.ModuleController;
 import com.ftpix.homedash.db.DB;
-import com.ftpix.homedash.models.Layout;
-import com.ftpix.homedash.models.ModuleLayout;
+import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.WebSocketMessage;
 import com.ftpix.homedash.models.WebSocketSession;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.utils.Predicates;
-import com.google.common.util.concurrent.Striped;
 import com.google.gson.Gson;
 import io.gsonfire.GsonFireBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -23,13 +21,11 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 @WebSocket
@@ -37,13 +33,12 @@ public class MainWebSocket {
 
     private static final ExecutorService exec = Executors.newFixedThreadPool(Math.max(2, Runtime.getRuntime().availableProcessors()));
     private static final ExecutorService commandProcessor = Executors.newCachedThreadPool();
-    private static final Striped<Lock> locks = Striped.lock(200);
 
-    private final List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
+    private final List<WebSocketSession> sessions = Collections.synchronizedList(new ArrayList<>());
+    private final Gson gson = new GsonFireBuilder().enableExposeMethodResult().createGsonBuilder().excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT, Modifier.VOLATILE).serializeSpecialFloatingPointValues().create();
     protected Logger logger = LogManager.getLogger();
     private boolean refresh = false;
     private long time = 0;
-    private final Gson gson = new GsonFireBuilder().enableExposeMethodResult().createGsonBuilder().excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT, Modifier.VOLATILE).serializeSpecialFloatingPointValues().create();
 
     public MainWebSocket() {
 
@@ -52,10 +47,10 @@ public class MainWebSocket {
     /**
      * Refresh a single module
      */
-    public static WebSocketMessage refreshSingleModule(int moduleId, String size) throws Exception {
+    public static WebSocketMessage refreshSingleModule(int moduleId, boolean fullScreen) throws Exception {
 
         Plugin plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(moduleId);
-        WebSocketMessage response = plugin.refreshPlugin(size);
+        WebSocketMessage response = plugin.refreshPlugin(fullScreen);
 
         return response;
 
@@ -115,20 +110,13 @@ public class MainWebSocket {
 
                     switch (socketMessage.getCommand()) {
                         case WebSocketMessage.COMMAND_REFRESH:
-                            WebSocketMessage response = refreshSingleModule(socketMessage.getModuleId(), (String) socketMessage.getMessage());
+                            WebSocketMessage response = refreshSingleModule(socketMessage.getModuleId(), Boolean.parseBoolean((String) socketMessage.getMessage()));
                             final String jsonResponse = gson.toJson(response);
                             client.getSession().getRemote().sendString(jsonResponse);
                             break;
                         case WebSocketMessage.COMMAND_CHANGE_PAGE:
                             client.setPage(DB.PAGE_DAO.queryForId(Double.valueOf(socketMessage.getMessage().toString()).intValue()));
                             logger.info("New page for client: [{}]", client.getPage().getName());
-                            time = 0;
-                            startRefresh();
-                            break;
-                        case WebSocketMessage.COMMAND_CHANGE_LAYOUT:
-                            Layout layout = DB.LAYOUT_DAO.queryForId(Double.valueOf(socketMessage.getMessage().toString()).intValue());
-                            client.setLayout(layout);
-                            logger.info("New layout for client: [{}]", client.getLayout().getName());
                             time = 0;
                             startRefresh();
                             break;
@@ -183,32 +171,28 @@ public class MainWebSocket {
             //sometimes there are no client and it's still running
             if (sessions.size() > 0) {
                 logger.info("Refreshing modules");
-                List<ModuleLayout> moduleLayouts = getModuleLayoutsToRefresh();
+                List<Module> moduleLayouts = getModuleLayoutsToRefresh();
 
                 moduleLayouts.forEach(ml -> {
 
 
                     try {
                         // Getting the data to send
-                        Plugin plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(ml.getModule());
-                        if (plugin.getRefreshRate(ml.getSize()) > Plugin.NEVER && time % plugin.getRefreshRate(ml.getSize()) == 0) {
+                        Plugin plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(ml);
+                        if (plugin.getRefreshRate(false) > Plugin.NEVER && time % plugin.getRefreshRate(false) == 0) {
 
                             exec.execute(() -> {
-                                final var lock = locks.get(ml.getModule().getId());
                                 try {
-                                    lock.lock();
-                                    logger.info("Refreshing plugin [{}] for layout[{}]", plugin.getId(), ml.getLayout().getName());
+                                    logger.info("Refreshing plugin [{}]", plugin.getId());
 
-                                    WebSocketMessage response = refreshSingleModule(ml.getModule().getId(), ml.getSize());
+                                    WebSocketMessage response = refreshSingleModule(ml.getId(), false);
 
                                     String jsonResponse = gson.toJson(response);
 
                                     sendMessage(jsonResponse, ml);
 
                                 } catch (Exception e) {
-                                    logger.error("Can't refresh module #" + ml.getModule().getId(), e);
-                                }finally {
-                                    lock.unlock();
+                                    logger.error("Can't refresh module #" + ml.getId(), e);
                                 }
 
                             });
@@ -236,27 +220,21 @@ public class MainWebSocket {
     /**
      * Find all the module layouts to refresh based on the clients connected
      */
-    private List<ModuleLayout> getModuleLayoutsToRefresh() {
-//        List<ModuleLayout> layouts = new ArrayList<>();
+    private List<Module> getModuleLayoutsToRefresh() {
 
         return sessions.stream()
-                .filter(s -> s.getLayout() != null && s.getPage() != null)
+                .filter(s -> s.getPage() != null)
                 .flatMap(s -> {
                     try {
-                        logger.info("Getting module layout for settings page:[{}], Layout[{}]", s.getPage().getName(), s.getLayout().getName());
-                        return ModuleLayoutController.INSTANCE.generatePageLayout(s.getPage(), s.getLayout()).stream();
+                        logger.info("Getting module layout for settings page:[{}]", s.getPage().getName());
+                        return ModuleController.INSTANCE.getForPage(s.getPage()).stream();
                     } catch (Exception e) {
-                        logger.error("Can't get layouts for page:[" + s.getPage().getId() + "], layout [" + s.getLayout().getName() + "]", e);
-                        return new ArrayList<ModuleLayout>().stream();
+                        logger.error("Can't get layouts for page:[" + s.getPage().getId() + "]", e);
+                        return new ArrayList<Module>().stream();
                     }
                 })
-                .filter(Predicates.distinctByKey(ModuleLayout::getId))
+                .filter(Predicates.distinctByKey(Module::getId))
                 .collect(Collectors.toList());
-
-//        List<ModuleLayout> layoutsToServe = layouts.stream().filter(Predicates.distinctByKey(l -> l.getId())).collect(Collectors.toList());
-//        logger.info("We have {} module layouts to refresh", layoutsToServe.size());
-//
-//        return layoutsToServe;
     }
 
     /**
@@ -267,9 +245,7 @@ public class MainWebSocket {
         stopRefresh();
 
         long readyClients = sessions.stream()
-                .filter(s -> {
-                    return s.getLayout() != null && s.getPage() != null;
-                })
+                .filter(s -> s.getPage() != null)
                 .count();
 
         logger.info("{}/{} clients are ready", readyClients, sessions.size());
@@ -300,24 +276,20 @@ public class MainWebSocket {
      */
     private Optional<WebSocketSession> getClientFromSession(Session session) {
 
-        Optional<WebSocketSession> webSocketSession = sessions.stream()
+        return sessions.stream()
                 .filter(s -> s.equals(session))
                 .findFirst();
-
-        return webSocketSession;
     }
 
 
     /**
      * Sends a message to clients
      */
-    public void sendMessage(String message, ModuleLayout ml) {
+    public void sendMessage(String message, Module ml) {
         sessions.stream().filter(s -> {
             try {
-                return (s.getLayout() != null)
-                        && (s.getPage() != null)
-                        && (s.getLayout().getId() == ml.getLayout().getId())
-                        && (s.getPage().getId() == ml.getModule().getPage().getId())
+                return (s.getPage() != null)
+                        && (s.getPage().getId() == ml.getPage().getId())
                         && s.getSession().isOpen();
             } catch (Exception e) {
                 logger.error("Error while checking client", e);

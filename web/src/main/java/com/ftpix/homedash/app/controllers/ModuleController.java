@@ -8,6 +8,7 @@ import com.ftpix.homedash.models.Module;
 import com.ftpix.homedash.models.*;
 import com.ftpix.homedash.plugins.Plugin;
 import com.ftpix.homedash.utils.HomeDashTemplateEngine;
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -21,10 +22,11 @@ import spark.Request;
 import spark.Response;
 import spark.Spark;
 
+import java.lang.reflect.Type;
+import java.security.InvalidParameterException;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.ftpix.homedash.db.DB.MODULE_DAO;
 import static com.ftpix.homedash.db.DB.MODULE_SETTINGS_DAO;
@@ -57,29 +59,17 @@ public enum ModuleController implements Controller<Module, Integer> {
          */
         Spark.get("/module/:moduleId/settings", this::getModuleSettings, new HomeDashTemplateEngine());
 
-        /*
-         * Save a new or edited module
-         */
-//        Spark.post("/save-module", this::saveModule, new HomeDashTemplateEngine());
 
         /*
          * Deletes a module
          */
         Spark.delete("/module/:moduleId", this::deleteModule);
 
+        Spark.get("/module/:moduleId/move-to-page/:pageId", this::moveModuleToPage, gson::toJson);
 
-        /**
-         * Gets the available sizes for a module's plugin
-         */
-        Spark.get("/module/:id/availableSizes", this::getModuleSizes, gson::toJson);
-
-
-        Spark.get("/module/:moduleId/move-to-page/:pageId", this::moveModule, gson::toJson);
-
-
-        Spark.get("/module/:moduleId/full-screen", this::getFullScreenView, new HomeDashTemplateEngine());
-
-        Spark.post("/module/getNextAvailableSize", this::getNextAvailableSize);
+        Spark.get("/module/for-page/:pageId", this::getForPage, gson::toJson);
+        Spark.get("/module/set-order/:pageId", this::setOrderForPage, gson::toJson);
+        Spark.get("/module/:moduleId/move/:forward/page/:pageId", this::moveModule, gson::toJson);
     }
 
     @Override
@@ -115,66 +105,61 @@ public enum ModuleController implements Controller<Module, Integer> {
         return object.getId();
     }
 
+    private List<Module> moveModule(Request req, Response response) throws SQLException {
+        int moduleId = Integer.parseInt(Optional.ofNullable(req.params("moduleId")).orElseThrow(() -> new InvalidParameterException("Module id must be an int")));
+        int pageId = Integer.parseInt(Optional.ofNullable(req.params("pageId")).orElse("1"));
+        boolean forward = Optional.ofNullable(req.params("forward")).orElse("true").equalsIgnoreCase("true");
+
+        List<Module> modules = getModulesForPage(pageId);
+        if (modules.size() == 1) {
+            return modules;
+        }
+        //making sure it's all in order
+
+        int indexToMove = -1;
+        for (int i = 0; i < modules.size(); i++) {
+            Module m = modules.get(i);
+            m.setOrder(i);
+            if (m.getId() == moduleId) {
+                indexToMove = i;
+            }
+        }
+
+        if (forward && indexToMove < modules.size() - 1) {
+            Collections.swap(modules, indexToMove, indexToMove + 1);
+        } else if (!forward && indexToMove > 0) {
+            Collections.swap(modules, indexToMove, indexToMove - 1);
+        }
+
+        for (int i = 0; i < modules.size(); i++) {
+            Module m = modules.get(i);
+            m.setOrder(i);
+            MODULE_DAO.update(m);
+        }
+
+        return modules;
+    }
+
+    private List<Module> setOrderForPage(Request request, Response response) throws SQLException {
+
+        Type moduleType = new TypeToken<ArrayList<Module>>() {
+        }.getType();
+        List<Module> modules = gson.fromJson(request.body(), moduleType);
+
+        modules.forEach(m -> {
+            try {
+                MODULE_DAO.update(m);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return getForPage(request, response);
+    }
+
     private List<PluginSimple> listPlugins(Request request, Response response) {
         return PluginController.INSTANCE.listAvailablePlugins().stream()
                 .map(p -> new PluginSimple(p.getClass().getName(), p.getDisplayName(), p.getDescription(), p.hasSettings()))
                 .collect(Collectors.toList());
-    }
-
-    /**
-     * Gets the next available size for a module for resize purpose.
-     *
-     * @param request
-     * @param response
-     * @return
-     */
-    private Object getNextAvailableSize(Request request, Response response) throws Exception {
-        Optional<String> currentSize = Optional.ofNullable(request.queryParams("currentSize"));
-        Optional<Integer> moduleId = Optional.ofNullable(request.queryParams("moduleId")).map(s -> Integer.parseInt(s));
-        Optional<Integer> availableWidth = Optional.ofNullable(request.queryParams("availableWidth")).map(s -> Integer.parseInt(s));
-
-        if (currentSize.isPresent() && moduleId.isPresent() && availableWidth.isPresent()) {
-
-            String[] sizes = PluginModuleMaintainer.INSTANCE.getPluginForModule(moduleId.get()).getSizes();
-            Arrays.sort(sizes);
-            List<String> filteredSizes = Stream.of(sizes)
-                    .filter(s -> !s.equalsIgnoreCase(ModuleLayout.FULL_SCREEN))
-                    .filter(s -> !s.equalsIgnoreCase(ModuleLayout.KIOSK))
-                    .filter(s -> Integer.parseInt(String.valueOf(s.charAt(0))) <= availableWidth.get())
-                    .collect(Collectors.toList());
-
-            int newIndex = filteredSizes.indexOf(currentSize.get()) + 1;
-            if (newIndex < filteredSizes.size()) {
-                return filteredSizes.get(newIndex);
-            } else {
-                return filteredSizes.get(0);
-            }
-
-
-        } else {
-            Spark.halt(404);
-            return "Missing paramters";
-        }
-
-    }
-
-    /**
-     * Gets the view for a full screen plugin
-     *
-     * @param req A Spark Request
-     * @param res A Spark response
-     * @return
-     * @throws Exception
-     */
-    private ModelAndView getFullScreenView(Request req, Response res) throws Exception {
-        Map<String, Object> map = new HashMap<String, Object>();
-        int id = Integer.parseInt(req.params("moduleId"));
-
-        Plugin plugin = PluginModuleMaintainer.INSTANCE.getPluginForModule(id);
-        map.put("plugin", plugin);
-        map.put("html", plugin.getView(ModuleLayout.FULL_SCREEN));
-
-        return new ModelAndView(map, "module-full-screen");
     }
 
     /**
@@ -185,7 +170,7 @@ public enum ModuleController implements Controller<Module, Integer> {
      * @return
      * @throws SQLException
      */
-    private boolean moveModule(Request req, Response res) throws SQLException {
+    private boolean moveModuleToPage(Request req, Response res) throws SQLException {
         int moduleId = Integer.parseInt(req.params("moduleId"));
         int pageId = Integer.parseInt(req.params("pageId"));
 
@@ -201,20 +186,6 @@ public enum ModuleController implements Controller<Module, Integer> {
         } else {
             return false;
         }
-    }
-
-    /**
-     * Gets the available sizes for a module.
-     *
-     * @param req A Spark Request
-     * @param res A Spark response
-     * @return a list of String with the different sizes
-     */
-    private String[] getModuleSizes(Request req, Response res) throws ClassNotFoundException, SQLException, InstantiationException, IllegalAccessException {
-        int moduleId = Integer.parseInt(req.params("id"));
-        logger.info("/module/{}/availableSizes", moduleId);
-
-        return PluginController.INSTANCE.getPluginSizes(getModulePlugin(moduleId));
     }
 
     /**
@@ -263,7 +234,6 @@ public enum ModuleController implements Controller<Module, Integer> {
             req.queryMap().toMap().forEach((key, value) -> {
                 flatSettings.put(key, value[0]);
             });
-
 
 
             Plugin plugin;
@@ -473,7 +443,6 @@ public enum ModuleController implements Controller<Module, Integer> {
     public boolean deleteModuleLayoutAndSettings(Module module) throws Exception {
         logger.info("deleteModuleLayoutAndSettings({})", module.getId());
         if (module != null) {
-            ModuleLayoutController.INSTANCE.deleteMany(module.getLayouts());
             ModuleSettingsController.INSTANCE.deleteMany(module.getSettings());
 
             PluginModuleMaintainer.INSTANCE.removeModule(module.getId());
@@ -522,5 +491,23 @@ public enum ModuleController implements Controller<Module, Integer> {
         } else {
             return Optional.empty();
         }
+    }
+
+    public List<Module> getForPage(Page page) throws SQLException {
+        QueryBuilder<Module, Integer> queryBuilder = DB.MODULE_DAO.queryBuilder();
+        Where<Module, Integer> where = queryBuilder.where();
+        where.eq("page_id", page.getId());
+        queryBuilder.orderBy("order", true);
+
+        PreparedQuery<Module> preparedQuery = queryBuilder.prepare();
+
+        return DB.MODULE_DAO.query(preparedQuery);
+    }
+
+    private List<Module> getForPage(Request req, Response response) throws SQLException {
+        int pageId = Integer.parseInt(Optional.ofNullable(req.params("page")).orElse("1"));
+        final Page page = PageController.INSTANCE.get(pageId);
+
+        return getForPage(page);
     }
 }

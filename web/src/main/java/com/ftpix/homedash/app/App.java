@@ -1,14 +1,10 @@
 package com.ftpix.homedash.app;
 
 import com.ftpix.homedash.app.controllers.SettingsController;
-import com.ftpix.homedash.db.DB;
 import com.ftpix.homedash.jobs.BackgroundRefresh;
-import com.ftpix.homedash.models.Layout;
-import com.ftpix.homedash.models.Page;
 import com.ftpix.homedash.plugins.SystemInfoPlugin;
 import com.ftpix.homedash.websocket.FullScreenWebSocket;
 import com.ftpix.homedash.websocket.MainWebSocket;
-import com.ftpix.homedash.websocket.SingleModuleKioskWebSocket;
 import com.google.common.io.Files;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -58,7 +54,6 @@ public class App {
 
                 webSocket("/ws", MainWebSocket.class);
                 webSocket("/ws-full-screen", FullScreenWebSocket.class);
-                webSocket("/ws-kiosk", SingleModuleKioskWebSocket.class);
 
                 //No cache policy, especially against Edge and IE
                 before((req, res) -> {
@@ -100,9 +95,6 @@ public class App {
                             }
                         });
 
-                if (!Constants.STATIC_CONFIG) {
-                    createDefaultData();
-                }
 
                 Endpoints.define();
 
@@ -252,42 +244,6 @@ public class App {
 
     }
 
-    /**
-     * Create default data like layouts and the main page
-     */
-    public static void createDefaultData() throws SQLException {
-        if (DB.LAYOUT_DAO.queryForAll().isEmpty()) {
-            logger.info("Creating first page if it doesn't exist");
-            Page page = new Page();
-            page.setId(1);
-            page.setName("Main");
-
-            DB.PAGE_DAO.createIfNotExists(page);
-
-            logger.info("Creating the 3 default layouts");
-            Layout desktop = new Layout();
-            desktop.setId(1);
-            desktop.setMaxGridWidth(11);
-            desktop.setName("Desktop");
-
-            DB.LAYOUT_DAO.createOrUpdate(desktop);
-
-            Layout tablet = new Layout();
-            tablet.setId(2);
-            tablet.setMaxGridWidth(8);
-            tablet.setName("Tablet");
-
-            DB.LAYOUT_DAO.createOrUpdate(tablet);
-
-            Layout mobile = new Layout();
-            mobile.setId(3);
-            mobile.setMaxGridWidth(3);
-            mobile.setName("Mobile");
-
-            DB.LAYOUT_DAO.createOrUpdate(mobile);
-        }
-
-    }
 
     /**
      * Create the scheduling jobs for refreshing the modules in the background
