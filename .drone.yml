@@ -12,6 +12,7 @@ steps:
       restore: true
       mount:
         - ./m2
+
   - name: set version
     image: maven:3.8-openjdk-17
     commands:
@@ -83,10 +84,9 @@ steps:
     when:
       event: tag
 trigger:
-  branch:
-    - master
   event:
     - push
+    - tag
 
 volumes:
   - name: cache
