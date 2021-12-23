@@ -12,6 +12,13 @@ steps:
       restore: true
       mount:
         - ./m2
+  - name: set version
+    image: maven:3.6.3
+    commands:
+      - mvn versions:set -DnewVersion=${DRONE_TAG} -Dmaven.repo.local=./m2
+      - mvn versions:commit -Dmaven.repo.local=./m2
+    when:
+      event: tag
 
   - name: build
     image: maven:3.6.3
@@ -33,17 +40,48 @@ steps:
       mount:
         - ./m2
 
-  - name: publish
+  - name: publish new version
     image: plugins/docker
     settings:
       username:
         from_secret: docker_username
       password:
         from_secret: docker_password
+      tags:
+        - '${DRONE_COMMIT}'
+        - '${DRONE_TAG}'
+        - latest
       repo: gonzague/homedash
-      force_tags: true
       context: web/docker
       dockerfile: web/docker/Dockerfile
+    when:
+      event: tag
+
+  - name: publish commit
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      tags:
+        - '${DRONE_COMMIT}'
+      repo: gonzague/homedash
+      context: web/docker
+      dockerfile: web/docker/Dockerfile
+    when:
+      event:
+        exclude:
+          - tag
+
+  - name: git hub release
+    image: plugins/github-release
+    settings:
+      api_key:
+        from_secret: github_token
+      files: web/target/Homedash-*.jar
+    when:
+      event: tag
 trigger:
   branch:
     - master
