@@ -91,4 +91,4 @@ trigger:
 volumes:
   - name: cache
     host:
-      path: /tmp/cache
+      path: /home/core/cache
