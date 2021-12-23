@@ -352,6 +352,9 @@
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
                             </descriptorRefs>
                             <archive>
+                                <manifestEntries>
+                                    <Multi-Release>true</Multi-Release>
+                                </manifestEntries>
                                 <manifest>
                                     <addClasspath>true</addClasspath>
                                     <mainClass>com.ftpix.homedash.app.App</mainClass>
