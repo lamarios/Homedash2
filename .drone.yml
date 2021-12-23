@@ -13,7 +13,7 @@ steps:
       mount:
         - ./m2
   - name: set version
-    image: maven:3.6.3
+    image: maven:3.8-openjdk-17
     commands:
       - mvn versions:set -DnewVersion=${DRONE_TAG} -Dmaven.repo.local=./m2
       - mvn versions:commit -Dmaven.repo.local=./m2
@@ -21,7 +21,7 @@ steps:
       event: tag
 
   - name: build
-    image: maven:3.6.3
+    image: maven:3.8-openjdk-17
     commands:
       - mvn clean install  -Dmaven.repo.local=./m2
       - mvn clean install -pl web -Dmaven.repo.local=./m2
